@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Module name="image_sensor" id="1e52fc24-1024-4d34-8ca0-8fa75d98cc86" version="1.0.0">
+    <ConfigRoot path="module.py"/>
+</Module>

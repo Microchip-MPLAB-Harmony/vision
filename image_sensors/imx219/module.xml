@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Module name="imx219" id="5703baa9-8bb5-4fe8-b88d-5ed8b35d4fc1" version="1.0.0">
+    <ConfigRoot path="module.py"/>
+</Module>

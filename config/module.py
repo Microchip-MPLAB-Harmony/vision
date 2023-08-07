@@ -1,3 +1,3 @@
-######################  Harmony replaceme  ######################
+######################  Harmony Vision  ######################
 def loadModule():
-    print("Load Module: Harmony replaceme")
+    print("Load Module: Harmony Vision")
