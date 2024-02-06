@@ -41,7 +41,6 @@
 #include "configuration.h"
 #include "vision/drivers/csi/drv_csi.h"
 #include "vision/peripheral/csi/plib_csi.h"
-#include "system/debug/sys_debug.h"
 
 static DRV_CSI_OBJ csiObj;
 
@@ -115,7 +114,7 @@ static uint32_t DRV_CSI_GetBitRate(DRV_CSI_OBJ* devObj)
     bitrate = 	csiObj.csiFrameWidth * csiObj.csiFrameHeight  * csiObj.csiFps * bpp;
     bitrate /= 1000000;
 
-    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\n size = %d bitrate = %d \r\n", size, bitrate);
+    printf("\r\n size = %ld bitrate = %ld \r\n", size, bitrate);
 
     if (bitrate < 90)
     {
@@ -144,7 +143,7 @@ bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj)
 
     devObj->csiBitRate = DRV_CSI_GetBitRate(devObj);
 
-    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\n\t csiBitRate = 0x%x \r\n", devObj->csiBitRate);
+    printf("\r\n\t csiBitRate = 0x%x \r\n", devObj->csiBitRate);
 
     // release CSI2 reset
     CSI_Reset();

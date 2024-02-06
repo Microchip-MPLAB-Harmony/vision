@@ -1,6 +1,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "device.h"
@@ -44,7 +45,7 @@ void ISC_Handler(void)
 
         if (DrvISCObj.dma.callback)
             DrvISCObj.dma.callback((uintptr_t)&DrvISCObj);
-        //SYS_DEBUG_PRINT(SYS_ERROR_INFO,"\r\n frameIndex =%d\r\n", DrvISCObj.frameIndex);
+        printf("\r\n frameIndex =%d  status = 0x%lx\r\n", DrvISCObj.frameIndex, status);
     }
     ISC_Enable_Interrupt(ISC_INTEN_DDONE_Msk);
     // ToDo Handle other interrupts.
@@ -76,7 +77,7 @@ bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj)
 
     if (count <= 0)
     {
-        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r ISC_Start_Capture timeout \n\r");
+        printf("\n\r ISC_Start_Capture timeout \n\r");
         return false;
     }
 

@@ -207,7 +207,7 @@ uint32_t DRV_ImageSensor_Configure(DRV_IMAGE_SENSOR_OBJ* isensor,
     }
     if (found == 0)
     {
-        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n DRV_IMAGE_SENSOR_CONFIGS Not found \r\n");
+        printf("\r\n DRV_IMAGE_SENSOR_CONFIGS Not found \r\n");
         return DRV_IMAGE_SENSOR_ERROR;
     }
 
@@ -331,31 +331,24 @@ DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Init(uint32_t drvI2CIndex, const char* dev
         I2CHandle = DRV_I2C_Open(drvI2CIndex, DRV_IO_INTENT_READWRITE);
         if (I2CHandle == DRV_HANDLE_INVALID)
         {
-            SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n Camera: I2C Driver Open Failed\r\n");
+            printf("\r\n Camera: I2C Driver Open Failed\r\n");
             return NULL;
         }
     }
     else
     {
-        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n Camera: Invalid I2C Driver Index\r\n");
+        printf("\r\n Camera: Invalid I2C Driver Index\r\n");
         return NULL;
     }
 
     sensor = DRV_ImageSensor_Probe(I2CHandle, true, 0);
     if (sensor != NULL)
     {
-        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\n Found %s Image Sensor \r\n", sensor->name);
-        //		if (strcmp(sensor->name, devname) == 0)
-        //		{
-        //			if (DRV_ImageSensor_Configure(sensor, DRV_IMAGE_SENSOR_VGA, DRV_IMAGE_SENSOR_RAW_BAYER) != DRV_IMAGE_SENSOR_SUCCESS)
-        //			{
-        //				SYS_DEBUG_MESSAGE(SYS_ERROR_INFO,"\r\n Sensor setup failed.\r\n");
-        //			}
-        //		}
+        printf("\r\n Found %s Image Sensor \r\n", sensor->name);
     }
     else
     {
-        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n Image Sensor probe failed.\r\n");
+        printf("\r\n Image Sensor probe failed.\r\n");
         return NULL;
     }
     return sensor;
