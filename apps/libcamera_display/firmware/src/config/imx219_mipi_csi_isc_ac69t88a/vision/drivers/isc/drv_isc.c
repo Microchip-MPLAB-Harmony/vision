@@ -1,12 +1,14 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "device.h"
-#include "system/int/sys_int.h"
-#include "system/debug/sys_debug.h"
 #include "system/cache/sys_cache.h"
+#include "system/debug/sys_debug.h"
+#include "system/int/sys_int.h"
+#include "system/time/sys_time.h"
 
 #include "vision/drivers/image_sensor/drv_image_sensor.h"
 #include "vision/drivers/isc/drv_isc.h"
@@ -22,6 +24,14 @@ __attribute__((__section__(".region_cache_aligned")))  __attribute__((__aligned_
 
 static DRV_ISC_OBJ DrvISCObj;
 
+static void DelayUS(uint32_t us)
+{
+    SYS_TIME_HANDLE timer = SYS_TIME_HANDLE_INVALID;
+    if (SYS_TIME_DelayUS(us, &timer) != SYS_TIME_SUCCESS)
+        return;
+    while (SYS_TIME_DelayIsComplete(timer) == false);
+}
+
 void ISC_Handler(void)
 {
     volatile const uint32_t status = ISC_Interrupt_Status();
@@ -35,12 +45,44 @@ void ISC_Handler(void)
 
         if (DrvISCObj.dma.callback)
             DrvISCObj.dma.callback((uintptr_t)&DrvISCObj);
-        //SYS_DEBUG_PRINT(SYS_ERROR_INFO,"\r\n frameIndex =%d\r\n", DrvISCObj.frameIndex);
+        printf("\r\n frameIndex =%d  status = 0x%lx\r\n", DrvISCObj.frameIndex, status);
     }
     ISC_Enable_Interrupt(ISC_INTEN_DDONE_Msk);
     // ToDo Handle other interrupts.
 }
 
+void DRV_ISC_Stop_Capture()
+{
+    ISC_Stop_Capture();
+}
+
+bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj)
+{
+    int count = 1000;
+
+    if (iscObj == NULL)
+        return false;
+
+    ISC_Start_Capture();
+
+    while (count--)
+    {
+        if ((ISC_Interrupt_Status() & ISC_INTSR_VD_Msk) == ISC_INTSR_VD(1))
+        {
+            ISC_Start_Capture();
+            break;
+        }
+        DelayUS(1000);
+    }
+
+    if (count <= 0)
+    {
+        printf("\n\r ISC_Start_Capture timeout \n\r");
+        return false;
+    }
+
+    return true;
+}
 
 uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
 {
@@ -59,7 +101,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         dma_view0 = isc_dma_pool.view0;
         for (i = 0; i < iscObj->dmaDescSize; i++)
         {
-            dma_view0[i].ctrl =  ISC_DCTRL_DVIEW_PACKED | ISC_DCTRL_DE_1;
+            dma_view0[i].ctrl =  ISC_DCTRL_DVIEW_PACKED | ISC_DCTRL_DE(1);
             dma_view0[i].nextDesc = (uint32_t)&dma_view0[i + 1];
             dma_view0[i].addr = (uint32_t)iscObj->dma.address0 + (i * iscObj->dma.size);
             dma_view0[i].stride = 0;
@@ -75,7 +117,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
 #endif
         else
             ISC_DMA_Configure_Input_Mode(ISC_DCFG_IMODE(iscObj->layout) | ISC_DCFG_YMBSIZE_BEATS16);
-        ISC_DMA_Enable(ISC_DCTRL_DVIEW_PACKED | ISC_DCTRL_DE_1);
+        ISC_DMA_Enable(ISC_DCTRL_DVIEW_PACKED | ISC_DCTRL_DE(1));
         break;
     }
     case ISC_LAYOUT_YC420SP:
@@ -86,7 +128,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         dma_view1 = isc_dma_pool.view1;
         for (i = 0; i < iscObj->dmaDescSize; i++)
         {
-            dma_view1[i].ctrl = ISC_DCTRL_DVIEW_SEMIPLANAR | ISC_DCTRL_DE_1;
+            dma_view1[i].ctrl = ISC_DCTRL_DVIEW_SEMIPLANAR | ISC_DCTRL_DE(1);
             dma_view1[i].nextDesc = (uint32_t)&dma_view1[i + 1];
             dma_view1[i].addr0 = (uint32_t)iscObj->dma.address0 + i * iscObj->dma.size;
             dma_view1[i].stride0 = 0;
@@ -98,7 +140,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         ISC_DMA_Configure_Desc_Entry((uint32_t)&dma_view1[0]);
         ISC_DMA_Configure_Input_Mode(ISC_DCFG_IMODE(iscObj->layout) |
                                      ISC_DCFG_YMBSIZE_BEATS8 | ISC_DCFG_CMBSIZE_BEATS8);
-        ISC_DMA_Enable(ISC_DCTRL_DVIEW_SEMIPLANAR | ISC_DCTRL_DE_1);
+        ISC_DMA_Enable(ISC_DCTRL_DVIEW_SEMIPLANAR | ISC_DCTRL_DE(1));
         break;
     }
     case ISC_LAYOUT_YC422P:
@@ -109,7 +151,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         dma_view2 = isc_dma_pool.view2;
         for (i = 0; i < iscObj->dmaDescSize; i++)
         {
-            dma_view2[i].ctrl = ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE_1;
+            dma_view2[i].ctrl = ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE(1);
             dma_view2[i].nextDesc = (uint32_t)&dma_view2[i + 1];
             dma_view2[i].addr0 = (uint32_t)iscObj->dma.address0 + i * iscObj->dma.size;;
             dma_view2[i].stride0 = 0;
@@ -123,7 +165,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         ISC_DMA_Configure_Desc_Entry((uint32_t)&dma_view2[0]);
         ISC_DMA_Configure_Input_Mode(ISC_DCFG_IMODE(iscObj->layout) |
                                      ISC_DCFG_YMBSIZE_BEATS8 | ISC_DCFG_CMBSIZE_BEATS8);
-        ISC_DMA_Enable(ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE_1);
+        ISC_DMA_Enable(ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE(1));
         break;
     }
     default:
@@ -167,44 +209,49 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
                         (iscObj->inputBits == DRV_IMAGE_SENSOR_40_BIT)
                         ? 5 : (4 - iscObj->inputBits)));
 
+#ifdef ISC_PFE_CFG0_MIPI_Msk
     ISC_PFE_MIPI_Enable(iscObj->enableMIPI);
-    ISC_PFE_Set_Sync_Polarity(0, 0);
+#endif
 
-    if (iscObj->gamma.enableGamma)
-    {
-        if ((!iscObj->gamma.greenEntries) ||
-            (!iscObj->gamma.blueEntries) ||
-            (!iscObj->gamma.redEntries))
-        {
-            ISC_Gamma_Enable(1, 0, 0);
-        }
-        else
-        {
-            // Todo move to plib
-            ISC_Gamma_Enable(1, ISC_GAM_CTRL_RENABLE_1 |
-                             ISC_GAM_CTRL_GENABLE_1 |
-                             ISC_GAM_CTRL_BENABLE_1,
-                             iscObj->gamma.enableBiPart);
-
-            ge = iscObj->gamma.greenEntries;
-            be = iscObj->gamma.blueEntries;
-            re = iscObj->gamma.redEntries;
-            for (i = 0; i < ISC_GAMMA_ENTRIES; i++)
-            {
-                ISC_REGS->ISC_GAM_RENTRY[i] = *re++;
-                ISC_REGS->ISC_GAM_GENTRY[i] = *ge++;
-                ISC_REGS->ISC_GAM_BENTRY[i] = *be++;
-            }
-        }
-    }
-    else
-    {
-        ISC_Gamma_Enable(0, 0, 0);
-    }
+    ISC_PFE_Set_Sync_Polarity(ISC_PFE_CFG0_HPOL(ISC_HSYNC_POLARITY_VAL),
+                              ISC_PFE_CFG0_VPOL(ISC_VSYNC_POLARITY_VAL));
 
     switch (iscObj->inputFormat)
     {
     case DRV_IMAGE_SENSOR_RAW_BAYER:
+
+        if (iscObj->gamma.enableGamma)
+        {
+            if ((!iscObj->gamma.greenEntries) ||
+                (!iscObj->gamma.blueEntries) ||
+                (!iscObj->gamma.redEntries))
+            {
+                ISC_Gamma_Enable(1, 0, 0);
+            }
+            else
+            {
+                // Todo move to plib
+                ISC_Gamma_Enable(1, ISC_GAM_CTRL_RENABLE(1) |
+                                 ISC_GAM_CTRL_GENABLE(1) |
+                                 ISC_GAM_CTRL_BENABLE(1),
+                                 iscObj->gamma.enableBiPart);
+
+                ge = iscObj->gamma.greenEntries;
+                be = iscObj->gamma.blueEntries;
+                re = iscObj->gamma.redEntries;
+                for (i = 0; i < ISC_GAMMA_ENTRIES; i++)
+                {
+                    ISC_REGS->ISC_GAM_RENTRY[i] = *re++;
+                    ISC_REGS->ISC_GAM_GENTRY[i] = *ge++;
+                    ISC_REGS->ISC_GAM_BENTRY[i] = *be++;
+                }
+            }
+        }
+        else
+        {
+            ISC_Gamma_Enable(0, 0, 0);
+        }
+
         /* In a single-sensor system, each cell on the sensor
          * has a specific color filter and microlens
          * positioned above it. The raw data obtained from the
@@ -218,12 +265,10 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
          * from the PFE module, each Bayer color component (R,
          * Gr, B, Gb) can be manually adjusted using an offset
          * and a gain. */
-        ISC_WB_Enable(1);
-        ISC_WB_Set_Bayer_Pattern(iscObj->bayerPattern);
-
-        /* Default value for White balance setting */
         if (iscObj->whiteBalance.enableWB)
         {
+            ISC_WB_Enable(1);
+            ISC_WB_Set_Bayer_Pattern(iscObj->bayerPattern);
             ISC_WB_Set_Bayer_Color(iscObj->whiteBalance.redOffset, \
                                    iscObj->whiteBalance.greenRedOffset, \
                                    iscObj->whiteBalance.blueOffset, \
@@ -233,21 +278,22 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
                                    iscObj->whiteBalance.blueGain, \
                                    iscObj->whiteBalance.greenBlueGain);
         }
-        else
-        {
-            ISC_WB_Set_Bayer_Color(0, 0, 0, 0, 0x200, 0x200, 0x200, 0x200);
-        }
+
         if (iscObj->cbc.enableCBC)
         {
             ISC_CBC_Enable(1);
             ISC_CBC_Configure(0, 0, iscObj->cbc.bright, iscObj->cbc.contrast);
+#ifdef ISC_CBHS_HUE_Msk
             ISC_CBHS_Configure(iscObj->cbc.hue, iscObj->cbc.saturation);
+#endif
         }
+
         if (iscObj->colorCorrection)
         {
             ISC_CC_Enable(1);
             ISC_CC_Configure(iscObj->colorCorrection);
         }
+
         if (iscObj->layout == ISC_LAYOUT_YC422SP ||
             iscObj->layout == ISC_LAYOUT_YC420SP ||
             iscObj->layout == ISC_LAYOUT_YC422P ||
@@ -273,6 +319,7 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
 
     case DRV_IMAGE_SENSOR_YUV_422:
     case DRV_IMAGE_SENSOR_RGB:
+    case DRV_IMAGE_SENSOR_JPEG:
         ISC_CFA_Enable(0);
         ISC_WB_Enable(0);
         ISC_Gamma_Enable(0, 0, 0);

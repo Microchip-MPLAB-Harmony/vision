@@ -48,6 +48,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "peripheral/flexcom/twi/master/plib_flexcom7_twi_master.h"
 #include "peripheral/tc/plib_tc0.h"
 #include "driver/i2c/drv_i2c.h"
@@ -65,11 +66,9 @@
 #include "peripheral/clk/plib_clk.h"
 #include "peripheral/pio/plib_pio.h"
 #include "peripheral/aic/plib_aic.h"
-#include "system/input/sys_input.h"
 #include "vision/libcamera/camera.h"
+#include "system/input/sys_input.h"
 #include "peripheral/flexcom/twi/master/plib_flexcom10_twi_master.h"
-#include "system/console/sys_console.h"
-#include "system/console/src/sys_console_uart_definitions.h"
 #include "peripheral/dbgu/plib_dbgu.h"
 #include "gfx/driver/controller/xlcdc/bridge/lvdsc/plib_lvdsc.h"
 #include "app.h"
@@ -210,11 +209,7 @@ typedef struct
     SYS_MODULE_OBJ drvI2C1;
 
     SYS_MODULE_OBJ  sysTime;
-    SYS_MODULE_OBJ  sysConsole0;
-
     SYS_MODULE_OBJ  drvMAXTOUCH;
-
-    SYS_MODULE_OBJ  sysDebug;
 
 	SYS_MODULE_OBJ devCamera;
 

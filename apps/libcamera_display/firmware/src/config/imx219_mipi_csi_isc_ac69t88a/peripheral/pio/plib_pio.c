@@ -118,7 +118,7 @@ void PIO_Initialize ( void )
     ((pio_registers_t*)PIO_PORT_C)->PIO_OER = 0x388000U;
     ((pio_registers_t*)PIO_PORT_C)->PIO_ODR = ~0x388000U;
     /* Initialize PORTC pin state */
-    ((pio_registers_t*)PIO_PORT_C)->PIO_ODSR = 0x0U;
+    ((pio_registers_t*)PIO_PORT_C)->PIO_ODSR = 0x200000U;
     /* PORTC Slew rate control */
     ((pio_registers_t*)PIO_PORT_C)->PIO_SLEWR = 0x0U;
     /* PORTC drive control */

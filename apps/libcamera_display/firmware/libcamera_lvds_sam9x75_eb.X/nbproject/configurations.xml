@@ -81,15 +81,8 @@
             <logicalFolder name="cache" displayName="cache" projectFiles="true">
               <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/cache/sys_cache.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="console" displayName="console" projectFiles="true">
-              <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/console/src/sys_console_uart_definitions.h</itemPath>
-              <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/console/src/sys_console_local.h</itemPath>
-              <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/console/src/sys_console_uart.h</itemPath>
-              <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/console/sys_console.h</itemPath>
-            </logicalFolder>
             <logicalFolder name="debug" displayName="debug" projectFiles="true">
               <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/debug/sys_debug.h</itemPath>
-              <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/debug/src/sys_debug_local.h</itemPath>
             </logicalFolder>
             <logicalFolder name="input" displayName="input" projectFiles="true">
               <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/input/sys_input_listener.h</itemPath>
@@ -283,6 +276,12 @@
       </logicalFolder>
       <itemPath>../src/app.h</itemPath>
     </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="true">
+      <itemPath>Makefile</itemPath>
+      <itemPath>libcamera_lvds_sam9x75_eb.mc3</itemPath>
+    </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
@@ -363,13 +362,6 @@
             <logicalFolder name="cache" displayName="cache" projectFiles="true">
               <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/cache/sys_cache.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="console" displayName="console" projectFiles="true">
-              <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/console/src/sys_console.c</itemPath>
-              <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/console/src/sys_console_uart.c</itemPath>
-            </logicalFolder>
-            <logicalFolder name="debug" displayName="debug" projectFiles="true">
-              <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/debug/src/sys_debug.c</itemPath>
-            </logicalFolder>
             <logicalFolder name="input" displayName="input" projectFiles="true">
               <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/input/sys_input_listener.c</itemPath>
               <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/system/input/sys_input.c</itemPath>
@@ -404,6 +396,12 @@
               <logicalFolder name="imx219" displayName="imx219" projectFiles="true">
                 <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/vision/image_sensors/imx219/imx219.c</itemPath>
               </logicalFolder>
+              <logicalFolder name="ov2640" displayName="ov2640" projectFiles="true">
+                <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/vision/image_sensors/ov2640/ov2640.c</itemPath>
+              </logicalFolder>
+              <logicalFolder name="ov5640" displayName="ov5640" projectFiles="true">
+                <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/vision/image_sensors/ov5640/ov5640.c</itemPath>
+              </logicalFolder>
             </logicalFolder>
             <logicalFolder name="libcamera" displayName="libcamera" projectFiles="true">
               <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/vision/libcamera/camera.c</itemPath>
@@ -431,12 +429,6 @@
       <itemPath>../src/config/imx219_mipi_csi_isc_ac69t88a/pin_configurations.csv</itemPath>
       <itemPath>../src/main.c</itemPath>
     </logicalFolder>
-    <logicalFolder name="ExternalFiles"
-                   displayName="Important Files"
-                   projectFiles="false">
-      <itemPath>Makefile</itemPath>
-      <itemPath>libcamera_lvds_sam9x75_eb.mc3</itemPath>
-    </logicalFolder>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -446,13 +438,13 @@
         <targetDevice>SAM9X75</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>samice</platformTool>
+        <platformTool>j32</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>4.30</languageToolchainVersion>
+        <languageToolchainVersion>4.35</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAM9X7_DFP" vendor="Microchip" version="1.1.120"/>
+        <pack name="SAM9X7_DFP" vendor="Microchip" version="1.3.130"/>
       </packs>
       <ScriptingSettings>
         <ScriptingSetting key="boot.load_adr" value=""/>
@@ -778,6 +770,7 @@
         <property key="communication.speed" value="4"/>
         <property key="debugoptions.debug-startup" value="Use system settings"/>
         <property key="debugoptions.reset-behaviour" value="Use system settings"/>
+        <property key="event.recorder.debugger.behavior" value="Running"/>
         <property key="event.recorder.enabled" value="false"/>
         <property key="event.recorder.scvd.files" value=""/>
         <property key="jlink.override" value=""/>
@@ -795,6 +788,8 @@
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservebootflash" value="false"/>
         <property key="programoptions.preserveprogrammemory" value="false"/>
+        <property key="programoptions.preserveprogrammemory.ranges"
+                  value="0x300000-0xeff00fff"/>
         <property key="programoptions.preserveprogramrange.ranges"
                   value="0x300000-0xeff00fff"/>
         <property key="programoptions.resetafterprogram" value="true"/>
@@ -811,6 +806,7 @@
         <property key="communication.speed" value="4"/>
         <property key="debugoptions.debug-startup" value="Use system settings"/>
         <property key="debugoptions.reset-behaviour" value="Use system settings"/>
+        <property key="event.recorder.debugger.behavior" value="Running"/>
         <property key="event.recorder.enabled" value="false"/>
         <property key="event.recorder.scvd.files" value=""/>
         <property key="jlink.override" value=""/>
@@ -828,7 +824,7 @@
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservebootflash" value="false"/>
         <property key="programoptions.preserveprogrammemory" value="false"/>
-        <property key="programoptions.preserveprogramrange.ranges"
+        <property key="programoptions.preserveprogrammemory.ranges"
                   value="0x300000-0xeff00fff"/>
         <property key="programoptions.resetafterprogram" value="true"/>
         <property key="script.has_reset" value="true"/>

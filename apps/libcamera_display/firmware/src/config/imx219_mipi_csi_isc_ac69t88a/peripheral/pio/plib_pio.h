@@ -63,83 +63,83 @@
 
 
 /*** Macros for LED_RGB_B pin ***/
-#define LED_RGB_B_Set()               (PIOC_REGS->PIO_SODR = (1<<20))
-#define LED_RGB_B_Clear()             (PIOC_REGS->PIO_CODR = (1<<20))
-#define LED_RGB_B_Toggle()            (PIOC_REGS->PIO_ODSR ^= (1<<20))
-#define LED_RGB_B_OutputEnable()      (PIOC_REGS->PIO_OER = (1<<20))
-#define LED_RGB_B_InputEnable()       (PIOC_REGS->PIO_ODR = (1<<20))
-#define LED_RGB_B_Get()               ((PIOC_REGS->PIO_PDSR >> 20) & 0x1)
+#define LED_RGB_B_Set()               (PIOC_REGS->PIO_SODR = ((uint32_t)1U<<20U))
+#define LED_RGB_B_Clear()             (PIOC_REGS->PIO_CODR = ((uint32_t)1U<<20U))
+#define LED_RGB_B_Toggle()            (PIOC_REGS->PIO_ODSR ^= ((uint32_t)1U<<20U))
+#define LED_RGB_B_OutputEnable()      (PIOC_REGS->PIO_OER = ((uint32_t)1U<<20U))
+#define LED_RGB_B_InputEnable()       (PIOC_REGS->PIO_ODR = ((uint32_t)1U<<20U))
+#define LED_RGB_B_Get()               ((PIOC_REGS->PIO_PDSR >> 20U) & 0x1U)
 #define LED_RGB_B_PIN                  PIO_PIN_PC20
 
 /*** Macros for USER_BUTTON pin ***/
-#define USER_BUTTON_Set()               (PIOC_REGS->PIO_SODR = (1<<23))
-#define USER_BUTTON_Clear()             (PIOC_REGS->PIO_CODR = (1<<23))
-#define USER_BUTTON_Toggle()            (PIOC_REGS->PIO_ODSR ^= (1<<23))
-#define USER_BUTTON_OutputEnable()      (PIOC_REGS->PIO_OER = (1<<23))
-#define USER_BUTTON_InputEnable()       (PIOC_REGS->PIO_ODR = (1<<23))
-#define USER_BUTTON_Get()               ((PIOC_REGS->PIO_PDSR >> 23) & 0x1)
+#define USER_BUTTON_Set()               (PIOC_REGS->PIO_SODR = ((uint32_t)1U<<23U))
+#define USER_BUTTON_Clear()             (PIOC_REGS->PIO_CODR = ((uint32_t)1U<<23U))
+#define USER_BUTTON_Toggle()            (PIOC_REGS->PIO_ODSR ^= ((uint32_t)1U<<23U))
+#define USER_BUTTON_OutputEnable()      (PIOC_REGS->PIO_OER = ((uint32_t)1U<<23U))
+#define USER_BUTTON_InputEnable()       (PIOC_REGS->PIO_ODR = ((uint32_t)1U<<23U))
+#define USER_BUTTON_Get()               ((PIOC_REGS->PIO_PDSR >> 23U) & 0x1U)
 #define USER_BUTTON_PIN                  PIO_PIN_PC23
 
 /*** Macros for AC69T88A_TOUCH_SDL pin ***/
-#define AC69T88A_TOUCH_SDL_Get()               ((PIOC_REGS->PIO_PDSR >> 0) & 0x1)
+#define AC69T88A_TOUCH_SDL_Get()               ((PIOC_REGS->PIO_PDSR >> 0U) & 0x1U)
 #define AC69T88A_TOUCH_SDL_PIN                  PIO_PIN_PC0
 
 /*** Macros for CAMERA_RESET pin ***/
-#define CAMERA_RESET_Set()               (PIOC_REGS->PIO_SODR = (1<<15))
-#define CAMERA_RESET_Clear()             (PIOC_REGS->PIO_CODR = (1<<15))
-#define CAMERA_RESET_Toggle()            (PIOC_REGS->PIO_ODSR ^= (1<<15))
-#define CAMERA_RESET_OutputEnable()      (PIOC_REGS->PIO_OER = (1<<15))
-#define CAMERA_RESET_InputEnable()       (PIOC_REGS->PIO_ODR = (1<<15))
-#define CAMERA_RESET_Get()               ((PIOC_REGS->PIO_PDSR >> 15) & 0x1)
+#define CAMERA_RESET_Set()               (PIOC_REGS->PIO_SODR = ((uint32_t)1U<<15U))
+#define CAMERA_RESET_Clear()             (PIOC_REGS->PIO_CODR = ((uint32_t)1U<<15U))
+#define CAMERA_RESET_Toggle()            (PIOC_REGS->PIO_ODSR ^= ((uint32_t)1U<<15U))
+#define CAMERA_RESET_OutputEnable()      (PIOC_REGS->PIO_OER = ((uint32_t)1U<<15U))
+#define CAMERA_RESET_InputEnable()       (PIOC_REGS->PIO_ODR = ((uint32_t)1U<<15U))
+#define CAMERA_RESET_Get()               ((PIOC_REGS->PIO_PDSR >> 15U) & 0x1U)
 #define CAMERA_RESET_PIN                  PIO_PIN_PC15
 
 /*** Macros for AC69T88A_BACKLIGHT_EN pin ***/
-#define AC69T88A_BACKLIGHT_EN_Set()               (PIOC_REGS->PIO_SODR = (1<<21))
-#define AC69T88A_BACKLIGHT_EN_Clear()             (PIOC_REGS->PIO_CODR = (1<<21))
-#define AC69T88A_BACKLIGHT_EN_Toggle()            (PIOC_REGS->PIO_ODSR ^= (1<<21))
-#define AC69T88A_BACKLIGHT_EN_OutputEnable()      (PIOC_REGS->PIO_OER = (1<<21))
-#define AC69T88A_BACKLIGHT_EN_InputEnable()       (PIOC_REGS->PIO_ODR = (1<<21))
-#define AC69T88A_BACKLIGHT_EN_Get()               ((PIOC_REGS->PIO_PDSR >> 21) & 0x1)
+#define AC69T88A_BACKLIGHT_EN_Set()               (PIOC_REGS->PIO_SODR = ((uint32_t)1U<<21U))
+#define AC69T88A_BACKLIGHT_EN_Clear()             (PIOC_REGS->PIO_CODR = ((uint32_t)1U<<21U))
+#define AC69T88A_BACKLIGHT_EN_Toggle()            (PIOC_REGS->PIO_ODSR ^= ((uint32_t)1U<<21U))
+#define AC69T88A_BACKLIGHT_EN_OutputEnable()      (PIOC_REGS->PIO_OER = ((uint32_t)1U<<21U))
+#define AC69T88A_BACKLIGHT_EN_InputEnable()       (PIOC_REGS->PIO_ODR = ((uint32_t)1U<<21U))
+#define AC69T88A_BACKLIGHT_EN_Get()               ((PIOC_REGS->PIO_PDSR >> 21U) & 0x1U)
 #define AC69T88A_BACKLIGHT_EN_PIN                  PIO_PIN_PC21
 
 /*** Macros for LED_RGB_R pin ***/
-#define LED_RGB_R_Set()               (PIOC_REGS->PIO_SODR = (1<<19))
-#define LED_RGB_R_Clear()             (PIOC_REGS->PIO_CODR = (1<<19))
-#define LED_RGB_R_Toggle()            (PIOC_REGS->PIO_ODSR ^= (1<<19))
-#define LED_RGB_R_OutputEnable()      (PIOC_REGS->PIO_OER = (1<<19))
-#define LED_RGB_R_InputEnable()       (PIOC_REGS->PIO_ODR = (1<<19))
-#define LED_RGB_R_Get()               ((PIOC_REGS->PIO_PDSR >> 19) & 0x1)
+#define LED_RGB_R_Set()               (PIOC_REGS->PIO_SODR = ((uint32_t)1U<<19U))
+#define LED_RGB_R_Clear()             (PIOC_REGS->PIO_CODR = ((uint32_t)1U<<19U))
+#define LED_RGB_R_Toggle()            (PIOC_REGS->PIO_ODSR ^= ((uint32_t)1U<<19U))
+#define LED_RGB_R_OutputEnable()      (PIOC_REGS->PIO_OER = ((uint32_t)1U<<19U))
+#define LED_RGB_R_InputEnable()       (PIOC_REGS->PIO_ODR = ((uint32_t)1U<<19U))
+#define LED_RGB_R_Get()               ((PIOC_REGS->PIO_PDSR >> 19U) & 0x1U)
 #define LED_RGB_R_PIN                  PIO_PIN_PC19
 
 /*** Macros for AC69T88A_TOUCH_SDA pin ***/
-#define AC69T88A_TOUCH_SDA_Get()               ((PIOC_REGS->PIO_PDSR >> 1) & 0x1)
+#define AC69T88A_TOUCH_SDA_Get()               ((PIOC_REGS->PIO_PDSR >> 1U) & 0x1U)
 #define AC69T88A_TOUCH_SDA_PIN                  PIO_PIN_PC1
 
 /*** Macros for BSP_MAXTOUCH_CHG pin ***/
-#define BSP_MAXTOUCH_CHG_Set()               (PIOC_REGS->PIO_SODR = (1<<31))
-#define BSP_MAXTOUCH_CHG_Clear()             (PIOC_REGS->PIO_CODR = (1<<31))
-#define BSP_MAXTOUCH_CHG_Toggle()            (PIOC_REGS->PIO_ODSR ^= (1<<31))
-#define BSP_MAXTOUCH_CHG_OutputEnable()      (PIOC_REGS->PIO_OER = (1<<31))
-#define BSP_MAXTOUCH_CHG_InputEnable()       (PIOC_REGS->PIO_ODR = (1<<31))
-#define BSP_MAXTOUCH_CHG_Get()               ((PIOC_REGS->PIO_PDSR >> 31) & 0x1)
+#define BSP_MAXTOUCH_CHG_Set()               (PIOC_REGS->PIO_SODR = ((uint32_t)1U<<31U))
+#define BSP_MAXTOUCH_CHG_Clear()             (PIOC_REGS->PIO_CODR = ((uint32_t)1U<<31U))
+#define BSP_MAXTOUCH_CHG_Toggle()            (PIOC_REGS->PIO_ODSR ^= ((uint32_t)1U<<31U))
+#define BSP_MAXTOUCH_CHG_OutputEnable()      (PIOC_REGS->PIO_OER = ((uint32_t)1U<<31U))
+#define BSP_MAXTOUCH_CHG_InputEnable()       (PIOC_REGS->PIO_ODR = ((uint32_t)1U<<31U))
+#define BSP_MAXTOUCH_CHG_Get()               ((PIOC_REGS->PIO_PDSR >> 31U) & 0x1U)
 #define BSP_MAXTOUCH_CHG_PIN                  PIO_PIN_PC31
 
 /*** Macros for AC69T88A_DISPLAY_EN pin ***/
-#define AC69T88A_DISPLAY_EN_Set()               (PIOA_REGS->PIO_SODR = (1<<30))
-#define AC69T88A_DISPLAY_EN_Clear()             (PIOA_REGS->PIO_CODR = (1<<30))
-#define AC69T88A_DISPLAY_EN_Toggle()            (PIOA_REGS->PIO_ODSR ^= (1<<30))
-#define AC69T88A_DISPLAY_EN_OutputEnable()      (PIOA_REGS->PIO_OER = (1<<30))
-#define AC69T88A_DISPLAY_EN_InputEnable()       (PIOA_REGS->PIO_ODR = (1<<30))
-#define AC69T88A_DISPLAY_EN_Get()               ((PIOA_REGS->PIO_PDSR >> 30) & 0x1)
+#define AC69T88A_DISPLAY_EN_Set()               (PIOA_REGS->PIO_SODR = ((uint32_t)1U<<30U))
+#define AC69T88A_DISPLAY_EN_Clear()             (PIOA_REGS->PIO_CODR = ((uint32_t)1U<<30U))
+#define AC69T88A_DISPLAY_EN_Toggle()            (PIOA_REGS->PIO_ODSR ^= ((uint32_t)1U<<30U))
+#define AC69T88A_DISPLAY_EN_OutputEnable()      (PIOA_REGS->PIO_OER = ((uint32_t)1U<<30U))
+#define AC69T88A_DISPLAY_EN_InputEnable()       (PIOA_REGS->PIO_ODR = ((uint32_t)1U<<30U))
+#define AC69T88A_DISPLAY_EN_Get()               ((PIOA_REGS->PIO_PDSR >> 30U) & 0x1U)
 #define AC69T88A_DISPLAY_EN_PIN                  PIO_PIN_PA30
 
 /*** Macros for AC69T88A_PWR_EN pin ***/
-#define AC69T88A_PWR_EN_Set()               (PIOA_REGS->PIO_SODR = (1<<14))
-#define AC69T88A_PWR_EN_Clear()             (PIOA_REGS->PIO_CODR = (1<<14))
-#define AC69T88A_PWR_EN_Toggle()            (PIOA_REGS->PIO_ODSR ^= (1<<14))
-#define AC69T88A_PWR_EN_OutputEnable()      (PIOA_REGS->PIO_OER = (1<<14))
-#define AC69T88A_PWR_EN_InputEnable()       (PIOA_REGS->PIO_ODR = (1<<14))
-#define AC69T88A_PWR_EN_Get()               ((PIOA_REGS->PIO_PDSR >> 14) & 0x1)
+#define AC69T88A_PWR_EN_Set()               (PIOA_REGS->PIO_SODR = ((uint32_t)1U<<14U))
+#define AC69T88A_PWR_EN_Clear()             (PIOA_REGS->PIO_CODR = ((uint32_t)1U<<14U))
+#define AC69T88A_PWR_EN_Toggle()            (PIOA_REGS->PIO_ODSR ^= ((uint32_t)1U<<14U))
+#define AC69T88A_PWR_EN_OutputEnable()      (PIOA_REGS->PIO_OER = ((uint32_t)1U<<14U))
+#define AC69T88A_PWR_EN_InputEnable()       (PIOA_REGS->PIO_ODR = ((uint32_t)1U<<14U))
+#define AC69T88A_PWR_EN_Get()               ((PIOA_REGS->PIO_PDSR >> 14U) & 0x1U)
 #define AC69T88A_PWR_EN_PIN                  PIO_PIN_PA14
 
 

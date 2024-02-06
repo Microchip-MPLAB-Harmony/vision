@@ -1046,4 +1046,5 @@ void XLCDC_Initialize(void)
     XLCDC_SetupOVR2Layer();
     XLCDC_EnableBacklight();
     XLCDC_Start();
+    XLCDC_SetBacklightBrightness(255);
 }

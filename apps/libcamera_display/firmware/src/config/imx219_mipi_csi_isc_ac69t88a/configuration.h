@@ -88,24 +88,6 @@ extern "C" {
 #define SYS_TIME_CPU_CLOCK_FREQUENCY                (800000000)
 #define SYS_TIME_COMPARE_UPDATE_EXECUTION_CYCLES    (470)
 
-#define SYS_CONSOLE_INDEX_0                       0
-
-
-
-
-
-#define SYS_DEBUG_ENABLE
-#define SYS_DEBUG_GLOBAL_ERROR_LEVEL       SYS_ERROR_DEBUG
-#define SYS_DEBUG_BUFFER_DMA_READY
-#define SYS_DEBUG_USE_CONSOLE
-
-
-#define SYS_CONSOLE_DEVICE_MAX_INSTANCES   			(1U)
-#define SYS_CONSOLE_UART_MAX_INSTANCES 	   			(1U)
-#define SYS_CONSOLE_USB_CDC_MAX_INSTANCES 	   		(0U)
-#define SYS_CONSOLE_PRINT_BUFFER_SIZE        		(200U)
-
-
 
 
 // *****************************************************************************
@@ -134,22 +116,31 @@ extern "C" {
 #define DRV_I2C_QUEUE_SIZE_IDX0               2
 #define DRV_I2C_CLOCK_SPEED_IDX0              400000
 
-
-/*** IMX219 Image Sensor Configuration ***/
-#define IMAGE_SENSOR_NAME					"IMX219"
-#define IMAGE_SENSOR_OUTPUT_RESOLUTION		DRV_IMAGE_SENSOR_VGA
-#define IMAGE_SENSOR_OUTPUT_FORMAT			DRV_IMAGE_SENSOR_RAW_BAYER
-#define IMAGE_SENSOR_OUTPUT_BUS_WIDTH		DRV_IMAGE_SENSOR_10_BIT
-
 /* I2C Driver Instance 1 Configuration Options */
 #define DRV_I2C_INDEX_1                       1
 #define DRV_I2C_CLIENTS_NUMBER_IDX1           1
 #define DRV_I2C_QUEUE_SIZE_IDX1               2
 #define DRV_I2C_CLOCK_SPEED_IDX1              400000
 
+
+/*** ISC PLib Configuration ***/
+#define PLIB_ISC_MCK_SEL_VAL			0
+#define PLIB_ISC_MCK_DIV_VAL			0
+#define PLIB_ISC_ISP_CLK_SEL_VAL		0
+#define PLIB_ISC_ISP_CLK_DIV_VAL		0
+#define ISC_HSYNC_POLARITY_VAL		0
+#define ISC_VSYNC_POLARITY_VAL		0
+
 /* I2C Driver Common Configuration Options */
 #define DRV_I2C_INSTANCES_NUMBER              (2U)
 
+
+
+/*** Image Sensor Configuration ***/
+#define IMAGE_SENSOR_NAME					"AutoDectect"
+#define IMAGE_SENSOR_OUTPUT_RESOLUTION		DRV_IMAGE_SENSOR_VGA
+#define IMAGE_SENSOR_OUTPUT_FORMAT			DRV_IMAGE_SENSOR_RAW_BAYER
+#define IMAGE_SENSOR_OUTPUT_BUS_WIDTH		DRV_IMAGE_SENSOR_10_BIT
 
 
 /*** CSI Driver Configuration ***/
@@ -162,18 +153,33 @@ extern "C" {
 
 
 /*** ISC Image Sensor Configuration ***/
-#define ISC_INPUT_FORMAT_TYPE		DRV_IMAGE_SENSOR_RAW_BAYER
-#define ISC_INPUT_BIT_WIDTH			DRV_IMAGE_SENSOR_10_BIT
-#define ISC_OUTPUT_FORMAT_TYPE		ISC_RLP_CFG_MODE_RGB565
-#define ISC_OUTPUT_LAYOUT_TYPE		ISC_LAYOUT_PACKED16
-#define ISC_BAYER_PATTERN_TYPE		ISC_CFA_CFG_BAYCFG_RGRG_Val
-#define ISC_ENABLE_GAMMA		true
-#define ISC_ENABLE_WHITE_BALANCE	true
-#define ISC_ENABLE_HISTOGRAM	false
-#define ISC_ENABLE_MIPI_INTERFACE	true
-#define ISC_ENABLE_VIDEO_MODE		true
+#define ISC_INPUT_FORMAT_TYPE			DRV_IMAGE_SENSOR_RAW_BAYER
+#define ISC_INPUT_BIT_WIDTH				DRV_IMAGE_SENSOR_10_BIT
+#define ISC_OUTPUT_FORMAT_TYPE			ISC_RLP_CFG_MODE_RGB565
+#define ISC_OUTPUT_LAYOUT_TYPE			ISC_LAYOUT_PACKED16
+#define ISC_BAYER_PATTERN_TYPE			ISC_CFA_CFG_BAYCFG_RGRG_Val
+#define ISC_ENABLE_GAMMA				true
+#define ISC_GAMMA_RED_ENTRIES			true
+#define ISC_GAMMA_BLUE_ENTRIES			true
+#define ISC_GAMMA_GREEN_ENTRIES			true
+#define ISC_ENABLE_WHITE_BALANCE		true
+#define ISC_WB_R_OFFSET					7928
+#define ISC_WB_GR_OFFSET				7928
+#define ISC_WB_B_OFFSET					7936
+#define ISC_WB_GB_OFFSET				7928
+#define ISC_WB_R_GAIN					1944
+#define ISC_WB_GR_GAIN					1103
+#define ISC_WB_B_GAIN					3403
+#define ISC_WB_GB_GAIN					1619
+#define ISC_ENABLE_HISTOGRAM			false
+#define ISC_ENABLE_MIPI_INTERFACE		true
+#define ISC_ENABLE_VIDEO_MODE			true
 #define ISC_ENABLE_BRIGHTNESS_CONTRAST	true
-#define ISC_ENABLE_PROGRESSIVE_MODE	true
+#define ISC_CBC_BRIGHTNESS_VAL			1
+#define ISC_CBC_CONTRAST_VAL			15
+#define ISC_CBHS_HUE_VAL				0
+#define ISC_CBHS_SATURATION_VAL			15
+#define ISC_ENABLE_PROGRESSIVE_MODE		true
 
 
 /*** Image Sensor Driver Configuration ***/

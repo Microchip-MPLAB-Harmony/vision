@@ -62,7 +62,6 @@ void FLEXCOM7_InterruptHandler (void);
 void FLEXCOM10_InterruptHandler (void);
 void TC0_InterruptHandler (void);
 void ISC_Handler (void);
-void DBGU_InterruptHandler (void);
 void CSI2DC_Handler (void);
 
 void RTT_InterruptHandler (void);

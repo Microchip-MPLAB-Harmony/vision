@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define DRV_IMAGE_SENSOR_MAX_DEVICES    1
-#define DRV_IMAGE_SENSOR_MAX_CONFIGS    5
+#define DRV_IMAGE_SENSOR_MAX_DEVICES    5
+#define DRV_IMAGE_SENSOR_MAX_CONFIGS    10
 
 
 enum
@@ -22,7 +22,8 @@ enum
     DRV_IMAGE_SENSOR_YUV_422,
     DRV_IMAGE_SENSOR_RGB,
     DRV_IMAGE_SENSOR_CCIR656,
-    DRV_IMAGE_SENSOR_MONO
+    DRV_IMAGE_SENSOR_MONO,
+    DRV_IMAGE_SENSOR_JPEG,
 };
 
 enum
@@ -39,6 +40,7 @@ enum
 {
     DRV_IMAGE_SENSOR_QVGA = 0,
     DRV_IMAGE_SENSOR_VGA,
+    DRV_IMAGE_SENSOR_WVGA,
     DRV_IMAGE_SENSOR_SVGA,
     DRV_IMAGE_SENSOR_XGA,
     DRV_IMAGE_SENSOR_WXGA,
@@ -47,6 +49,14 @@ enum
     DRV_IMAGE_SENSOR_1080P,
     DRV_IMAGE_SENSOR_5MP,
     DRV_IMAGE_SENSOR_8MP,
+};
+
+/** Image Sensor I2C mode */
+enum
+{
+    DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_BYTE = 0,
+    DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,
+    DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_2BYTE
 };
 
 typedef struct
@@ -71,8 +81,12 @@ typedef struct
 {
     const char* name;
     uint8_t devAddr;
-    uint16_t chipIdAddr;
-    uint16_t chipId;
+    uint8_t i2cInfMode;         /* I2C interface mode  */
+    uint16_t chipIdAddrHigh;
+    uint16_t chipIdAddrLow;
+    uint16_t chipIdHigh;
+    uint16_t chipIdLow;
+    uint16_t chipIdMask;        /** Chip Id mask */
     uint16_t streamStartAddr;
     uint8_t streamStartValue;
     uint8_t streamStopValue;
@@ -84,6 +98,8 @@ typedef struct
     volatile bool drvI2cSuccess;
 } DRV_IMAGE_SENSOR_OBJ;
 
+extern const DRV_IMAGE_SENSOR_OBJ ov2640_device;
+extern const DRV_IMAGE_SENSOR_OBJ ov5640_device;
 extern const DRV_IMAGE_SENSOR_OBJ imx219_device;
 
 DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Probe(DRV_HANDLE drvI2CHandle, bool detect_auto, uint8_t id);
