@@ -474,6 +474,16 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT * const init)
 		pDrvInstance->csi2dcObj->dataPipeDataType = CSI2_DATA_FORMAT_RAW10;
 		pDrvInstance->csiObj->csiDataType = CSI2_DATA_FORMAT_RAW10;
 	}
+        
+        if(pDrvInstance->csiObj->csiFrameWidth != pDrvInstance->imageWidth)
+        {
+            pDrvInstance->csiObj->csiFrameWidth = pDrvInstance->imageWidth;
+        }       
+        
+        if(pDrvInstance->csiObj->csiFrameHeight != pDrvInstance->imageHeight)
+        {
+            pDrvInstance->csiObj->csiFrameHeight = pDrvInstance->imageHeight;
+        }
 
 
 	if(pInit->csiDataFormat >= 0)

@@ -42,8 +42,7 @@
 
 /*** IMX219 Image Sensor Configuration ***/
 #define IMAGE_SENSOR_NAME					"${ImageSensorName}"
-#define IMAGE_SENSOR_OUTPUT_WIDTH			${ImageSensorWidth}
-#define IMAGE_SENSOR_OUTPUT_HEIGHT			${ImageSensorHeight}
+#define IMAGE_SENSOR_OUTPUT_RESOLUTION		${ImageSensorResolution}
 #define IMAGE_SENSOR_OUTPUT_FORMAT			${ImageSensorOutputFormat}
 #define IMAGE_SENSOR_OUTPUT_BUS_WIDTH		${ImageSensorBitWidth}
 <#--
