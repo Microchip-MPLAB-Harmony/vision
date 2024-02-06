@@ -19,7 +19,7 @@
 #endif
 
 
-#define DMA_MAX_BUFFERS		(10)
+#define DMA_MAX_BUFFERS		(4)
 #define COUNTER_FREQ		(1)
 
 /** Video frame buffer size calculation */
