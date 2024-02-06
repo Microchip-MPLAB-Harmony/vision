@@ -84,6 +84,8 @@ void ISC_Software_Reset(void)
     ISC_REGS->ISC_CTRLDIS = ISC_CTRLDIS_SWRST_Msk;
 }
 
+
+#ifdef ISC_PFE_CFG0_MIPI_Msk
 /**
  *  Enable MIPI.
  * vmode: enable
@@ -94,8 +96,8 @@ void ISC_PFE_MIPI_Enable(uint8_t en)
         ISC_REGS->ISC_PFE_CFG0 |= ISC_PFE_CFG0_MIPI(1);
     else
         ISC_REGS->ISC_PFE_CFG0 &= ~ISC_PFE_CFG0_MIPI(1);
-
 }
+#endif
 
 /**
  * configure PFE(Parallel Front End) video mode.
@@ -201,6 +203,7 @@ void ISC_PFE_Crop_Area(uint32_t hstart, uint32_t hend,
 }
 
 
+#ifdef ISC_DPC_CTRL_Msk
 /**
  *  Black Level Correction.
  */
@@ -232,6 +235,7 @@ void ISC_Enable_Green_Correction(uint8_t enable, uint8_t clip)
         ISC_REGS->ISC_DPC_CTRL &= ~ISC_DPC_CTRL_GDCEN(1);
     }
 }
+#endif
 
 /**
  *  Enables ISP Clock.
@@ -257,6 +261,27 @@ void ISC_Reset_ISP_Clock(void)
     ISC_REGS->ISC_CLKDIS = ISC_CLKDIS_ICSWRST_Msk;
 }
 
+
+#if defined(ISC_CLKCFG_ICDIV_Msk) && defined(ISC_CLKCFG_ICSEL_Msk)
+/**
+ * Configure the ISP clock.
+ * ispClockDiv ISP Clock Divider.
+ *  ispClockSelection ISP Clock Selection.
+			0: HCLOCK is selected.
+			1: GCK is selected.
+ */
+void ISC_Configure_ISP_Clock(uint32_t ispClockDiv, uint32_t ispClockSelection)
+{
+    uint32_t clkcfg = ISC_REGS->ISC_CLKCFG & ~(ISC_CLKCFG_ICDIV_Msk | ISC_CLKCFG_ICSEL_Msk);
+
+    ISC_REGS->ISC_CLKCFG = clkcfg |
+                           ISC_CLKCFG_ICDIV(ispClockDiv) |
+                           ISC_CLKCFG_ICSEL(ispClockSelection);
+
+    while (ISC_Sync_InProgress());
+}
+#endif
+
 /**
  * Configure the Master Clock.
  * masterClockDiv Master Clock Divider.
@@ -267,7 +292,17 @@ void ISC_Reset_ISP_Clock(void)
  */
 void ISC_Configure_Master_Clock(uint32_t masterClockDiv, uint32_t masterClockSelection)
 {
+#ifdef ISC_CLKCFG_MCSEL_Msk
+    uint32_t clkcfg = ISC_REGS->ISC_CLKCFG & ~(ISC_CLKCFG_MCDIV_Msk | ISC_CLKCFG_MCSEL_Msk);
+
+    ISC_REGS->ISC_CLKCFG = clkcfg |
+                           ISC_CLKCFG_MCDIV(masterClockDiv) |
+                           ISC_CLKCFG_MCSEL(masterClockSelection);
+
+    while (ISC_Sync_InProgress());
+#else
     ISC_REGS->ISC_CLKCFG = ISC_CLKCFG_MCDIV(masterClockDiv);
+#endif
 }
 
 /**
@@ -447,7 +482,11 @@ void ISC_CC_Configure(PLIB_ISC_COLOR_CORRECT* cc)
 void ISC_Gamma_Enable(uint8_t enable, uint8_t channels, uint8_t bipart_enable)
 {
     if (enable)
+#ifdef ISC_GAM_CTRL_BIPART_Msk
         ISC_REGS->ISC_GAM_CTRL |= ISC_GAM_CTRL_ENABLE(1) | channels | (bipart_enable ? ISC_GAM_CTRL_BIPART(1) : 0);
+#else
+        ISC_REGS->ISC_GAM_CTRL |= ISC_GAM_CTRL_ENABLE(1) | channels;
+#endif
     else
         ISC_REGS->ISC_GAM_CTRL = 0;
 }
@@ -477,7 +516,7 @@ void ISC_Gamma_Configure(uint16_t* r_gam_constant, uint16_t* r_gam_slope,
     }
 }
 
-
+#ifdef ISC_VHXS_CTRL_Msk
 /**
  *  Enables/disable Horizontal or Vertical Scaler
  */
@@ -489,7 +528,6 @@ void ISC_Scaler_Enable(uint8_t h_enable, uint8_t v_enable)
     if (v_enable)
         ISC_REGS->ISC_VHXS_CTRL |= ISC_VHXS_CTRL_VXSEN(1);
 }
-
 void ISC_Scaler_Source_Size(uint16_t hxsize, uint16_t vxsize)
 {
     ISC_REGS->ISC_VHXS_SS = ISC_VHXS_SS_XS(hxsize) | ISC_VHXS_SS_YS(vxsize);
@@ -497,8 +535,9 @@ void ISC_Scaler_Source_Size(uint16_t hxsize, uint16_t vxsize)
 
 void ISC_Scaler_Destination_Size(uint16_t hxsize, uint16_t vxsize)
 {
-    ISC_REGS->ISC_VHXS_DS = ISC_VHXS_SS_XS(hxsize) | ISC_VHXS_SS_YS(vxsize);
+    ISC_REGS->ISC_VHXS_DS = ISC_VHXS_DS_XD(hxsize) | ISC_VHXS_DS_YD(vxsize);
 }
+#endif
 
 /**
  *  Enables/disable Color Space Conversion.
@@ -536,10 +575,17 @@ void ISC_CSC_Configure(PLIB_ISC_COLOR_SPACE* cs)
  */
 void ISC_CBC_Enable(uint8_t enable)
 {
+#ifdef ISC_CBHS_CTRL_Msk
     if (enable)
         ISC_REGS->ISC_CBHS_CTRL = ISC_CBHS_CTRL_ENABLE(1);
     else
         ISC_REGS->ISC_CBHS_CTRL = 0;
+#else
+    if (enable)
+        ISC_REGS->ISC_CBC_CTRL = ISC_CBC_CTRL_ENABLE(1);
+    else
+        ISC_REGS->ISC_CBC_CTRL = 0;
+#endif
 }
 
 /**
@@ -552,26 +598,46 @@ void ISC_CBC_Enable(uint8_t enable)
  * contrast Contrast (signed 12 bits 1:3:8).
  */
 void ISC_CBC_Configure(uint8_t ccir656, uint8_t byte_order,
-                       uint16_t brightness, uint16_t contrast)
+                       uint32_t brightness, uint32_t contrast)
 {
+#ifdef ISC_CBHS_CFG_Msk
     if (ccir656)
         ISC_REGS->ISC_CBHS_CFG = ISC_CBHS_CFG_CCIR(1) | byte_order;
     else
         ISC_REGS->ISC_CBHS_CFG = 0;
+#else
+    if (ccir656)
+        ISC_REGS->ISC_CBC_CFG = ISC_CBC_CFG_CCIR(1) | byte_order;
+    else
+        ISC_REGS->ISC_CBC_CFG = 0;
+#endif
+
+#ifdef ISC_CBHS_BRIGHT_Msk
     ISC_REGS->ISC_CBHS_BRIGHT = ISC_CBHS_BRIGHT_BRIGHT(brightness);
+#else
+    ISC_REGS->ISC_CBC_BRIGHT = ISC_CBC_BRIGHT_BRIGHT(brightness);
+#endif
+
+#ifdef ISC_CBHS_CONT_CONTRAST_Msk
     ISC_REGS->ISC_CBHS_CONT = ISC_CBHS_CONT_CONTRAST(contrast);
+#else
+    ISC_REGS->ISC_CBC_CONTRAST = ISC_CBC_CONTRAST_CONTRAST(contrast);
+#endif
 }
 
+#ifdef ISC_CBHS_HUE_Msk
 /**
  * Configure Saturation and hue with give parameter.
  * Hue Control (unsigned 9 bits 0:9:0).
  * Saturation Contrast (unsigned 12 bits 0:8:4).
  */
-void ISC_CBHS_Configure(uint16_t hue, uint16_t saturation)
+void ISC_CBHS_Configure(uint32_t hue, uint32_t saturation)
 {
     ISC_REGS->ISC_CBHS_HUE = ISC_CBHS_HUE_HUE(hue);
     ISC_REGS->ISC_CBHS_SAT = ISC_CBHS_SAT_SATURATION(saturation);
 }
+#endif
+
 /*------------------------------------------
  *       Sub-sampling functions
  *----------------------------------------*/
@@ -734,6 +800,12 @@ void ISC_DMA_Enable(uint32_t ctrl)
  */
 void ISC_DMA_Address(uint8_t channel, uint32_t address, uint32_t stride)
 {
+#ifdef ISC_SUB0_NUMBER
+
+    ISC_REGS->ISC_SUB0[channel].ISC_DAD = address;
+    ISC_REGS->ISC_SUB0[channel].ISC_DST = stride;
+
+#else
     switch (channel)
     {
     case 0:
@@ -751,13 +823,18 @@ void ISC_DMA_Address(uint8_t channel, uint32_t address, uint32_t stride)
     default:
         break;
     }
+#endif
 }
 
 void ISC_Initialize(void)
 {
     int counter = 1000;
-    ISC_Configure_Master_Clock(0, 0);
+
+    ISC_Configure_Master_Clock(PLIB_ISC_MCK_DIV_VAL, PLIB_ISC_MCK_SEL_VAL);
     ISC_Enable_Master_Clock();
+#if defined(ISC_CLKCFG_ICDIV_Msk) && defined(ISC_CLKCFG_ICSEL_Msk)
+    ISC_Configure_ISP_Clock(PLIB_ISC_ISP_CLK_DIV_VAL, PLIB_ISC_ISP_CLK_SEL_VAL);
+#endif
     ISC_Enable_ISP_Clock();
     while ((ISC_REGS->ISC_CLKSR != ((ISC_CLKSR_ICSR_Msk) | (ISC_CLKSR_MCSR_Msk))) && counter--);
 

@@ -67,7 +67,9 @@ uint32_t ISC_Ctrl_Status(void);
 int ISC_Update_Profile(void);
 void ISC_Software_Reset(void);
 
+#ifdef ISC_PFE_CFG0_MIPI_Msk
 void ISC_PFE_MIPI_Enable(uint8_t en);
+#endif
 void ISC_PFE_Set_Video_Mode(uint32_t vmode);
 void ISC_PFE_Set_Sync_Polarity(uint32_t hpol, uint32_t vpol);
 void ISC_PFE_Set_Pixel_Polarity(uint32_t ppol);
@@ -80,12 +82,16 @@ void ISC_PFE_Enable_Video_Mode(uint8_t enable);
 void ISC_PFE_Set_Cropping_Area(uint32_t hstart, uint32_t hend,
                                uint32_t vstart, uint32_t vend);
 
-
+#if defined(ISC_CLKCFG_ICDIV_Msk) && defined(ISC_CLKCFG_ICSEL_Msk)
 void ISC_Configure_ISP_Clock(uint32_t isp_clk_div,
                              uint32_t isp_clk_sel);
+#endif
+void ISC_Configure_ISP_Clock(uint32_t ispClockDiv,
+                             uint32_t ispClockSelection);
 void ISC_Enable_ISP_Clock(void);
 void ISC_Disable_ISP_Clock(void);
 void ISC_Reset_ISP_Clock(void);
+
 void ISC_Configure_Master_Clock(uint32_t master_clk_div,
                                 uint32_t master_clk_sel);
 void ISC_Enable_Master_Clock(void);
@@ -123,10 +129,11 @@ void ISC_Gamma_Configure(uint16_t* r_gam_constant, uint16_t* r_gam_slope,
                          uint16_t* g_gam_constant, uint16_t* g_gam_slope,
                          uint16_t* b_gam_constant, uint16_t* b_gam_slope);
 
-
+#ifdef ISC_VHXS_CTRL_Msk
 void ISC_Scaler_Enable(uint8_t h_enable, uint8_t v_enable);
 void ISC_Scaler_Source_Size(uint16_t hxsize, uint16_t vxsize);
 void ISC_Scaler_Destination_Size(uint16_t hxsize, uint16_t vxsize);
+#endif
 
 void ISC_CSC_Enable(uint8_t enabled);
 void ISC_CSC_Configure(PLIB_ISC_COLOR_SPACE* cs);
@@ -134,10 +141,15 @@ void ISC_CSC_Configure(PLIB_ISC_COLOR_SPACE* cs);
 
 void ISC_CBC_Enable(uint8_t enabled);
 void ISC_CBC_Configure(uint8_t ccir656, uint8_t byte_order,
-                       uint16_t brightness, uint16_t contrast);
+                       uint32_t brightness, uint32_t contrast);
+#ifdef ISC_DPC_CTRL_Msk
 void ISC_Enable_Black_Level(uint8_t enable, uint16_t level);
 void ISC_Enable_Green_Correction(uint8_t enable, uint8_t clip);
-void ISC_CBHS_Configure(uint16_t hue, uint16_t saturation);
+#endif
+
+#ifdef ISC_CBHS_HUE_Msk
+void ISC_CBHS_Configure(uint32_t hue, uint32_t saturation);
+#endif
 
 void ISC_Sub422_Enable(uint8_t enabled);
 void ISC_Sub422_Configure(uint8_t ccir656, uint8_t byte_order, uint8_t lpf);
