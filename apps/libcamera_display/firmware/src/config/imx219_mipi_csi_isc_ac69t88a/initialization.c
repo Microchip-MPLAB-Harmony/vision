@@ -221,7 +221,7 @@ const DRV_MAXTOUCH_INIT drvMAXTOUCHInitData =
 const CAMERA_INIT drvCAMERAInitData =
 {
     .imageSensorName               = IMAGE_SENSOR_NAME,
-    .imageSensorResolution         = DRV_IMAGE_SENSOR_VGA,
+    .imageSensorResolution         = IMAGE_SENSOR_OUTPUT_RESOLUTION,
     .imageSensorOutputFormat       = IMAGE_SENSOR_OUTPUT_FORMAT,
     .imageSensorOutputBitWidth     = IMAGE_SENSOR_OUTPUT_BUS_WIDTH,
     .iscInputFormat                = ISC_INPUT_FORMAT_TYPE,

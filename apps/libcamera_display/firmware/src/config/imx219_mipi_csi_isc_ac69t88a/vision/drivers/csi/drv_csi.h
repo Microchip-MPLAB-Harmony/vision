@@ -8,29 +8,21 @@
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
-	extern "C" {
+extern "C" {
 #endif
 // DOM-IGNORE-END
 
-typedef enum 
-{
-	CSI_DATA_LANES_1 = 0,
-	CSI_DATA_LANES_2,
-	CSI_DATA_LANES_3,
-	CSI_DATA_LANES_4
-}CSI_DATA_LANES;
-
 typedef struct
 {
-	uint8_t numLanes;
-	uint8_t csiDataType;
-	uint8_t csiDataId;
-	uint8_t csiVirtualChannel;
-	uint8_t csiBitRate;
-	uint32_t csiFps;
-	uint32_t csiFrameWidth;    
-	uint32_t csiFrameHeight;
-}DRV_CSI_OBJ;
+    uint8_t numLanes;
+    uint8_t csiDataType;
+    uint8_t csiDataId;
+    uint8_t csiVirtualChannel;
+    uint8_t csiBitRate;
+    uint32_t csiFps;
+    uint32_t csiFrameWidth;
+    uint32_t csiFrameHeight;
+} DRV_CSI_OBJ;
 
 bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj);
 
@@ -38,8 +30,8 @@ DRV_CSI_OBJ* DRV_CSI_Initalize(void);
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
-	}
+}
 #endif
 
-#endif 
+#endif
 

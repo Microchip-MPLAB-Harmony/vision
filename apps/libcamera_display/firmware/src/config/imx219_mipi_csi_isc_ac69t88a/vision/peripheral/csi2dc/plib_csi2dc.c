@@ -43,98 +43,98 @@
 
 void CSI2DC_Global_Config(uint32_t cfg)
 {
-	CSI2DC_REGS->CSI2DC_GCFGR = cfg;
+    CSI2DC_REGS->CSI2DC_GCFGR = cfg;
 }
 
 void CSI2DC_Reset(void)
 {
-	int i = 0;
-	CSI2DC_REGS->CSI2DC_GCTLR = CSI2DC_GCTLR_SWRST_1;
-	for(i = 0; i < 10000; i++);
-	CSI2DC_REGS->CSI2DC_GCTLR = CSI2DC_GCTLR_SWRST_0;
+    int i = 0;
+    CSI2DC_REGS->CSI2DC_GCTLR = CSI2DC_GCTLR_SWRST_1;
+    for (i = 0; i < 10000; i++);
+    CSI2DC_REGS->CSI2DC_GCTLR = CSI2DC_GCTLR_SWRST_0;
 }
 
 uint32_t CSI2DC_Global_status(void)
 {
-	return CSI2DC_REGS->CSI2DC_GSR;
+    return CSI2DC_REGS->CSI2DC_GSR;
 }
 
 void CSI2DC_Enable_Interrupt(uint32_t flag)
 {
-	CSI2DC_REGS->CSI2DC_GIER = flag;
+    CSI2DC_REGS->CSI2DC_GIER = flag;
 }
 
 void CSI2DC_Disable_Interrupt(uint32_t flag)
 {
-	CSI2DC_REGS->CSI2DC_GIDR = flag;
+    CSI2DC_REGS->CSI2DC_GIDR = flag;
 }
 
 uint32_t CSI2DC_Interrupt_Status(void)
 {
-	return CSI2DC_REGS->CSI2DC_GISR;
+    return CSI2DC_REGS->CSI2DC_GISR;
 }
 
 void CSI2DC_Configure_VideoPipe(uint32_t dt, uint32_t vc, uint32_t align_isc)
 {
-	CSI2DC_REGS->CSI2DC_VPCFGR = CSI2DC_VPCFGR_DT(dt) | CSI2DC_VPCFGR_VC(vc) | (align_isc ? CSI2DC_VPCFGR_PA_1 : 0);
+    CSI2DC_REGS->CSI2DC_VPCFGR = CSI2DC_VPCFGR_DT(dt) | CSI2DC_VPCFGR_VC(vc) | (align_isc ? CSI2DC_VPCFGR_PA_1 : 0);
 }
 
 void CSI2DC_Enable_VideoPipe(void)
 {
-	CSI2DC_REGS->CSI2DC_VPER = CSI2DC_VPER_ENABLE_1;
+    CSI2DC_REGS->CSI2DC_VPER = CSI2DC_VPER_ENABLE_1;
 }
 
 void CSI2DC_Enable_VideoPipe_Interrupt(uint32_t flag)
 {
-	CSI2DC_REGS->CSI2DC_VPIER = flag;
+    CSI2DC_REGS->CSI2DC_VPIER = flag;
 }
 
 void CSI2DC_Disable_VideoPipe_Interrupt(uint32_t flag)
 {
-	CSI2DC_REGS->CSI2DC_VPIDR = flag;
+    CSI2DC_REGS->CSI2DC_VPIDR = flag;
 }
 
 uint32_t CSI2DC_VideoPipe_Interrupt_Status(void)
 {
-	return CSI2DC_REGS->CSI2DC_VPISR;
+    return CSI2DC_REGS->CSI2DC_VPISR;
 }
 
 void CSI2DC_Configure_DataPipe(uint32_t dt, uint32_t vc, uint32_t bo)
 {
-	CSI2DC_REGS->CSI2DC_DPCFGR = CSI2DC_DPCFGR_DT(dt) | CSI2DC_DPCFGR_VC(vc) | CSI2DC_DPCFGR_BO(bo);
+    CSI2DC_REGS->CSI2DC_DPCFGR = CSI2DC_DPCFGR_DT(dt) | CSI2DC_DPCFGR_VC(vc) | CSI2DC_DPCFGR_BO(bo);
 }
 
 void CSI2DC_Enable_DataPipe(void)
 {
-	CSI2DC_REGS->CSI2DC_DPER = CSI2DC_DPER_ENABLE_1;
+    CSI2DC_REGS->CSI2DC_DPER = CSI2DC_DPER_ENABLE_1;
 }
 
 void CSI2DC_Configure_DataPipe_DMA(uint32_t count, uint8_t chuck_size, bool enable)
 {
-	CSI2DC_REGS->CSI2DC_DPDCR = (CSI2DC_DPDCR_TC(count) | CSI2DC_DPDCR_CSIZE(chuck_size) | (enable ? CSI2DC_DPDCR_DMA_1 : CSI2DC_DPDCR_DMA_0));
+    CSI2DC_REGS->CSI2DC_DPDCR = (CSI2DC_DPDCR_TC(count) | CSI2DC_DPDCR_CSIZE(chuck_size) | (enable ? CSI2DC_DPDCR_DMA_1 : CSI2DC_DPDCR_DMA_0));
 }
 
 void CSI2DC_Enable_DataPipe_Interrupt(uint32_t flag)
 {
-	CSI2DC_REGS->CSI2DC_DPIER = flag;
+    CSI2DC_REGS->CSI2DC_DPIER = flag;
 }
 
 void CSI2DC_Disable_DataPipe_Interrupt(uint32_t flag)
 {
-	CSI2DC_REGS->CSI2DC_DPIDR = flag;
+    CSI2DC_REGS->CSI2DC_DPIDR = flag;
 }
 
 uint32_t CSI2DC_DataPipe_Interrupt_Status(void)
 {
-	return CSI2DC_REGS->CSI2DC_DPISR;
+    return CSI2DC_REGS->CSI2DC_DPISR;
 }
 
 void CSI2DC_Update_Pipe(uint32_t pipe)
 {
-	CSI2DC_REGS->CSI2DC_PUR = pipe;
+    CSI2DC_REGS->CSI2DC_PUR = pipe;
 }
 
 uint32_t CSI2DC_Pipe_Status(void)
 {
-	return CSI2DC_REGS->CSI2DC_PUSR;
+    return CSI2DC_REGS->CSI2DC_PUSR;
 }

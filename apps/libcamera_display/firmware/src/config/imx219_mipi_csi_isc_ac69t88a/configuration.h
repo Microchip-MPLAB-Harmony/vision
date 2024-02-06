@@ -137,8 +137,7 @@ extern "C" {
 
 /*** IMX219 Image Sensor Configuration ***/
 #define IMAGE_SENSOR_NAME					"IMX219"
-#define IMAGE_SENSOR_OUTPUT_WIDTH			640
-#define IMAGE_SENSOR_OUTPUT_HEIGHT			480
+#define IMAGE_SENSOR_OUTPUT_RESOLUTION		DRV_IMAGE_SENSOR_VGA
 #define IMAGE_SENSOR_OUTPUT_FORMAT			DRV_IMAGE_SENSOR_RAW_BAYER
 #define IMAGE_SENSOR_OUTPUT_BUS_WIDTH		DRV_IMAGE_SENSOR_10_BIT
 
@@ -153,13 +152,13 @@ extern "C" {
 
 
 
-/*** MXT336T Driver Configuration ***/
-#define DRV_MAXTOUCH_I2C_MODULE_INDEX   0
-
-
 /*** CSI Driver Configuration ***/
 #define CSI_DATA_FORMAT_TYPE		CSI2_DATA_FORMAT_RAW10
 #define CSI_NUM_LANES				CSI_DATA_LANES_2
+
+
+/*** MXT336T Driver Configuration ***/
+#define DRV_MAXTOUCH_I2C_MODULE_INDEX   0
 
 
 /*** ISC Image Sensor Configuration ***/

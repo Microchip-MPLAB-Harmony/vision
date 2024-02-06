@@ -43,7 +43,7 @@
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
-    extern "C" {
+extern "C" {
 #endif
 // DOM-IGNORE-END
 
@@ -56,7 +56,7 @@
 #define CSI2_DATA_FORMAT_YUV420_10C 0x1D
 #define CSI2_DATA_FORMAT_YUV422_8   0x1E
 #define CSI2_DATA_FORMAT_YUV422_10  0x1F
-  
+
 // 0x20 to 0x27 RGB Data Format
 #define CSI2_DATA_FORMAT_RGB444     0x20
 #define CSI2_DATA_FORMAT_RGB555     0x21
@@ -74,6 +74,15 @@
 #define CSI2_DATA_FORMAT_RAW10      0x2B
 #define CSI2_DATA_FORMAT_RAW12      0x2C
 #define CSI2_DATA_FORMAT_RAW14      0x2D
+
+
+typedef enum
+{
+    CSI_DATA_LANES_1 = 0,
+    CSI_DATA_LANES_2,
+    CSI_DATA_LANES_3,
+    CSI_DATA_LANES_4
+} CSI_DATA_LANES;
 
 /****************************** CSI API *********************************/
 
@@ -94,7 +103,7 @@
 
   Parameters:
     None.
- 
+
   Returns:
     None.
 
@@ -122,7 +131,7 @@ void CSI_Shutdown(void);
 
   Parameters:
     None.
- 
+
   Returns:
     None.
 
@@ -134,8 +143,8 @@ void CSI_Shutdown(void);
   Remarks:
     None.
 */
-void CSI_Exit_Shutdown(void);        
-        
+void CSI_Exit_Shutdown(void);
+
 /* Function:
     void CSI_Configure_Lane(uint8_t lane)
 
@@ -151,7 +160,7 @@ void CSI_Exit_Shutdown(void);
 
   Parameters:
     lane - Numbers of lanes (0 - 3).
- 
+
   Returns:
     None.
 
@@ -162,7 +171,7 @@ void CSI_Exit_Shutdown(void);
 
   Remarks:
     None.
-*/        
+*/
 void CSI_Configure_Lane(uint8_t lane);
 
 /* Function:
@@ -179,7 +188,7 @@ void CSI_Configure_Lane(uint8_t lane);
 
   Parameters:
     None.
- 
+
   Returns:
     None.
 
@@ -207,7 +216,7 @@ void CSI_Reset(void);
 
   Parameters:
     None.
- 
+
   Returns:
     None.
 
@@ -236,7 +245,7 @@ void CSI_Exit_Reset(void);
 
   Parameters:
     None.
- 
+
   Returns:
     None.
 
@@ -264,7 +273,7 @@ void CSI_Reset_DPhy(void);
 
   Parameters:
     None.
- 
+
   Returns:
     None.
 
@@ -296,7 +305,7 @@ void CSI_Exit_Reset_DPhy(void);
     id - Data Id.
     vchannel - Virtual channel number
     datatype - Data format type
- 
+
   Returns:
     None.
 
@@ -331,7 +340,7 @@ void CSI_Configure_DataId(uint8_t id, uint8_t vchannel, uint8_t datatype);
 
   Parameters:
     bit_rate - bit rate of the data lines.
- 
+
   Returns:
     None.
 
@@ -343,11 +352,11 @@ void CSI_Configure_DataId(uint8_t id, uint8_t vchannel, uint8_t datatype);
   Remarks:
     None.
 */
-void CSI_Analog_Init(uint8_t bit_rate);
+void CSI_Analog_Init(uint8_t bit_rate, uint8_t nlanes);
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
-    }
+}
 #endif
 
 #endif

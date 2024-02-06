@@ -12630,15 +12630,6 @@
 </value>
       </entry>
       <entry>
-         <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="vision_sensor_imx219" name="ImageSensorHeight"/>
-         <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;vision_sensor_imx219&gt;
-  &lt;vision_sensor_imx219 dnOrder=&quot;0&quot; id=&quot;ImageSensorHeight&quot;&gt;
-    &lt;Values dnOrder=&quot;0&quot;/&gt;
-  &lt;/vision_sensor_imx219&gt;
-&lt;/vision_sensor_imx219&gt;
-</value>
-      </entry>
-      <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="vision_sensor_imx219" name="ImageSensorName"/>
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;vision_sensor_imx219&gt;
   &lt;vision_sensor_imx219 dnOrder=&quot;0&quot; id=&quot;ImageSensorName&quot;&gt;
@@ -12651,15 +12642,6 @@
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="vision_sensor_imx219" name="ImageSensorOutputFormat"/>
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;vision_sensor_imx219&gt;
   &lt;vision_sensor_imx219 dnOrder=&quot;0&quot; id=&quot;ImageSensorOutputFormat&quot;&gt;
-    &lt;Values dnOrder=&quot;0&quot;/&gt;
-  &lt;/vision_sensor_imx219&gt;
-&lt;/vision_sensor_imx219&gt;
-</value>
-      </entry>
-      <entry>
-         <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="vision_sensor_imx219" name="ImageSensorWidth"/>
-         <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;vision_sensor_imx219&gt;
-  &lt;vision_sensor_imx219 dnOrder=&quot;0&quot; id=&quot;ImageSensorWidth&quot;&gt;
     &lt;Values dnOrder=&quot;0&quot;/&gt;
   &lt;/vision_sensor_imx219&gt;
 &lt;/vision_sensor_imx219&gt;
@@ -12797,11 +12779,11 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\libcamera\camera.h</file>
-         <hash>cb09bc4a5f53214049bce7dd5ad46648d7ee70aa0d373af3e69cd9e3221a58d2</hash>
+         <hash>f18af9156597b0ba938a7e6de3b0d2ea61fa61297710698bbc530d5646b2d158</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\libcamera\camera.c</file>
-         <hash>b379cde719771055911f92962416a0b92b8286e0c64bd57171d804c33ef7f30f</hash>
+         <hash>dea57d27dc2431592c37d1276b399374b4536a046c12a8777d8cedaa52f344b7</hash>
       </entry>
       <entry>
          <file>..\src\packs\SAM9X75_DFP\component\pit64b.h</file>
@@ -12865,7 +12847,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\drivers\csi\drv_csi.h</file>
-         <hash>c11147865c58c8fd3fa18774c0f1f1b387375fbbe8ce3b83323f0b97a00faac6</hash>
+         <hash>1dc5ada0214ac57af900bf9f7a757f24d3b735c564d035c62a0113751879815e</hash>
       </entry>
       <entry>
          <file>..\src\packs\SAM9X75_DFP\instance\rstc.h</file>
@@ -12881,7 +12863,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\drivers\csi\drv_csi.c</file>
-         <hash>f6d537f167f63b99ac41ad293c5f572feeebccf4e9e0a0f82c7cfa2775a39683</hash>
+         <hash>2102ba24e0271bbc86e0711282bae0c5d2434b1ec18453e628d0330cb3bbc85f</hash>
       </entry>
       <entry>
          <file>..\src\packs\SAM9X75_DFP\instance\pit64b0.h</file>
@@ -12917,7 +12899,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\image_sensors\imx219\imx219.c</file>
-         <hash>27a4b483b1ea3126b603438ddbbdd870d95f9023980ed9b98c97975085843f28</hash>
+         <hash>1540c7fe8faca9124cf789fa5f072d6056bf8e70559c35a1aa1a0bdfff8339f4</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\gfx\driver\gfx_driver.h</file>
@@ -12933,7 +12915,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\peripheral\csi\plib_csi.c</file>
-         <hash>7c832dabb2f2ecaa664733b71533c5e8e3e83ca1f2c08c51ae8d28ad79899069</hash>
+         <hash>a09de24a62b982cf5b964c55998849a4a6e3bdc8451718f5a88933dc023a001c</hash>
       </entry>
       <entry>
          <file>..\src\packs\SAM9X75_DFP\component\syscwp.h</file>
@@ -12949,7 +12931,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\peripheral\csi\plib_csi.h</file>
-         <hash>d1a3d8573c68beea06c0c805a50a073d21f6be26b4518d92e350ced03ecf5b10</hash>
+         <hash>bdd75af53a7ad3a67316c5cee151b1e9fda730fa9c5146bc0469bb6a3e820bf7</hash>
       </entry>
       <entry>
          <file>..\src\packs\SAM9X75_DFP\instance\syscwp.h</file>
@@ -13305,7 +13287,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\drivers\isc\drv_isc.h</file>
-         <hash>5023ad8a0b2a17c690ba271f5e9d3aa5eb6391c27a1c5f7fc40126ba63613165</hash>
+         <hash>0ed2ff2714c09f8596b22ad45c5a5f82e1235641bd4b494eb563abb26757d119</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\system\input\sys_input_listener.c</file>
@@ -13325,19 +13307,19 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\drivers\isc\drv_isc.c</file>
-         <hash>822cb433a3098c7d0691dc86fbae38981aae991d5b6c57a0849be37bad27efbb</hash>
+         <hash>67b886407f0cac4e2e5101c12056fbf074021ec7c5934d35c7f91d66c823dcbe</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\configuration.h</file>
-         <hash>2edc1ed781edfff9160fd8994073c85be0b3aa0e7197c9333d1bdecd6ec3738c</hash>
+         <hash>d274675b3cb5c26936bfcd3ff348a770c8523fd20541c514669802a08d156f4c</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\peripheral\csi2dc\plib_csi2dc.c</file>
-         <hash>776fa2d1809b113c9423463ade06fab169baae132726c25321ab6bd20c0d5ba5</hash>
+         <hash>7ea0ec5364d56022681b1b07cd9915202fa4fa047af1b7b30c21772d77b21b39</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\peripheral\csi2dc\plib_csi2dc.h</file>
-         <hash>79053cd887154869199f3d3dca8e1107f77e26142d4704684d202b8521adc9a5</hash>
+         <hash>27b4df831935210831a1a440bdfeb7965c6c15bf3d4486576b8cfd7cff85522a</hash>
       </entry>
       <entry>
          <file>..\src\main.c</file>
@@ -13353,7 +13335,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\initialization.c</file>
-         <hash>683434ccdb63f66c7870b78e78d121a312e4843c5541c1b32f28dd029095783e</hash>
+         <hash>0d2351c5506a55f7e47521e901fdfb26b032c5afb775d4df2b76f60aa03c76e8</hash>
       </entry>
       <entry>
          <file>..\src\packs\SAM9X75_DFP\component\csi2dc.h</file>
@@ -13401,7 +13383,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\drivers\csi2dc\drv_csi2dc.h</file>
-         <hash>7c08965523f9b41fdab0107c887cdb96d5d7d2610e111d80281ba2dffc5cd4cf</hash>
+         <hash>60312cdf5d38d8e25d4e81bd055b82a1c0c7a49ebc728c8421eb58f5f4a9eb55</hash>
       </entry>
       <entry>
          <file>..\src\packs\SAM9X75_DFP\instance\isc.h</file>
@@ -13409,7 +13391,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\drivers\csi2dc\drv_csi2dc.c</file>
-         <hash>b68b414e1770c44e20248eccfa9335693beb0dcde0a275e587ff896e170e3e26</hash>
+         <hash>307cec2e457f058c44812fcf39e4321000546858f51a7b41fd59e470c04d2012</hash>
       </entry>
       <entry>
          <file>..\src\packs\SAM9X75_DFP\instance\piod.h</file>
@@ -13557,11 +13539,11 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\drivers\image_sensor\drv_image_sensor.h</file>
-         <hash>ea5a7722b8c0319ca18afdd5d45be8422e9c7678a05af8f55474511a8b4c367e</hash>
+         <hash>23aef6ab0f38b588202b297f970cd37dcd4ff05ae12b3376f50b4d576e839e95</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\peripheral\isc\plib_isc.h</file>
-         <hash>568271045ff21e766042a8ff1e8a51f4153743dd927223b5ed9b078c3c5d50d7</hash>
+         <hash>a81c19d08900e68e6fc429f5708af6613b9db02408d4696efa143163662a6e99</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\peripheral\dbgu\plib_dbgu.c</file>
@@ -13569,7 +13551,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\drivers\image_sensor\drv_image_sensor.c</file>
-         <hash>c0711624e9a6ab175fc0dc18352e4c0719dfdf03b3ccf84bbd9bb490bc062b96</hash>
+         <hash>01e4c208a498af6f444537780fbc30725201a557177d9c6f27998e0535c13728</hash>
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\system\system.h</file>
@@ -13577,7 +13559,7 @@
       </entry>
       <entry>
          <file>..\src\config\imx219_mipi_csi_isc_ac69t88a\vision\peripheral\isc\plib_isc.c</file>
-         <hash>6347d56c4cb35c66775f114f4cf0bbf09b90a874a658b0d87227b3b912bce050</hash>
+         <hash>e7b43e860308c8b8507584d5ba54fadeb10f5e5e26bd13ab6e85679965f2fea2</hash>
       </entry>
    </generatedFileHashHistoryMap>
 </config>
