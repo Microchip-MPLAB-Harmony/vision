@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define DRV_IMAGE_SENSOR_MAX_DEVICES    1
-#define DRV_IMAGE_SENSOR_MAX_CONFIGS    5
+#define DRV_IMAGE_SENSOR_MAX_DEVICES    5
+#define DRV_IMAGE_SENSOR_MAX_CONFIGS    10
 
 
 enum
@@ -97,6 +97,8 @@ typedef struct
     volatile bool drvI2cSuccess;
 } DRV_IMAGE_SENSOR_OBJ;
 
+extern const DRV_IMAGE_SENSOR_OBJ ov2640_device;
+extern const DRV_IMAGE_SENSOR_OBJ ov5640_device;
 extern const DRV_IMAGE_SENSOR_OBJ imx219_device;
 
 DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Probe(DRV_HANDLE drvI2CHandle, bool detect_auto, uint8_t id);

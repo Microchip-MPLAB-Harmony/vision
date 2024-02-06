@@ -24,10 +24,10 @@
 
 def loadModule():
     if any(x in Variables.get("__PROCESSOR") for x in ["SAM9X7", "SAMA7"]):
-        component = Module.CreateComponent("vision_sensor_imx219", "IMX219", "/Vision/Image Sensors/", "imx219.py")
-        component.setDisplayType("Sony IMX219")
+        component = Module.CreateComponent("vision_image_sensors", "Auto Detect", "/Vision/Image Sensors/", "image_sensors.py")
+        component.setDisplayType("Auto Probe ImageSensor")
         component.addCapability("vision_image_sensor_data_bus", "ImageSensor Data Bus", False)
         component.addCapability("vision_image_sensor_control_bus", "ImageSensor Control Bus", False)
     else:
-        print("IMX219 Image Sensor module not loaded" + str(Variables.get("__PROCESSOR")))
+        print("Image Sensors module not loaded" + str(Variables.get("__PROCESSOR")))
 

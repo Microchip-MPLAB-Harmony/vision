@@ -1,15 +1,12 @@
 <#--
 /*******************************************************************************
-  IMX219 Driver Freemarker Template File
+  ImageSensor Driver Freemarker Template File
 
   Company:
     Microchip Technology Inc.
 
-  File Name:
-    imx219.c.ftl
-
   Summary:
-    IMX219 Driver Freemarker Template File
+    ImageSensor Driver Freemarker Template File
 
   Description:
 
@@ -40,7 +37,7 @@
 
 -->
 
-/*** IMX219 Image Sensor Configuration ***/
+/*** Image Sensor Configuration ***/
 #define IMAGE_SENSOR_NAME					"${ImageSensorName}"
 #define IMAGE_SENSOR_OUTPUT_RESOLUTION		${ImageSensorResolution}
 #define IMAGE_SENSOR_OUTPUT_FORMAT			${ImageSensorOutputFormat}

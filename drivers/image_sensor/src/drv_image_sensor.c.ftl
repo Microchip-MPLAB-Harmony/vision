@@ -9,6 +9,8 @@
 
 static const DRV_IMAGE_SENSOR_OBJ* Devices[DRV_IMAGE_SENSOR_MAX_DEVICES] =
 {
+    &ov2640_device,
+    &ov5640_device,
     &imx219_device,
 };
 
