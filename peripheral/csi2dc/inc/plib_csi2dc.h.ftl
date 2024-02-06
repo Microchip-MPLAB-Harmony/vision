@@ -46,7 +46,7 @@
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
-	extern "C" {
+extern "C" {
 #endif
 // DOM-IGNORE-END
 
@@ -72,7 +72,7 @@ uint32_t CSI2DC_Pipe_Status(void);
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
-	}
+}
 #endif
 
 #endif

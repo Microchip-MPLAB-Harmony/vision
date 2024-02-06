@@ -45,14 +45,15 @@
 
 static DRV_CSI_OBJ csiObj;
 
-typedef struct 
+typedef struct
 {
-	uint16_t MinValue;
-	uint16_t MaxValue;
+    uint16_t MinValue;
+    uint16_t MaxValue;
     uint16_t BitRateValue;
-}CSI_BitRate;
+} CSI_BitRate;
 
-static const CSI_BitRate CSI_BitRateLookUp[] = {
+static const CSI_BitRate CSI_BitRateLookUp[] =
+{
     {80, 89,   0x00},
     {90, 99,   0x10},
     {100, 109, 0x20}, //100000
@@ -100,22 +101,22 @@ static uint32_t DRV_CSI_GetBitRate(DRV_CSI_OBJ* devObj)
     uint32_t bitrate = 0;
     uint32_t size = sizeof(CSI_BitRateLookUp) / sizeof(CSI_BitRateLookUp[0]);
     uint32_t i = 0;
-    
-	if (devObj == NULL)
-	{
-		return 0;
-	}
+
+    if (devObj == NULL)
+    {
+        return 0;
+    }
 
     if (devObj->csiDataType == CSI2_DATA_FORMAT_RAW10)
         bpp = 10;
     else if (devObj->csiDataType == CSI2_DATA_FORMAT_RAW8)
         bpp = 8;
-    
+
     bitrate = 	csiObj.csiFrameWidth * csiObj.csiFrameHeight  * csiObj.csiFps * bpp;
     bitrate /= 1000000;
-    
-    SYS_DEBUG_PRINT(SYS_ERROR_INFO,"\r\n size = %d bitrate = %d \r\n", size, bitrate);
-    
+
+    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\n size = %d bitrate = %d \r\n", size, bitrate);
+
     if (bitrate < 90)
     {
         return 0;
@@ -124,61 +125,61 @@ static uint32_t DRV_CSI_GetBitRate(DRV_CSI_OBJ* devObj)
     {
         for (i = 0; i < size; i++)
         {
-            if ((bitrate >= CSI_BitRateLookUp[i].MinValue) && 
+            if ((bitrate >= CSI_BitRateLookUp[i].MinValue) &&
                 (bitrate <= CSI_BitRateLookUp[i].MaxValue))
             {
                 return CSI_BitRateLookUp[i].BitRateValue;
             }
-        }        
+        }
     }
     return 0;
 }
 
 bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj)
 {
-	if (devObj == NULL)
-	{
-		return false;
-	}
-	
+    if (devObj == NULL)
+    {
+        return false;
+    }
+
     devObj->csiBitRate = DRV_CSI_GetBitRate(devObj);
-    
-    SYS_DEBUG_PRINT(SYS_ERROR_INFO,"\r\n\t csiBitRate = 0x%x \r\n", devObj->csiBitRate);
-    
-	// release CSI2 reset
-	CSI_Reset();
-	// Enter to shutdown mode
-	CSI_Shutdown();
-	// Reset CSI D-Phy
-	CSI_Reset_DPhy();
-	// Initialize DWC_mipi_csi2_host sequence
-	CSI_Analog_Init(devObj->csiBitRate, devObj->numLanes); //0x16
-	// exit shutdown state
-	CSI_Exit_Shutdown();
-	// clear PHY from reset
-	CSI_Exit_Reset_DPhy();
-	// Lanes
-	CSI_Configure_Lane(devObj->numLanes);
-	// configure CSI2 ID interface mode
-	CSI_Configure_DataId(devObj->csiDataId, devObj->csiVirtualChannel, devObj->csiDataType);
-	// clear CSI from reset
-	CSI_Exit_Reset();
-	
-	return true;
+
+    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\n\t csiBitRate = 0x%x \r\n", devObj->csiBitRate);
+
+    // release CSI2 reset
+    CSI_Reset();
+    // Enter to shutdown mode
+    CSI_Shutdown();
+    // Reset CSI D-Phy
+    CSI_Reset_DPhy();
+    // Initialize DWC_mipi_csi2_host sequence
+    CSI_Analog_Init(devObj->csiBitRate, devObj->numLanes); //0x16
+    // exit shutdown state
+    CSI_Exit_Shutdown();
+    // clear PHY from reset
+    CSI_Exit_Reset_DPhy();
+    // Lanes
+    CSI_Configure_Lane(devObj->numLanes);
+    // configure CSI2 ID interface mode
+    CSI_Configure_DataId(devObj->csiDataId, devObj->csiVirtualChannel, devObj->csiDataType);
+    // clear CSI from reset
+    CSI_Exit_Reset();
+
+    return true;
 }
 
 DRV_CSI_OBJ* DRV_CSI_Initalize(void)
 {
-	csiObj.numLanes = CSI_NUM_LANES;
-	csiObj.csiDataType = CSI_DATA_FORMAT_TYPE;
-	csiObj.csiBitRate = 0x16;
-	csiObj.csiFrameWidth = 640;    
-	csiObj.csiFrameHeight = 480;
-	csiObj.csiFps = 150;
+    csiObj.numLanes = CSI_NUM_LANES;
+    csiObj.csiDataType = CSI_DATA_FORMAT_TYPE;
+    csiObj.csiBitRate = 0x16;
+    csiObj.csiFrameWidth = 640;
+    csiObj.csiFrameHeight = 480;
+    csiObj.csiFps = 150;
 
-	csiObj.csiDataId = 0;
-	csiObj.csiVirtualChannel = 0;
+    csiObj.csiDataId = 0;
+    csiObj.csiVirtualChannel = 0;
 
-	return &csiObj;
+    return &csiObj;
 }
 
