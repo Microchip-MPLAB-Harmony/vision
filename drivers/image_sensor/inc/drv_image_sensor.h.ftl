@@ -50,6 +50,14 @@ enum
     DRV_IMAGE_SENSOR_8MP,
 };
 
+/** Image Sensor I2C mode */
+enum
+{
+    DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_BYTE = 0,
+    DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,
+    DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_2BYTE
+};
+
 typedef struct
 {
     uint16_t regAddr;
@@ -72,8 +80,12 @@ typedef struct
 {
     const char* name;
     uint8_t devAddr;
-    uint16_t chipIdAddr;
-    uint16_t chipId;
+    uint8_t i2cInfMode;         /* I2C interface mode  */
+    uint16_t chipIdAddrHigh;
+    uint16_t chipIdAddrLow;
+    uint16_t chipIdHigh;
+    uint16_t chipIdLow;
+    uint16_t chipIdMask;        /** Chip Id mask */
     uint16_t streamStartAddr;
     uint8_t streamStartValue;
     uint8_t streamStopValue;
