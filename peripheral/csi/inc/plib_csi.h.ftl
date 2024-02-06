@@ -74,6 +74,15 @@
 #define CSI2_DATA_FORMAT_RAW10      0x2B
 #define CSI2_DATA_FORMAT_RAW12      0x2C
 #define CSI2_DATA_FORMAT_RAW14      0x2D
+        
+
+typedef enum 
+{
+	CSI_DATA_LANES_1 = 0,
+	CSI_DATA_LANES_2,
+	CSI_DATA_LANES_3,
+	CSI_DATA_LANES_4
+}CSI_DATA_LANES;        
 
 /****************************** CSI API *********************************/
 
@@ -343,7 +352,7 @@ void CSI_Configure_DataId(uint8_t id, uint8_t vchannel, uint8_t datatype);
   Remarks:
     None.
 */
-void CSI_Analog_Init(uint8_t bit_rate);
+void CSI_Analog_Init(uint8_t bit_rate, uint8_t nlanes);
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

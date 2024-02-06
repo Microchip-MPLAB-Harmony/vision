@@ -12,14 +12,6 @@
 #endif
 // DOM-IGNORE-END
 
-typedef enum 
-{
-	CSI_DATA_LANES_1 = 0,
-	CSI_DATA_LANES_2,
-	CSI_DATA_LANES_3,
-	CSI_DATA_LANES_4
-}CSI_DATA_LANES;
-
 typedef struct
 {
 	uint8_t numLanes;
