@@ -209,8 +209,12 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
                         (iscObj->inputBits == DRV_IMAGE_SENSOR_40_BIT)
                         ? 5 : (4 - iscObj->inputBits)));
 
+#ifdef ISC_PFE_CFG0_MIPI_Msk
     ISC_PFE_MIPI_Enable(iscObj->enableMIPI);
-    ISC_PFE_Set_Sync_Polarity(0, 0);
+#endif
+
+    ISC_PFE_Set_Sync_Polarity(ISC_PFE_CFG0_HPOL(ISC_HSYNC_POLARITY_VAL),
+                              ISC_PFE_CFG0_VPOL(ISC_VSYNC_POLARITY_VAL));
 
     if (iscObj->gamma.enableGamma)
     {

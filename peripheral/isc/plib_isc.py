@@ -89,6 +89,28 @@ def instantiateComponent(component):
     else:
         isc_isp_clk_sel.setVisible(True)
 
+    isc_polarity_menu = component.createMenuSymbol("PLIB_ISC_PolarityMenu", None)
+    isc_polarity_menu.setLabel("Polarity Settings")
+    isc_polarity_menu.setDescription("Contains the ISC polarity values.")
+
+    isc_hsync_polarity = component.createIntegerSymbol("PLIB_ISC_HSYNC_POLARITY", isc_polarity_menu)
+    isc_hsync_polarity.setLabel("HSYNC Polarity")
+    isc_hsync_polarity.setDescription("HSYNC signal is active high, i.e. valid pixels are sampled when HSYNC is asserted" 
+                             "HSYNC signal is active low, i.e. valid pixels are sampled when HSYNC is deasserted")
+    isc_hsync_polarity.setDefaultValue(0)
+    isc_hsync_polarity.setMax(1)
+
+    isc_vsync_polarity = component.createIntegerSymbol("PLIB_ISC_VSYNC_POLARITY", isc_polarity_menu)
+    isc_vsync_polarity.setLabel("VSYNC Polarity")
+    isc_vsync_polarity.setDescription("VSYNC signal is active high, i.e. valid pixels are sampled when VSYNC is asserted" 
+                             "VSYNC signal is active low, i.e. valid pixels are sampled when VSYNC is deasserted")
+    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
+        isc_vsync_polarity.setDefaultValue(0)
+    else:
+        isc_vsync_polarity.setDefaultValue(1)
+    isc_vsync_polarity.setMin(0)
+    isc_vsync_polarity.setMax(1)
+
     PLIB_ISC_CONFIG_H = component.createFileSymbol("PLIB_ISC_CONFIG_H", None)
     PLIB_ISC_CONFIG_H.setType("STRING")
     PLIB_ISC_CONFIG_H.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
