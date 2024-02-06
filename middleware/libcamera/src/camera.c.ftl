@@ -44,10 +44,7 @@
 #include "system/debug/sys_debug.h"
 #include "system/int/sys_int.h"
 #include "system/time/sys_time.h"
-#include "vision/drivers/csi2dc/drv_csi2dc.h"
-#include "vision/drivers/csi/drv_csi.h"
 #include "vision/peripheral/isc/plib_isc.h"
-#include "vision/peripheral/csi2dc/plib_csi2dc.h"
 
 // ToDO Instead of fixed memory, Implement a memory pool
 __attribute__((__section__(".region_cache"))) __attribute__((__aligned__(32))) static uint8_t GBuffer[1920 * 1080 * 4 * DMA_MAX_BUFFERS];
@@ -88,13 +85,15 @@ typedef struct
     uint32_t imageHeight;
     uint32_t drvI2CIndex;
     uint32_t bufferSize;
-    DRV_ISC_OBJ* iscObj;
-    DRV_CSI2DC_OBJ* csi2dcObj;
-    DRV_CSI_OBJ* csiObj;
-    DRV_IMAGE_SENSOR_OBJ* sensor;
     bool enableFps;
     uint32_t fpsCount;
     SYS_TIME_HANDLE fpsTimer;
+    DRV_ISC_OBJ* iscObj;
+    DRV_IMAGE_SENSOR_OBJ* sensor;
+#if ISC_ENABLE_MIPI_INTERFACE
+    DRV_CSI2DC_OBJ* csi2dcObj;
+    DRV_CSI_OBJ* csiObj;
+#endif
 } DEVICE_OBJECT;
 
 /* Camera Driver instance object */
@@ -377,6 +376,8 @@ bool CAMERA_Open(SYS_MODULE_OBJ object)
         pDrvObject->imageHeight = DEFAULT_FRAME_HEIGHT;
     }
 
+#if ISC_ENABLE_MIPI_INTERFACE
+
     if (pDrvObject->csi2dcObj)
     {
         DRV_CSI2DC_Configure(pDrvObject->csi2dcObj);
@@ -389,6 +390,7 @@ bool CAMERA_Open(SYS_MODULE_OBJ object)
         // ToDo Add fps, nlanes, channelid from Sensor configuration.
         DRV_CSI_Configure(pDrvObject->csiObj);
     }
+#endif
 
     CAMERA_configure(pDrvObject);
 
@@ -502,6 +504,8 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
     else
         pDrvInstance->imageSensorOutputBitWidth = DRV_IMAGE_SENSOR_10_BIT;
 
+#if ISC_ENABLE_MIPI_INTERFACE
+
     pDrvInstance->csi2dcObj = DRV_CSI2DC_Initalize();
     if (pDrvInstance->csi2dcObj == NULL)
     {
@@ -551,6 +555,7 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
         pDrvInstance->csi2dcObj->dataPipeDataType = CSI2_DATA_FORMAT_RAW10;
     }
 
+#endif
 
     if (pInit->iscInputFormat >= 0)
     {

@@ -42,7 +42,9 @@ const CAMERA_INIT drvCAMERAInitData =
     .iscEnableVideoMode            = ISC_ENABLE_VIDEO_MODE,
     .iscEnableBightnessAndContrast = ISC_ENABLE_BRIGHTNESS_CONTRAST,
     .iscEnableProgressiveMode      = ISC_ENABLE_PROGRESSIVE_MODE,
+#if ISC_ENABLE_MIPI_INTERFACE	
     .csiDataFormat                 = CSI_DATA_FORMAT_TYPE,
+#endif	
     .drvI2CIndex                   = DRV_IMAGE_SENSOR_I2C_MODULE_INDEX,
 };
 
