@@ -61,7 +61,8 @@ The following applications are provided to demonstrate a subset of the capabilit
 
 | Category | Item | Description | Release Type |
 | --- | --- | ---- |---- |
-|  apps | [libcamera_display](./apps/libcamera_display/readme.md) | Image sensor live capture output on display application. | ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
+|  apps | [libcamera_display](./apps/libcamera_display/readme.md) | This application capture live frames from an image sensor and display it on LVDS dispaly. | ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
+|     | [libcamera_usb](./apps/libcamera_usb/readme.md) | This application capture a frame from a image sensor and the captured frame is saved to a bmp file and copied to a USB drive. | ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
 
 ____
 

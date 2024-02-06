@@ -33,7 +33,12 @@ nav_order: 99
 ### Dependent Components
 
 
+* [dev_packs v3.17.0](https://github.com/Microchip-MPLAB-Harmony/dev_packs/releases/tag/v3.17.0)
+* [csp v3.17.0](https://github.com/Microchip-MPLAB-Harmony/csp/releases/tag/v3.17.0)
+* [core v3.13.1](https://github.com/Microchip-MPLAB-Harmony/core/tree/v3.13.1)
+* [bsp v3.16.1](https://github.com/Microchip-MPLAB-Harmony/bsp/releases/tag/v3.16.1)
 * [Gfx v3.13.0 ](https://github.com/Microchip-MPLAB-Harmony/core/releases/tag/v3.13.0)
+* [usb v3.11.0-E2](https://github.com/Microchip-MPLAB-Harmony/usb/releases/tag/v3.11.0-E2)
 
 
 
