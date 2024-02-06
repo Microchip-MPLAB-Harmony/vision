@@ -216,41 +216,42 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
     ISC_PFE_Set_Sync_Polarity(ISC_PFE_CFG0_HPOL(ISC_HSYNC_POLARITY_VAL),
                               ISC_PFE_CFG0_VPOL(ISC_VSYNC_POLARITY_VAL));
 
-    if (iscObj->gamma.enableGamma)
-    {
-        if ((!iscObj->gamma.greenEntries) ||
-            (!iscObj->gamma.blueEntries) ||
-            (!iscObj->gamma.redEntries))
-        {
-            ISC_Gamma_Enable(1, 0, 0);
-        }
-        else
-        {
-            // Todo move to plib
-            ISC_Gamma_Enable(1, ISC_GAM_CTRL_RENABLE(1) |
-                             ISC_GAM_CTRL_GENABLE(1) |
-                             ISC_GAM_CTRL_BENABLE(1),
-                             iscObj->gamma.enableBiPart);
-
-            ge = iscObj->gamma.greenEntries;
-            be = iscObj->gamma.blueEntries;
-            re = iscObj->gamma.redEntries;
-            for (i = 0; i < ISC_GAMMA_ENTRIES; i++)
-            {
-                ISC_REGS->ISC_GAM_RENTRY[i] = *re++;
-                ISC_REGS->ISC_GAM_GENTRY[i] = *ge++;
-                ISC_REGS->ISC_GAM_BENTRY[i] = *be++;
-            }
-        }
-    }
-    else
-    {
-        ISC_Gamma_Enable(0, 0, 0);
-    }
-
     switch (iscObj->inputFormat)
     {
     case DRV_IMAGE_SENSOR_RAW_BAYER:
+
+        if (iscObj->gamma.enableGamma)
+        {
+            if ((!iscObj->gamma.greenEntries) ||
+                (!iscObj->gamma.blueEntries) ||
+                (!iscObj->gamma.redEntries))
+            {
+                ISC_Gamma_Enable(1, 0, 0);
+            }
+            else
+            {
+                // Todo move to plib
+                ISC_Gamma_Enable(1, ISC_GAM_CTRL_RENABLE(1) |
+                                 ISC_GAM_CTRL_GENABLE(1) |
+                                 ISC_GAM_CTRL_BENABLE(1),
+                                 iscObj->gamma.enableBiPart);
+
+                ge = iscObj->gamma.greenEntries;
+                be = iscObj->gamma.blueEntries;
+                re = iscObj->gamma.redEntries;
+                for (i = 0; i < ISC_GAMMA_ENTRIES; i++)
+                {
+                    ISC_REGS->ISC_GAM_RENTRY[i] = *re++;
+                    ISC_REGS->ISC_GAM_GENTRY[i] = *ge++;
+                    ISC_REGS->ISC_GAM_BENTRY[i] = *be++;
+                }
+            }
+        }
+        else
+        {
+            ISC_Gamma_Enable(0, 0, 0);
+        }
+
         /* In a single-sensor system, each cell on the sensor
          * has a specific color filter and microlens
          * positioned above it. The raw data obtained from the
