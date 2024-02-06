@@ -23,7 +23,7 @@
 ##############################################################################
 
 def loadModule():
-    if any(x in Variables.get("__PROCESSOR") for x in ["SAM9X7", "SAMA7"]):
+    if any(x in Variables.get("__PROCESSOR") for x in ["SAMA5D2", "SAM9X7", "SAMA7"]):
         component = Module.CreateComponent("vision_sensor_driver", "Image Sensor Driver", "/Vision/Drivers", "image_sensor_drv.py")
         component.setDisplayType("Driver")
         component.addDependency("vision_image_sensor_control_bus", "ImageSensor Control Bus", False, True)

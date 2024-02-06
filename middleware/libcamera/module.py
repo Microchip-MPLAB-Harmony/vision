@@ -1,6 +1,6 @@
 
 def loadModule():
-    if any(x in Variables.get("__PROCESSOR") for x in ["SAM9X7", "SAMA7"]):
+    if any(x in Variables.get("__PROCESSOR") for x in ["SAMA5D2", "SAM9X7", "SAMA7"]):
         print("libcamera module loaded to support " + str(Variables.get("__PROCESSOR")))
         component = Module.CreateComponent("vision_camera", "libCamera", "/Vision/Middleware/", "libcamera.py")
         component.setDisplayType("Camera Library")

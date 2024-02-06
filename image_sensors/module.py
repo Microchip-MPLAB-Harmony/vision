@@ -23,7 +23,7 @@
 ##############################################################################
 
 def loadModule():
-    if any(x in Variables.get("__PROCESSOR") for x in ["SAM9X7", "SAMA7"]):
+    if any(x in Variables.get("__PROCESSOR") for x in ["SAMA5D2","SAM9X7", "SAMA7"]):
         component = Module.CreateComponent("vision_image_sensors", "Auto Detect", "/Vision/Image Sensors/", "image_sensors.py")
         component.setDisplayType("Auto Probe ImageSensor")
         component.addCapability("vision_image_sensor_data_bus", "ImageSensor Data Bus", False)
