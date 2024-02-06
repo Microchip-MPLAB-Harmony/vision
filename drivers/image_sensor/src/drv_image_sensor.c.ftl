@@ -190,7 +190,7 @@ uint32_t DRV_ImageSensor_Configure(DRV_IMAGE_SENSOR_OBJ* isensor,
 		return DRV_IMAGE_SENSOR_ERROR;
 	}
 
-	for (i = 0; i < DRV_IMAGE_SENSOR_MAX_DEVICES; i++) {
+	for (i = 0; i < DRV_IMAGE_SENSOR_MAX_CONFIGS; i++) {
 		if (isensor->iSensorConfigs[i]->sensorSupported){
 			if (isensor->iSensorConfigs[i]->sensorResolution == resolution) {
 				if (isensor->iSensorConfigs[i]->sensorFormat == format) {
@@ -202,6 +202,7 @@ uint32_t DRV_ImageSensor_Configure(DRV_IMAGE_SENSOR_OBJ* isensor,
 	}
 	if (found == 0)
 	{
+        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n DRV_IMAGE_SENSOR_CONFIGS Not found \r\n"); 
 		return DRV_IMAGE_SENSOR_ERROR;
 	}
 
@@ -261,7 +262,7 @@ uint32_t DRV_ImageSensor_GetConfig(DRV_IMAGE_SENSOR_OBJ *isensor,
 		return DRV_IMAGE_SENSOR_ERROR;
 	}
 
-	for (i = 0; i < DRV_IMAGE_SENSOR_MAX_DEVICES; i++)
+	for (i = 0; i < DRV_IMAGE_SENSOR_MAX_CONFIGS; i++)
 	{
 		if (isensor->iSensorConfigs[i]->sensorSupported && 
 			(isensor->iSensorConfigs[i]->sensorResolution == resolution) &&
