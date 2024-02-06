@@ -282,13 +282,17 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
         {
             ISC_CBC_Enable(1);
             ISC_CBC_Configure(0, 0, iscObj->cbc.bright, iscObj->cbc.contrast);
+#ifdef ISC_CBHS_HUE_Msk
             ISC_CBHS_Configure(iscObj->cbc.hue, iscObj->cbc.saturation);
+#endif
         }
+
         if (iscObj->colorCorrection)
         {
             ISC_CC_Enable(1);
             ISC_CC_Configure(iscObj->colorCorrection);
         }
+
         if (iscObj->layout == ISC_LAYOUT_YC422SP ||
             iscObj->layout == ISC_LAYOUT_YC420SP ||
             iscObj->layout == ISC_LAYOUT_YC422P ||

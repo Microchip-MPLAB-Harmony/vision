@@ -170,10 +170,10 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject)
 
     if (pDrvObject->iscObj->cbc.enableCBC)
     {
-        pDrvObject->iscObj->cbc.bright = 0x01;
-        pDrvObject->iscObj->cbc.contrast = 0x12;
-        pDrvObject->iscObj->cbc.hue = 0;
-        pDrvObject->iscObj->cbc.saturation = 0x20;
+        pDrvObject->iscObj->cbc.bright = ISC_CBC_BRIGHTNESS_VAL;
+        pDrvObject->iscObj->cbc.contrast = ISC_CBC_CONTRAST_VAL;
+        pDrvObject->iscObj->cbc.hue = ISC_CBHS_HUE_VAL;
+        pDrvObject->iscObj->cbc.saturation = ISC_CBHS_SATURATION_VAL;
     }
 
 #if 0
