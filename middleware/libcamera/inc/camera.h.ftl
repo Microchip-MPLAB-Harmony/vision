@@ -106,6 +106,8 @@ bool CAMERA_Get_Frame(SYS_MODULE_OBJ object,
 
 uint32_t CAMERA_Status(void);
 
+uint32_t CAMERA_Get_FPS();
+
 #ifdef __cplusplus
 }
 #endif

@@ -38,15 +38,16 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#include "device.h"
 #include "camera.h"
+#include "device.h"
 #include "peripheral/pio/plib_pio.h"
-#include "vision/peripheral/isc/plib_isc.h"
-#include "vision/peripheral/csi2dc/plib_csi2dc.h"
 #include "system/debug/sys_debug.h"
 #include "system/int/sys_int.h"
+#include "system/time/sys_time.h"
 #include "vision/drivers/csi2dc/drv_csi2dc.h"
 #include "vision/drivers/csi/drv_csi.h"
+#include "vision/peripheral/isc/plib_isc.h"
+#include "vision/peripheral/csi2dc/plib_csi2dc.h"
 
 // ToDO Instead of fixed memory, Implement a memory pool
 __attribute__((__section__(".region_cache"))) __attribute__((__aligned__(32))) static uint8_t GBuffer[1920 * 1080 * 4 * DMA_MAX_BUFFERS];
@@ -91,17 +92,36 @@ typedef struct
     DRV_CSI2DC_OBJ* csi2dcObj;
     DRV_CSI_OBJ* csiObj;
     DRV_IMAGE_SENSOR_OBJ* sensor;
+    bool enableFps;
+    uint32_t fpsCount;
+    SYS_TIME_HANDLE fpsTimer;
 } DEVICE_OBJECT;
 
 /* Camera Driver instance object */
 DEVICE_OBJECT DrvCameraInstances;
+
+static uint32_t fpsCounter;
 CAMERA_CALLBACK_OBJECT CameraCallbackObj;
 
 static void CAMERA_ISC_Callback(uintptr_t context)
 {
+    fpsCounter++;
+
     if (CameraCallbackObj.callback_fn != NULL)
     {
         CameraCallbackObj.callback_fn(CameraCallbackObj.context);
+    }
+}
+
+static void updateFps_Callback(uintptr_t context)
+{
+
+    DEVICE_OBJECT* pDrvObject = (DEVICE_OBJECT*)context;
+    if (pDrvObject != NULL)
+    {
+        pDrvObject->fpsCount = fpsCounter;
+        fpsCounter = 0;
+        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\n\t FPS = %ld \r\n", pDrvObject->fpsCount);
     }
 }
 
@@ -210,6 +230,11 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject)
     return true;
 }
 
+uint32_t CAMERA_Get_FPS()
+{
+    return DrvCameraInstances.fpsCount;
+}
+
 bool CAMERA_Get_Frame(SYS_MODULE_OBJ object,
                       uint32_t* buffer,
                       uint32_t* width,
@@ -247,6 +272,16 @@ bool CAMERA_Stop_Capture(SYS_MODULE_OBJ object)
 
     SYS_INT_SourceDisable(ID_ISC);
 
+    if (pDrvObject->fpsTimer != SYS_TIME_HANDLE_INVALID)
+    {
+        if (SYS_TIME_TimerDestroy(pDrvObject->fpsTimer) == SYS_TIME_SUCCESS)
+        {
+            pDrvObject->fpsTimer = SYS_TIME_HANDLE_INVALID;
+            pDrvObject->fpsCount = 0;
+            fpsCounter = 0;
+        }
+    }
+
     return true;
 }
 
@@ -271,9 +306,20 @@ bool CAMERA_Start_Capture(SYS_MODULE_OBJ object)
 
     SYS_INT_SourceEnable(ID_ISC);
 
+    if (pDrvObject->enableFps)
+    {
+        if (pDrvObject->fpsTimer != SYS_TIME_HANDLE_INVALID)
+            SYS_TIME_TimerDestroy(pDrvObject->fpsTimer);
+
+        pDrvObject->fpsTimer = SYS_TIME_CallbackRegisterMS(updateFps_Callback,
+                               (uintptr_t)pDrvObject,
+                               1000,
+                               SYS_TIME_PERIODIC);
+        pDrvObject->fpsCount = 0;
+        fpsCounter = 0;
+    }
 
     SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r ISC_Drv_Start_Capture : Done \n\r");
-
     return true;
 }
 
@@ -557,6 +603,10 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
 
     if (pDrvInstance->imageHeight <= 0)
         pDrvInstance->imageHeight = DEFAULT_FRAME_HEIGHT;
+
+    pDrvInstance->enableFps = true;
+    pDrvInstance->fpsTimer = SYS_TIME_HANDLE_INVALID;
+    pDrvInstance->fpsCount = 0;
 
     SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n CAMERA_Initialize : END\r\n");
 
