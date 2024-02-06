@@ -153,7 +153,9 @@ const CAMERA_INIT drvCAMERAInitData =
     .iscEnableVideoMode            = ISC_ENABLE_VIDEO_MODE,
     .iscEnableBightnessAndContrast = ISC_ENABLE_BRIGHTNESS_CONTRAST,
     .iscEnableProgressiveMode      = ISC_ENABLE_PROGRESSIVE_MODE,
+#if ISC_ENABLE_MIPI_INTERFACE	
     .csiDataFormat                 = CSI_DATA_FORMAT_TYPE,
+#endif	
     .drvI2CIndex                   = DRV_IMAGE_SENSOR_I2C_MODULE_INDEX,
 };
 
@@ -178,7 +180,7 @@ SYSTEM_OBJECTS sysObj;
 /******************************************************
  * USB Driver Initialization
  ******************************************************/
-void DRV_USB_VBUSPowerEnable(uint8_t port, bool enable)
+static void DRV_USB_VBUSPowerEnable(uint8_t port, bool enable)
 {
     /* Note: USB Host applications should have a way for Enabling/Disabling the 
        VBUS. Applications can use a GPIO to turn VBUS on/off through a switch. 
@@ -202,7 +204,7 @@ void DRV_USB_VBUSPowerEnable(uint8_t port, bool enable)
     }
 }
 
-DRV_USB_EHCI_INIT drvUSBEHCIInit =
+static DRV_USB_EHCI_INIT drvUSBEHCIInit =
 {
     /* Interrupt Source for USB module */
     .interruptSource = (INT_SOURCE)UHPHS_IRQn,
@@ -222,7 +224,7 @@ DRV_USB_EHCI_INIT drvUSBEHCIInit =
     .companionDriverIndex = DRV_USB_OHCI_INDEX_0
 };
 
-DRV_USB_OHCI_INIT drvUSBOHCIInit =
+static DRV_USB_OHCI_INIT drvUSBOHCIInit =
 {
     /* Interrupt Source for USB module */
     .interruptSource = (INT_SOURCE)UHPHS_IRQn,
@@ -242,7 +244,7 @@ DRV_USB_OHCI_INIT drvUSBOHCIInit =
 
 // <editor-fold defaultstate="collapsed" desc="File System Initialization Data">
 
-const SYS_FS_MEDIA_MOUNT_DATA sysfsMountTable[SYS_FS_VOLUME_NUMBER] =
+ const SYS_FS_MEDIA_MOUNT_DATA sysfsMountTable[SYS_FS_VOLUME_NUMBER] =
 {
     {
         .mountName = SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0,
@@ -329,44 +331,6 @@ static const SYS_TIME_INIT sysTimeInitData =
 };
 
 // </editor-fold>
-// <editor-fold defaultstate="collapsed" desc="SYS_CONSOLE Instance 0 Initialization Data">
-
-
-static const SYS_CONSOLE_UART_PLIB_INTERFACE sysConsole0UARTPlibAPI =
-{
-    .read_t = (SYS_CONSOLE_UART_PLIB_READ)FLEXCOM3_USART_Read,
-	.readCountGet = (SYS_CONSOLE_UART_PLIB_READ_COUNT_GET)FLEXCOM3_USART_ReadCountGet,
-	.readFreeBufferCountGet = (SYS_CONSOLE_UART_PLIB_READ_FREE_BUFFFER_COUNT_GET)FLEXCOM3_USART_ReadFreeBufferCountGet,
-    .write_t = (SYS_CONSOLE_UART_PLIB_WRITE)FLEXCOM3_USART_Write,
-	.writeCountGet = (SYS_CONSOLE_UART_PLIB_WRITE_COUNT_GET)FLEXCOM3_USART_WriteCountGet,
-	.writeFreeBufferCountGet = (SYS_CONSOLE_UART_PLIB_WRITE_FREE_BUFFER_COUNT_GET)FLEXCOM3_USART_WriteFreeBufferCountGet,
-};
-
-static const SYS_CONSOLE_UART_INIT_DATA sysConsole0UARTInitData =
-{
-    .uartPLIB = &sysConsole0UARTPlibAPI,    
-};
-
-static const SYS_CONSOLE_INIT sysConsole0Init =
-{
-    .deviceInitData = (const void*)&sysConsole0UARTInitData,
-    .consDevDesc = &sysConsoleUARTDevDesc,
-    .deviceIndex = 0,
-};
-
-
-
-// </editor-fold>
-
-
-static const SYS_DEBUG_INIT debugInit =
-{
-    .moduleInit = {0},
-    .errorLevel = SYS_DEBUG_GLOBAL_ERROR_LEVEL,
-    .consoleIndex = 0,
-};
-
-
 
 
 
@@ -375,6 +339,28 @@ static const SYS_DEBUG_INIT debugInit =
 // Section: Local initialization functions
 // *****************************************************************************
 // *****************************************************************************
+
+/*******************************************************************************
+  Function:
+    void STDIO_BufferModeSet ( void )
+
+  Summary:
+    Sets the buffering mode for stdin and stdout
+
+  Remarks:
+ ********************************************************************************/
+static void STDIO_BufferModeSet(void)
+{
+    /* MISRAC 2012 deviation block start */
+    /* MISRA C-2012 Rule 21.6 deviated 2 times in this file.  Deviation record ID -  H3_MISRAC_2012_R_21_6_DR_3 */
+
+    /* Make stdin unbuffered */
+    setbuf(stdin, NULL);
+
+    /* Make stdout unbuffered */
+    setbuf(stdout, NULL);
+}
+
 
 /* MISRAC 2012 deviation block end */
 
@@ -393,6 +379,9 @@ void SYS_Initialize ( void* data )
 
     /* MISRAC 2012 deviation block start */
     /* MISRA C-2012 Rule 2.2 deviated in this file.  Deviation record ID -  H3_MISRAC_2012_R_2_2_DR_1 */
+
+    STDIO_BufferModeSet();
+
 
   
     DWDT_Initialize();
@@ -427,6 +416,7 @@ void SYS_Initialize ( void* data )
     sysObj.drvI2C0 = DRV_I2C_Initialize(DRV_I2C_INDEX_0, (SYS_MODULE_INIT *)&drvI2C0InitData);
 
 
+	sysObj.devCamera = CAMERA_Initialize((SYS_MODULE_INIT *)&drvCAMERAInitData);
 
 
 
@@ -436,19 +426,9 @@ void SYS_Initialize ( void* data )
     sysObj.sysTime = SYS_TIME_Initialize(SYS_TIME_INDEX_0, (SYS_MODULE_INIT *)&sysTimeInitData);
     
     /* MISRAC 2012 deviation block end */
-    /* MISRA C-2012 Rule 11.3, 11.8 deviated below. Deviation record ID -  
-     H3_MISRAC_2012_R_11_3_DR_1 & H3_MISRAC_2012_R_11_8_DR_1*/
-    sysObj.sysConsole0 = SYS_CONSOLE_Initialize(SYS_CONSOLE_INDEX_0, (SYS_MODULE_INIT *)&sysConsole0Init);
-   /* MISRAC 2012 deviation block end */
-    /* MISRA C-2012 Rule 11.3, 11.8 deviated below. Deviation record ID -  
-     H3_MISRAC_2012_R_11_3_DR_1 & H3_MISRAC_2012_R_11_8_DR_1*/
-
-    sysObj.sysDebug = SYS_DEBUG_Initialize(SYS_DEBUG_INDEX_0, (SYS_MODULE_INIT*)&debugInit);
-
-    /* MISRAC 2012 deviation block end */
 
     /* Initialize the USB Host layer */
-    sysObj.usbHostObject0 = USB_HOST_Initialize (( SYS_MODULE_INIT *)& usbHostInitData );	
+    sysObj.usbHostObject0 = USB_HOST_Initialize (( SYS_MODULE_INIT *)& usbHostInitData );    
 
      /* Initialize USB Driver */ 
     sysObj.drvUSBEHCIObject = DRV_USB_EHCI_Initialize (DRV_USB_EHCI_INDEX_0, (SYS_MODULE_INIT *) &drvUSBEHCIInit);
@@ -457,7 +437,6 @@ void SYS_Initialize ( void* data )
     /*** File System Service Initialization Code ***/
     (void) SYS_FS_Initialize( (const void *) sysFSInit );
 
-	sysObj.devCamera = CAMERA_Initialize((SYS_MODULE_INIT *)&drvCAMERAInitData);
 
     /* MISRAC 2012 deviation block end */
     APP_Initialize();

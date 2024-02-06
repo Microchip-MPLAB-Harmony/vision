@@ -62,16 +62,15 @@
 
 USB_HOST_CLIENT_DRIVER gUSBHostMSDClientDriver = 
 {
-    .initialize = _USB_HOST_MSD_Initialize,
-    .deinitialize = _USB_HOST_MSD_Deinitialize,
-    .reinitialize = _USB_HOST_MSD_Reinitialize,
-    .interfaceAssign = _USB_HOST_MSD_InterfaceAssign,
-    .interfaceRelease = _USB_HOST_MSD_InterfaceRelease,
-    .interfaceEventHandler = _USB_HOST_MSD_InterfaceEventHandler,
-    .interfaceTasks = _USB_HOST_MSD_InterfaceTasks,
+    .initialize = F_USB_HOST_MSD_Initialize,
+    .deinitialize = F_USB_HOST_MSD_Deinitialize,
+    .reinitialize = F_USB_HOST_MSD_Reinitialize,
+    .interfaceAssign = F_USB_HOST_MSD_InterfaceAssign,
+    .interfaceRelease = F_USB_HOST_MSD_InterfaceRelease,
+    .interfaceEventHandler = F_USB_HOST_MSD_InterfaceEventHandler,
+    .interfaceTasks = F_USB_HOST_MSD_InterfaceTasks,
     .deviceEventHandler = NULL,
-    .deviceAssign = NULL,
-    .deviceEventHandler = NULL,
+    .deviceAssign = NULL,    
     .deviceRelease = NULL
          
 };
@@ -80,20 +79,20 @@ USB_HOST_CLIENT_DRIVER gUSBHostMSDClientDriver =
  * If the error callback function has been enabled
  * then declare it here.
  **************************************************/
-_USB_HOST_MSD_ERROR_CALLBACK_DECLARE
+M_USB_HOST_MSD_ERROR_CALLBACK_DECLARE
 
 /**************************************************
  * Global array of MSD Instance Objects. Each for
  * one MSD device attached.
  ***************************************************/
-USB_HOST_MSD_INSTANCE  gUSBHostMSDInstance[USB_HOST_MSD_INSTANCES_NUMBER];
+static USB_HOST_MSD_INSTANCE  gUSBHostMSDInstance[USB_HOST_MSD_INSTANCES_NUMBER];
 
 /***********************************************
  * CBW and CSW structure needed by for the MSD
  * function driver instance.
  ***********************************************/
-uint8_t gUSBHostMSDCBW[USB_HOST_MSD_INSTANCES_NUMBER][32] USB_ALIGN;
-uint8_t gUSBHostMSDCSW[USB_HOST_MSD_INSTANCES_NUMBER][16] USB_ALIGN;
+static uint8_t gUSBHostMSDCBW[USB_HOST_MSD_INSTANCES_NUMBER][32] USB_ALIGN;
+static uint8_t gUSBHostMSDCSW[USB_HOST_MSD_INSTANCES_NUMBER][16] USB_ALIGN;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -103,7 +102,7 @@ uint8_t gUSBHostMSDCSW[USB_HOST_MSD_INSTANCES_NUMBER][16] USB_ALIGN;
 
 // *****************************************************************************
 /* Function:
-   void _USB_HOST_MSD_TransferTasks
+   void F_USB_HOST_MSD_TransferTasks
    (
         uintptr msdInstanceIndex,
         USB_HOST_RESULT result,
@@ -123,7 +122,7 @@ uint8_t gUSBHostMSDCSW[USB_HOST_MSD_INSTANCES_NUMBER][16] USB_ALIGN;
     application.
 */
 
-void _USB_HOST_MSD_TransferTasks
+void F_USB_HOST_MSD_TransferTasks
 (
     uintptr_t msdInstanceIndex,
     USB_HOST_RESULT result,
@@ -154,7 +153,7 @@ void _USB_HOST_MSD_TransferTasks
                 if(result == USB_HOST_RESULT_SUCCESS)
                 {
                     /* Check if the command needs a data stage */
-                    if(transferObj->size > 0)
+                    if(transferObj->size > 0U)
                     {
                         /* Data stage is needed. Find out the direction */
                         if(transferObj->transferDirection == USB_HOST_MSD_TRANSFER_DIRECTION_DEVICE_TO_HOST)
@@ -173,7 +172,7 @@ void _USB_HOST_MSD_TransferTasks
                         msdInstanceInfo->transferState = USB_HOST_MSD_TRANSFER_STATE_WAIT_FOR_DATA;
 
                         /* Send the transfer */
-                        USB_HOST_DeviceTransfer(pipeHandle, &transferHandle, transferObj->buffer, transferObj->size,msdInstanceIndex);
+                        (void) USB_HOST_DeviceTransfer(pipeHandle, &transferHandle, transferObj->buffer, transferObj->size,msdInstanceIndex);
                     }
                     else
                     {
@@ -183,7 +182,7 @@ void _USB_HOST_MSD_TransferTasks
                         /* Note that we are not checking for return value here
                          * because we are in an interrupt context. If the function
                          * fails here, there isn't much that we can do. */
-                        USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, msdInstanceIndex);
+                        (void) USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, msdInstanceIndex);
                     }
                 }
                 else if(result == USB_HOST_RESULT_REQUEST_STALLED)
@@ -197,7 +196,7 @@ void _USB_HOST_MSD_TransferTasks
 
                     msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_RESET_RECOVERY;
                     msdInstanceInfo->transferState = USB_HOST_MSD_TRANSFER_STATE_ERROR;
-                    _USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_CBW_STALL_RESET_RECOVERY);
+                    M_USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_CBW_STALL_RESET_RECOVERY);
                 }
                 else 
                 {
@@ -224,7 +223,7 @@ void _USB_HOST_MSD_TransferTasks
                     /* Note that we are not checking for return value here
                      * because we are in an interrupt context. If the function
                      * fails here, there isn't much that we can do. */
-                    USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, msdInstanceIndex);
+                    (void) USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, msdInstanceIndex);
                 }
                 else if(result == USB_HOST_RESULT_REQUEST_STALLED)
                 {
@@ -275,7 +274,7 @@ void _USB_HOST_MSD_TransferTasks
                     }
                     
                     if ((msdCSW->dCSWSignature == USB_MSD_VALID_CSW_SIGNATURE) &&
-                            (msdCSW->dCSWTag == USB_MSD_VALID_CBW_TAG) && (size == 13))
+                            (msdCSW->dCSWTag == USB_MSD_VALID_CBW_TAG) && (size == 13U))
                     {
                         /* This means the CSW is valid as defined in section
                          * 6.3.1 of the BOT specification. Now we check if it is
@@ -298,19 +297,19 @@ void _USB_HOST_MSD_TransferTasks
                             }
                             transferIsDone = true;
                             msdResult = (USB_HOST_MSD_RESULT)msdCSW->bCSWStatus;
-                            //////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW: bCSWStatus = 0x%X ", msdCSW->bCSWStatus);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW: bCSWStatus = 0x%X ", msdCSW->bCSWStatus);
                         }
                         else if (msdCSW->bCSWStatus == USB_MSD_CSW_STATUS_PHASE_ERROR)
                         {
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW is valid but a phase error has occurred ");
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW is valid but a phase error has occurred ");
                             /* This means the CSW is valid but a phase error has
                              * occurred. Reset recovery should be performed.
                              * This is done in the transfer error tasks routine. */
                             msdInstanceInfo->transferState = USB_HOST_MSD_TRANSFER_STATE_ERROR;
                             msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_RESET_RECOVERY;
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Problem CSW");
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Problem CSW");
                             msdInstanceInfo->cswPhaseError = true;
-                            _USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_CSW_PHASE_ERROR);
+                            M_USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_CSW_PHASE_ERROR);
                         }
                         else
                         {
@@ -320,12 +319,12 @@ void _USB_HOST_MSD_TransferTasks
                              * meaningful. Because this is something we cannot
                              * handle, we end the transfer and move the device
                              * to error state. */
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW The specification does not define how the host must react in such a case ");
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW The specification does not define how the host must react in such a case ");
 
                             msdInstanceInfo->msdErrorCode = USB_HOST_MSD_ERROR_CODE_FAILED_BOT_TRANSFER;
                             msdInstanceInfo->msdState = USB_HOST_MSD_STATE_ERROR;
                             transferIsDone = true;
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Error in CSW phase");
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Error in CSW phase");
                             processedBytes = 0;
                             msdResult = USB_HOST_MSD_RESULT_FAILURE;
                         }
@@ -336,10 +335,10 @@ void _USB_HOST_MSD_TransferTasks
                          * performed. See Figure 2 - Status transport flow in
                          * the BOT specification. */
 
-                        //SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Problem CSW");
-                        //SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Sig = 0x53425355 = 0x%X", (int)msdCSW->dCSWSignature);
-                        //SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Tag = 0xDD1331DD = 0x%X", (int)msdCSW->dCSWTag);
-                        //SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r size(13) = %d", (int)size);
+                        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Problem CSW");
+                        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Sig = 0x53425355 = 0x%X", (int)msdCSW->dCSWSignature);
+                        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r Tag = 0xDD1331DD = 0x%X", (int)msdCSW->dCSWTag);
+                        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r size(13) = %d", (int)size);
                         
                         msdInstanceInfo->transferState = USB_HOST_MSD_TRANSFER_STATE_ERROR;
                         msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_RESET_RECOVERY;
@@ -352,7 +351,7 @@ void _USB_HOST_MSD_TransferTasks
                      * machine is in a CSW retry state, then we know that this
                      * is the second time. */
 
-                    //SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW Stalled");
+                    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW Stalled");
                     msdInstanceInfo->transferState = USB_HOST_MSD_TRANSFER_STATE_ERROR;
                     if(msdInstanceInfo->transferErrorTaskState == USB_HOST_MSD_TRANSFER_ERROR_STATE_CSW_RETRY)
                     {
@@ -376,15 +375,16 @@ void _USB_HOST_MSD_TransferTasks
                     /* Figure 2 of the BOT specification states that the host
                      * should try to do an endpoint stall clear on bulk error.
                      * */
-                    //SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW Figure 2 of the BOT specification");
+                    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r CSW Figure 2 of the BOT specification");
                     msdInstanceInfo->transferState = USB_HOST_MSD_TRANSFER_STATE_ERROR;
                     msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_CSW_STALLED;
-                    _USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_CSW_UNKNOWN_ERROR);
+                    M_USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_CSW_UNKNOWN_ERROR);
                 }
 
                 break;
 
             default:
+                /* Do Nothing */
                 break;
         }
 
@@ -410,7 +410,7 @@ void _USB_HOST_MSD_TransferTasks
 
 // *****************************************************************************
 /* Function:
-   USB_HOST_MSD_RESULT _USB_HOST_MSD_HostResultToMSDResultMap
+   USB_HOST_MSD_RESULT F_USB_HOST_MSD_HostResultToMSDResultMap
    (
         USB_HOST_RESULT result
    )
@@ -426,7 +426,7 @@ void _USB_HOST_MSD_TransferTasks
     application.
 */
 
-USB_HOST_MSD_RESULT _USB_HOST_MSD_HostResultToMSDResultMap
+USB_HOST_MSD_RESULT F_USB_HOST_MSD_HostResultToMSDResultMap
 (
     USB_HOST_RESULT result
 )
@@ -461,7 +461,7 @@ USB_HOST_MSD_RESULT _USB_HOST_MSD_HostResultToMSDResultMap
 
 // *****************************************************************************
 /* Function:
-   int_USB_HOST_MSD_InterfaceHandleToMSDInstance
+   intF_USB_HOST_MSD_InterfaceHandleToMSDInstance
    ( 
         USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle
    )
@@ -479,7 +479,7 @@ USB_HOST_MSD_RESULT _USB_HOST_MSD_HostResultToMSDResultMap
     application.
 */
 
-int _USB_HOST_MSD_InterfaceHandleToMSDInstance
+int F_USB_HOST_MSD_InterfaceHandleToMSDInstance
 ( 
     USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle
 )
@@ -505,7 +505,7 @@ int _USB_HOST_MSD_InterfaceHandleToMSDInstance
 
 // *****************************************************************************
 /* Function:
-   void _USB_HOST_MSD_InstanceRelease
+   void F_USB_HOST_MSD_InstanceRelease
     (
         USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle
     );
@@ -523,17 +523,17 @@ int _USB_HOST_MSD_InterfaceHandleToMSDInstance
     application.
 */
 
-void _USB_HOST_MSD_InstanceRelease
+void F_USB_HOST_MSD_InstanceRelease
 (
     USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle
 )
 {
     int msdInstanceIndex;
-    int iterator;
+    uint32_t iterator;
     USB_HOST_MSD_INSTANCE * msdInstanceInfo;
 
     /* Find the MSD instance for this interface */
-    msdInstanceIndex = _USB_HOST_MSD_InterfaceHandleToMSDInstance(interfaceHandle);
+    msdInstanceIndex = F_USB_HOST_MSD_InterfaceHandleToMSDInstance(interfaceHandle);
 
     if(msdInstanceIndex >= 0)
     {
@@ -544,14 +544,14 @@ void _USB_HOST_MSD_InstanceRelease
         if(msdInstanceInfo->bulkOutPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
         {
             /* Close the pipe */
-            USB_HOST_DevicePipeClose(msdInstanceInfo->bulkOutPipeHandle);
+            (void) USB_HOST_DevicePipeClose(msdInstanceInfo->bulkOutPipeHandle);
             msdInstanceInfo->bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
         }
 
         if(msdInstanceInfo->bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
         {
             /* Close the pipe */
-            USB_HOST_DevicePipeClose(msdInstanceInfo->bulkInPipeHandle);
+            (void) USB_HOST_DevicePipeClose(msdInstanceInfo->bulkInPipeHandle);
             msdInstanceInfo->bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
         }
 
@@ -559,7 +559,7 @@ void _USB_HOST_MSD_InstanceRelease
          * the IRP callback functions to be valid when the pipes are closed
          * in the statement above. */
 
-        USB_HOST_DeviceInterfaceRelease(interfaceHandle);
+        (void) USB_HOST_DeviceInterfaceRelease(interfaceHandle);
 
         /* Note that we are not checking the msdState before calling
          * USB_HOST_SCSI_Deinitialize for this LUN. A valid concern could be
@@ -572,7 +572,7 @@ void _USB_HOST_MSD_InstanceRelease
 
         for(iterator = 0; iterator < msdInstanceInfo->logicalUnitNumber; iterator ++)
         {
-            USB_HOST_SCSI_Deinitialize(USB_HOST_MSD_LUNHandleGet(iterator, msdInstanceIndex));
+            USB_HOST_SCSI_Deinitialize(USB_HOST_MSD_LUNHandleGet((uint32_t)iterator, (uint32_t)msdInstanceIndex));
         }
 
         msdInstanceInfo->assigned = false;
@@ -617,13 +617,13 @@ void USB_HOST_MSD_TransferErrorTasks
     USB_HOST_MSD_RESULT msdResult = USB_HOST_MSD_RESULT_FAILURE;
     bool transferIsDone = false;
     USB_HOST_MSD_INSTANCE * msdInstanceInfo;
-    int msdInstanceIndex;
+    uint32_t msdInstanceIndex;
     size_t processedBytes = 0;
     USB_HOST_TRANSFER_HANDLE transferHandle, requestHandle;
 
     if(USB_HOST_MSD_LUN_HANDLE_INVALID == lunHandle)
     {
-        //SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "\r\nUSB Host MSD: LUN Handle %x in USB_HOST_MSD_Transfer is not valid.",lunHandle);
+        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "\r\nUSB Host MSD: LUN Handle %x in USB_HOST_MSD_Transfer is not valid.",lunHandle);
     }
     else
     {
@@ -636,7 +636,7 @@ void USB_HOST_MSD_TransferErrorTasks
         if(!msdInstanceInfo->assigned)
         {
             /* This object is not valid */
-            ////SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "\r\nUSB Host MSD: MSD Instance %d in USB_HOST_MSD_TransferErrorTasks is not valid.", msdInstanceIndex);
+            SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "\r\nUSB Host MSD: MSD Instance %d in USB_HOST_MSD_TransferErrorTasks is not valid.", msdInstanceIndex);
         }
         else
         {
@@ -666,12 +666,12 @@ void USB_HOST_MSD_TransferErrorTasks
                         processedBytes = 0;
 
                         /* Create the control transfer setup packet */
-                        _USB_HOST_MSD_ResetPacketCreate(&msdInstanceInfo->setupPacket, msdInstanceInfo->bInterfaceNumber);
+                        F_USB_HOST_MSD_ResetPacketCreate(&msdInstanceInfo->setupPacket, msdInstanceInfo->bInterfaceNumber);
                         msdInstanceInfo->controlTransferDone = false;
 
                         /* Try sending the control transfer */
                         if(USB_HOST_DeviceControlTransfer(msdInstanceInfo->controlPipeHandle, &transferHandle,
-                                    &msdInstanceInfo->setupPacket, NULL, _USB_HOST_MSD_ControlTransferCallback,
+                                    &msdInstanceInfo->setupPacket, NULL, F_USB_HOST_MSD_ControlTransferCallback,
                                     (uintptr_t)(msdInstanceInfo)) == USB_HOST_RESULT_SUCCESS)
                         {
                             msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_RR_WAIT_MSD_RESET;
@@ -693,8 +693,8 @@ void USB_HOST_MSD_TransferErrorTasks
                             if(USB_HOST_RESULT_SUCCESS == msdInstanceInfo->controlTransferResult)
                             {
                                 /* The control transfer completed successfully */
-                                ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD Reset done.", msdInstanceIndex);
-                                ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d clearing Halt on Bulk IN endpoint", msdInstanceIndex);
+                                SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD Reset done.", msdInstanceIndex);
+                                SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d clearing Halt on Bulk IN endpoint", msdInstanceIndex);
                                 msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_RR_CLEAR_FEATURE_IN;
                             }
                             else
@@ -730,8 +730,8 @@ void USB_HOST_MSD_TransferErrorTasks
                         /* Here we are waiting for the standard request to complete */
                         if(msdInstanceInfo->standardRequestDone)
                         {
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD IN endpoint Clear Feature Done done.\r\n", msdInstanceIndex);
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d clearing Halt on Bulk Out endpoint\r\n", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD IN endpoint Clear Feature Done done.\r\n", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d clearing Halt on Bulk Out endpoint\r\n", msdInstanceIndex);
                             msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_RR_CLEAR_FEATURE_OUT;
                         }
                         break;
@@ -755,8 +755,8 @@ void USB_HOST_MSD_TransferErrorTasks
                         /* Here we are waiting for the standard request to complete */
                         if(msdInstanceInfo->standardRequestDone)
                         {
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD OUT endpoint Clear Feature Done done.", msdInstanceIndex);
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Ending Transfer.", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD OUT endpoint Clear Feature Done done.", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Ending Transfer.", msdInstanceIndex);
                             msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_NO_ERROR;
                             transferIsDone = true;
                             if(msdInstanceInfo->cswPhaseError)
@@ -796,8 +796,8 @@ void USB_HOST_MSD_TransferErrorTasks
                         {
                             /* The request had completed. Now we try to get the
                              * CSW. */
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD IN endpoint Clear Feature Done.", msdInstanceIndex);
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Trying to get CSW.", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD IN endpoint Clear Feature Done.", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Trying to get CSW.", msdInstanceIndex);
                             msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_NO_ERROR;
 
                             /* The CSW completion will be completed in the
@@ -806,7 +806,7 @@ void USB_HOST_MSD_TransferErrorTasks
                             msdInstanceInfo->transferState = USB_HOST_MSD_TRANSFER_STATE_WAIT_FOR_CSW;
 
                             /* Launch the CSW */
-                            USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, msdInstanceIndex);
+                            (void) USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, (uint32_t)msdInstanceIndex);
 
                         }
                         break;
@@ -833,8 +833,8 @@ void USB_HOST_MSD_TransferErrorTasks
                         {
                             /* The request had completed. Now we try to get the
                              * CSW. */
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD OUT endpoint Clear Feature Done.", msdInstanceIndex);
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Trying to get CSW.", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d MSD OUT endpoint Clear Feature Done.", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Trying to get CSW.", msdInstanceIndex);
                             msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_NO_ERROR;
 
                             /* The CSW completion will be completed in the
@@ -843,7 +843,7 @@ void USB_HOST_MSD_TransferErrorTasks
                             msdInstanceInfo->transferState = USB_HOST_MSD_TRANSFER_STATE_WAIT_FOR_CSW;
 
                             /* Launch the CSW */
-                            USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, msdInstanceIndex);
+                            (void) USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, (uint32_t)msdInstanceIndex);
 
                         }
                         break;
@@ -872,8 +872,8 @@ void USB_HOST_MSD_TransferErrorTasks
                         {
                             /* The request had completed. Now we try to get the
                              * CSW again. */
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d CSW Stall Bulk IN endpoint Clear Feature Done.", msdInstanceIndex);
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Trying to get CSW.", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d CSW Stall Bulk IN endpoint Clear Feature Done.", msdInstanceIndex);
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Trying to get CSW.", msdInstanceIndex);
 
                             /* The CSW completion will be completed in the
                              * transfer tasks. So we set the state of the
@@ -882,7 +882,7 @@ void USB_HOST_MSD_TransferErrorTasks
                             msdInstanceInfo->transferErrorTaskState = USB_HOST_MSD_TRANSFER_ERROR_STATE_CSW_RETRY;
 
                             /* Launch the CSW */
-                            USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, msdInstanceIndex);
+                            (void) USB_HOST_DeviceTransfer(msdInstanceInfo->bulkInPipeHandle, &transferHandle, msdInstanceInfo->msdCSW, 13, (uint32_t)msdInstanceIndex);
 
                         }
                         break;
@@ -898,6 +898,7 @@ void USB_HOST_MSD_TransferErrorTasks
                         break;
 
                     default:
+                        /* Do Nothing */
                         break;
                 }
 
@@ -926,7 +927,7 @@ void USB_HOST_MSD_TransferErrorTasks
 
 // *****************************************************************************
 /* Function:
-   void _USB_HOST_MSD_ControlTransferCallback
+   void F_USB_HOST_MSD_ControlTransferCallback
     (
         USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
         USB_HOST_REQUEST_HANDLE requestHandle,
@@ -946,7 +947,7 @@ void USB_HOST_MSD_TransferErrorTasks
     application.
 */
 
-void _USB_HOST_MSD_ControlTransferCallback
+void F_USB_HOST_MSD_ControlTransferCallback
 (
     USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
     USB_HOST_REQUEST_HANDLE requestHandle,
@@ -970,7 +971,7 @@ void _USB_HOST_MSD_ControlTransferCallback
 
 // *****************************************************************************
 /* Function:
-   void _USB_HOST_MSD_GetMaxLUNPacketCreate
+   void F_USB_HOST_MSD_GetMaxLUNPacketCreate
    ( 
        USB_SETUP_PACKET * setupPacket,
        uint8_t bInterfaceNumber
@@ -987,7 +988,7 @@ void _USB_HOST_MSD_ControlTransferCallback
     application.
 */
 
-void _USB_HOST_MSD_GetMaxLUNPacketCreate
+void F_USB_HOST_MSD_GetMaxLUNPacketCreate
 (
    USB_SETUP_PACKET * setupPacket,
    uint8_t bInterfaceNumber
@@ -997,7 +998,7 @@ void _USB_HOST_MSD_GetMaxLUNPacketCreate
     setupPacket->bmRequestType  = ( USB_SETUP_DIRN_DEVICE_TO_HOST | USB_SETUP_TYPE_CLASS | USB_SETUP_RECIPIENT_INTERFACE );
 
     /* Setup the other setup packet values */
-    setupPacket->bRequest =  USB_MSD_GET_MAX_LUN ;
+    setupPacket->bRequest =  (uint8_t)USB_MSD_GET_MAX_LUN ;
     setupPacket->wValue = 0x0000;
     setupPacket->wIndex = bInterfaceNumber;
     setupPacket->wLength = 0x01;
@@ -1005,7 +1006,7 @@ void _USB_HOST_MSD_GetMaxLUNPacketCreate
 
 // *****************************************************************************
 /* Function:
-   void _USB_HOST_MSD_ResetPacketCreate
+   void F_USB_HOST_MSD_ResetPacketCreate
    ( 
        USB_SETUP_PACKET * setupPacket,
        uint8_t bInterfaceNumber
@@ -1022,7 +1023,7 @@ void _USB_HOST_MSD_GetMaxLUNPacketCreate
     application.
 */
 
-void _USB_HOST_MSD_ResetPacketCreate
+void F_USB_HOST_MSD_ResetPacketCreate
 ( 
    USB_SETUP_PACKET * setupPacket,
    uint8_t bInterfaceNumber
@@ -1030,15 +1031,18 @@ void _USB_HOST_MSD_ResetPacketCreate
 {
     /* Create the setup packet */
     setupPacket->bmRequestType  = ( USB_SETUP_DIRN_HOST_TO_DEVICE | USB_SETUP_TYPE_CLASS | USB_SETUP_RECIPIENT_INTERFACE ); 
-    setupPacket->bRequest =  USB_MSD_RESET ;
+    setupPacket->bRequest =  (uint8_t)USB_MSD_RESET ;
     setupPacket->wValue = 0x0000;
     setupPacket->wIndex = bInterfaceNumber;
     setupPacket->wLength = 0x00;
 }
 
 // *****************************************************************************
+/* MISRA C-2012 Rule 11.3 deviated:4 Deviation record ID -  H3_USB_MISRAC_2012_R_11_3_DR_1 */
+
+
 /* Function:
-    void _USB_HOST_MSD_Initialize(void * msdInitData)
+    void F_USB_HOST_MSD_Initialize(void * msdInitData)
 
   Summary:
     This function is called when the Host Layer is initializing.
@@ -1051,7 +1055,7 @@ void _USB_HOST_MSD_ResetPacketCreate
     application.
 */
 
-void _USB_HOST_MSD_Initialize(void * msdInitData)
+void F_USB_HOST_MSD_Initialize(void * msdInitData)
 {
     /* Make sure all the pipe handles are invalid */
     
@@ -1073,18 +1077,18 @@ void _USB_HOST_MSD_Initialize(void * msdInitData)
          * interface release function could be called from an interrupt context.
          * */
 
-        if(OSAL_RESULT_TRUE != OSAL_MUTEX_Create(&(msdInstanceInfo->mutexMSDInstanceObject)))
+        if((OSAL_RESULT)OSAL_RESULT_TRUE != OSAL_MUTEX_Create(&(msdInstanceInfo->mutexMSDInstanceObject)))
         {
             /* The mutex could not be created. We cannot
              * continue with using the instance object. */
-            ////SYS_DEBUG_PRINT(SYS_ERROR_FATAL, "\r\nUSB Host MSD: Could not create Mutex for MSD instance %d",iterator);
+            SYS_DEBUG_PRINT(SYS_ERROR_FATAL, "\r\nUSB Host MSD: Could not create Mutex for MSD instance %d",iterator);
         }
     }
 }
 
 // *****************************************************************************
 /* Function:
-    void _USB_HOST_MSD_Deinitialize(void)
+    void F_USB_HOST_MSD_Deinitialize(void)
 
   Summary:
     This function is called when the Host Layer is deinitializing.
@@ -1097,14 +1101,14 @@ void _USB_HOST_MSD_Initialize(void * msdInitData)
     application.
 */
 
-void _USB_HOST_MSD_Deinitialize(void)
+void F_USB_HOST_MSD_Deinitialize(void)
 {
     /* This function is not implemented in this release of the driver */
 }
 
 // *****************************************************************************
 /* Function:
-    void _USB_HOST_MSD_Reinitialize(void)
+    void F_USB_HOST_MSD_Reinitialize(void)
 
   Summary:
     This function is called when the Host Layer is reinitializing.
@@ -1117,14 +1121,14 @@ void _USB_HOST_MSD_Deinitialize(void)
     application.
 */
 
-void _USB_HOST_MSD_Reinitialize(void * msdInitData)
+void F_USB_HOST_MSD_Reinitialize(void * msdInitData)
 {
     /* This function is not implemented in this release of the driver */
 }
 
 // *****************************************************************************
 /* Function:
-    void _USB_HOST_MSD_InterfaceAssign 
+    void F_USB_HOST_MSD_InterfaceAssign 
     (
         USB_HOST_DEVICE_INTERFACE_HANDLE * interfaces,
         USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
@@ -1145,7 +1149,7 @@ void _USB_HOST_MSD_Reinitialize(void * msdInitData)
     application.
 */
 
-void _USB_HOST_MSD_InterfaceAssign 
+void F_USB_HOST_MSD_InterfaceAssign 
 (
     USB_HOST_DEVICE_INTERFACE_HANDLE * interfaces,
     USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
@@ -1161,6 +1165,7 @@ void _USB_HOST_MSD_InterfaceAssign
     USB_INTERFACE_DESCRIPTOR * interfaceDescriptor;
     USB_HOST_PIPE_HANDLE controlPipeHandle, bulkInPipeHandle, bulkOutPipeHandle;
     bool result = false;
+    uint32_t temp;
 
     /* We first try to open a control pipe to the device. Also initialize the
      * local pipe handles  */
@@ -1179,7 +1184,8 @@ void _USB_HOST_MSD_InterfaceAssign
          * this, a query must be setup first. */
 
         USB_HOST_DeviceEndpointQueryContextClear(&endpointQuery);
-        endpointQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_DIRECTION|USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE);
+        temp = ((uint32_t)USB_HOST_ENDPOINT_QUERY_BY_DIRECTION|(uint32_t)USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE);
+        endpointQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)temp;
         endpointQuery.direction  = USB_DATA_DIRECTION_DEVICE_TO_HOST;
         endpointQuery.transferType = USB_TRANSFER_TYPE_BULK;
 
@@ -1196,7 +1202,8 @@ void _USB_HOST_MSD_InterfaceAssign
                 /* Now open the the bulk out pipe */
 
                 USB_HOST_DeviceEndpointQueryContextClear(&endpointQuery);
-                endpointQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_DIRECTION|USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE);
+                temp = ((uint32_t)USB_HOST_ENDPOINT_QUERY_BY_DIRECTION|(uint32_t)USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE);
+                endpointQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)temp;
                 endpointQuery.direction  = USB_DATA_DIRECTION_HOST_TO_DEVICE;
                 endpointQuery.transferType = USB_TRANSFER_TYPE_BULK;
 
@@ -1220,7 +1227,7 @@ void _USB_HOST_MSD_InterfaceAssign
                                  * interface handle and the device
                                  * object handle. */
 
-                                ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Host Instance %d Assigned.",driverIndex);
+                                SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Host Instance %d Assigned.",driverIndex);
                                 gUSBHostMSDInstance[driverIndex].assigned = true;
                                 msdInstanceInfo = &gUSBHostMSDInstance[driverIndex];
                                 msdInstanceInfo->transferObj.inUse = false;
@@ -1243,7 +1250,7 @@ void _USB_HOST_MSD_InterfaceAssign
                     {
                         /* If an error callback function is defined, then call it with the error
                          * code */
-                        _USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_FAILED_PIPE_OPEN);
+                        M_USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_FAILED_PIPE_OPEN);
 
                         SYS_DEBUG_MESSAGE(SYS_ERROR_DEBUG, "\r\nUSB Host MSD: Could not open Bulk OUT pipe.");
                     }
@@ -1252,7 +1259,7 @@ void _USB_HOST_MSD_InterfaceAssign
                 {
                     /* If an error callback function is defined, then call it with the error
                      * code */
-                    _USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_NOT_FOUND_BULK_OUT_ENDPOINT);
+                    M_USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_NOT_FOUND_BULK_OUT_ENDPOINT);
                     SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\nUSB Host MSD: Could not find OUT endpoint in interface descriptor.");
                 }
             }
@@ -1260,7 +1267,7 @@ void _USB_HOST_MSD_InterfaceAssign
             {
                 /* If an error callback function is defined, then call it with the error
                  * code */
-                _USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_FAILED_PIPE_OPEN);
+                M_USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_FAILED_PIPE_OPEN);
                 SYS_DEBUG_MESSAGE(SYS_ERROR_DEBUG, "\r\nUSB Host MSD: Could not open Bulk IN pipe.");
             }
         }
@@ -1268,7 +1275,7 @@ void _USB_HOST_MSD_InterfaceAssign
         {
             /* If an error callback function is defined, then call it with the error
              * code */
-            _USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_NOT_FOUND_BULK_IN_ENDPOINT);
+            M_USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_NOT_FOUND_BULK_IN_ENDPOINT);
             SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\nUSB Host MSD: Could not find IN endpoint in interface descriptor.");
         }
     }
@@ -1280,29 +1287,30 @@ void _USB_HOST_MSD_InterfaceAssign
 
         /* If an error callback function is defined, then call it with the error
          * code */
-        _USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_INSUFFICIENT_INSTANCES);
+        M_USB_HOST_MSD_ERROR_CALLBACK(deviceObjHandle, USB_HOST_MSD_ERROR_CODE_INSUFFICIENT_INSTANCES);
         
         /* Close any pipes that were opened */
         if(USB_HOST_PIPE_HANDLE_INVALID != bulkInPipeHandle)
         {
             SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\nUSB Host MSD: Closing Bulk IN pipe.");
-            USB_HOST_DevicePipeClose(bulkInPipeHandle);
+            (void) USB_HOST_DevicePipeClose(bulkInPipeHandle);
         }
 
         if(USB_HOST_PIPE_HANDLE_INVALID != bulkOutPipeHandle)
         {
             SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\nUSB Host MSD: Closing Bulk OUT pipe.");
-            USB_HOST_DevicePipeClose(bulkOutPipeHandle);
+            (void) USB_HOST_DevicePipeClose(bulkOutPipeHandle);
         }
 
         SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\nUSB Host MSD: Releasing Interface.");
-        _USB_HOST_MSD_InterfaceRelease(interfaceHandle);
+        F_USB_HOST_MSD_InterfaceRelease(interfaceHandle);
     }
 
     return;
 }
 
 // *****************************************************************************
+/* MISRAC 2012 deviation block end */
 /* Function:
     void USB_HOST_MSD_InterfaceRelease
     (
@@ -1322,19 +1330,19 @@ void _USB_HOST_MSD_InterfaceAssign
     application.
 */
 
-void _USB_HOST_MSD_InterfaceRelease
+void F_USB_HOST_MSD_InterfaceRelease
 (
     USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle
 )
 {
     /* The device is detached or the configuration has changed. Shut down
      * everything for this interface */
-    _USB_HOST_MSD_InstanceRelease(interfaceHandle);
+    F_USB_HOST_MSD_InstanceRelease(interfaceHandle);
 }
 
 // *****************************************************************************
 /* Function:
-    USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HOST_MSD_InterfaceEventHandler
+    USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE F_USB_HOST_MSD_InterfaceEventHandler
     (
         USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle,
         USB_HOST_DEVICE_INTERFACE_EVENT event,
@@ -1355,7 +1363,7 @@ void _USB_HOST_MSD_InterfaceRelease
     application.
 */
 
-USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HOST_MSD_InterfaceEventHandler
+USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE F_USB_HOST_MSD_InterfaceEventHandler
 (
     USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle,
     USB_HOST_DEVICE_INTERFACE_EVENT event,
@@ -1378,7 +1386,7 @@ USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HOST_MSD_InterfaceEventHandler
             /* This means a transfer completed. Update the transfer state
              * machine. */
             transferCompleteEventData = (USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE_DATA *)(eventData);
-            _USB_HOST_MSD_TransferTasks (context, transferCompleteEventData->result, transferCompleteEventData->length);
+            F_USB_HOST_MSD_TransferTasks (context, transferCompleteEventData->result, transferCompleteEventData->length);
             break;
             
         case USB_HOST_DEVICE_INTERFACE_EVENT_SET_INTERFACE_COMPLETE:
@@ -1392,6 +1400,7 @@ USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HOST_MSD_InterfaceEventHandler
             break;
             
         default:
+            /* Do Nothing */
             break;
     }
 
@@ -1419,19 +1428,19 @@ USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HOST_MSD_InterfaceEventHandler
     application.
 */
 
-void _USB_HOST_MSD_InterfaceTasks
+void F_USB_HOST_MSD_InterfaceTasks
 (
     USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle
 )
 {
     int msdInstanceIndex;
     bool interruptIsEnabled;
-    int iterator;
+    uint32_t iterator;
     USB_HOST_MSD_INSTANCE * msdInstanceInfo;
     USB_HOST_TRANSFER_HANDLE  transferHandle;
      
     /* Get the MSD instance for this interface */
-    msdInstanceIndex = _USB_HOST_MSD_InterfaceHandleToMSDInstance(interfaceHandle);
+    msdInstanceIndex = F_USB_HOST_MSD_InterfaceHandleToMSDInstance(interfaceHandle);
 
     if(msdInstanceIndex >= 0)
     {
@@ -1449,7 +1458,7 @@ void _USB_HOST_MSD_InterfaceTasks
 
                 /* In this state we launch the Get Max LUN request. Create the
                  * Get Max LUN packet */
-                _USB_HOST_MSD_GetMaxLUNPacketCreate(&msdInstanceInfo->setupPacket, msdInstanceInfo->bInterfaceNumber);
+                F_USB_HOST_MSD_GetMaxLUNPacketCreate(&msdInstanceInfo->setupPacket, msdInstanceInfo->bInterfaceNumber);
 
                 /* Set the flag indicating we are waiting for the control
                  * request to complete */
@@ -1459,13 +1468,13 @@ void _USB_HOST_MSD_InterfaceTasks
                  * logicalUnitNumber member of the instance object. The received
                  * data should be stored there. */
 
-                ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Trying to send Get Max LUN Request.", msdInstanceIndex);
+                SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Trying to send Get Max LUN Request.", msdInstanceIndex);
                 
                 if(USB_HOST_DeviceControlTransfer(msdInstanceInfo->controlPipeHandle, 
                         &transferHandle,
                         &msdInstanceInfo->setupPacket, 
                         &msdInstanceInfo->logicalUnitNumber,
-                        _USB_HOST_MSD_ControlTransferCallback,
+                        F_USB_HOST_MSD_ControlTransferCallback,
                         (uintptr_t)(msdInstanceInfo)) == USB_HOST_RESULT_SUCCESS)
                 {
                     /* Update state. We will wait for the Get Max LUN request to
@@ -1491,7 +1500,7 @@ void _USB_HOST_MSD_InterfaceTasks
                         /* This means an unknown error has occurred. For now we
                          * will move the client driver to an error state. The
                          * device will not be accessible in the error state. */
-                        ////SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\r\nUSB Host MSD: MSD Instance %d Get Max LUN Request Unknown Failure.", msdInstanceIndex);
+                        SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\r\nUSB Host MSD: MSD Instance %d Get Max LUN Request Unknown Failure.", msdInstanceIndex);
                         msdInstanceInfo->logicalUnitNumber = 0;
                         msdInstanceInfo->msdErrorCode = USB_HOST_MSD_ERROR_CODE_FAILED_GET_MAX_LUN;
                         msdInstanceInfo->msdState = USB_HOST_MSD_STATE_ERROR;
@@ -1502,7 +1511,7 @@ void _USB_HOST_MSD_InterfaceTasks
                          * not support multiple LUNs. We set the number of LUNs
                          * to 1 */
 
-                        ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Get Max LUN Request was stalled. Setting LUNs to 1.", msdInstanceIndex);
+                        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d Get Max LUN Request was stalled. Setting LUNs to 1.", msdInstanceIndex);
                         msdInstanceInfo->logicalUnitNumber = 1;
                     }
                     else if (msdInstanceInfo->controlTransferResult == USB_HOST_RESULT_SUCCESS) 
@@ -1517,7 +1526,11 @@ void _USB_HOST_MSD_InterfaceTasks
                          * LUNs are supported. We increment the LUN count by 1. */
 
                         msdInstanceInfo->logicalUnitNumber ++;
-                        ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: Get Max LUN Request was passed. LUNs = %d.", msdInstanceInfo->logicalUnitNumber);
+                        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: Get Max LUN Request was passed. LUNs = %d.", msdInstanceInfo->logicalUnitNumber);
+                    }
+                    else
+                    {
+                        /* Do Nothing */
                     }
 
                     if(msdInstanceInfo->msdState != USB_HOST_MSD_STATE_ERROR)
@@ -1533,8 +1546,8 @@ void _USB_HOST_MSD_InterfaceTasks
                         for (iterator = 0; iterator < msdInstanceInfo->logicalUnitNumber; iterator ++)
                         {
                             /* Initialize the SCSI driver for every LUN */
-                            ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: Initializing SCSI for LUN %d.", iterator);
-                            USB_HOST_SCSI_Initialize(USB_HOST_MSD_LUNHandleGet(iterator,msdInstanceIndex));
+                            SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: Initializing SCSI for LUN %d.", iterator);
+                            USB_HOST_SCSI_Initialize(USB_HOST_MSD_LUNHandleGet((uint32_t)iterator,(uint32_t)msdInstanceIndex));
                         }
 
                         msdInstanceInfo->msdState = USB_HOST_MSD_STATE_READY;
@@ -1545,7 +1558,7 @@ void _USB_HOST_MSD_InterfaceTasks
                             SYS_INT_Enable();
                         }
 
-                        ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d is Ready.", msdInstanceIndex);
+                        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d is Ready.", msdInstanceIndex);
                     }
                     else
                     {
@@ -1564,14 +1577,14 @@ void _USB_HOST_MSD_InterfaceTasks
                  * device is ready. */
                 for (iterator = 0; iterator < (msdInstanceInfo->logicalUnitNumber); iterator ++)
                 {
-                    USB_HOST_SCSI_Tasks(USB_HOST_MSD_LUNHandleGet(iterator,msdInstanceIndex));
+                    USB_HOST_SCSI_Tasks(USB_HOST_MSD_LUNHandleGet((uint32_t)iterator,(uint32_t)msdInstanceIndex));
                 }
                 break;
 
             case USB_HOST_MSD_STATE_ERROR:
 
-                ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d is entering error state", msdInstanceIndex);
-                _USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, msdInstanceInfo->msdErrorCode); 
+                SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d is entering error state", msdInstanceIndex);
+                M_USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, msdInstanceInfo->msdErrorCode); 
                 msdInstanceInfo->msdState = USB_HOST_MSD_STATE_ERROR_HOLDING;
                 break;
 
@@ -1580,12 +1593,14 @@ void _USB_HOST_MSD_InterfaceTasks
                 break;
 
             default:
+                /* Do Nothing */
                 break;
         }
     }
 }
 
 // *****************************************************************************
+/* MISRA C-2012 Rule 20.7 False Positive:1 Deviation record ID -  H3_USB_MISRAC_2012_R_20_7_DR_1 */
 /* Function:
    USB_HOST_MSD_RESULT USB_HOST_MSD_Transfer
    (
@@ -1627,12 +1642,12 @@ USB_HOST_MSD_RESULT USB_HOST_MSD_Transfer
 )
 {
     USB_HOST_MSD_RESULT result;
-    int iterator;
+    uint32_t iterator;
     USB_HOST_MSD_INSTANCE * msdInstanceInfo;
-    int msdInstanceIndex;
+    uint32_t msdInstanceIndex;
     USB_HOST_RESULT hostResult;
     USB_HOST_TRANSFER_HANDLE transferHandle;
-
+    
     if(USB_HOST_MSD_LUN_HANDLE_INVALID == lunHandle)
     {
         SYS_DEBUG_MESSAGE(SYS_ERROR_ERROR, "\r\nUSB Host MSD: LUN Handle in USB_HOST_MSD_Transfer is not valid.");
@@ -1649,7 +1664,7 @@ USB_HOST_MSD_RESULT USB_HOST_MSD_Transfer
         if(!msdInstanceInfo->assigned)
         {
             /* This object is not valid */
-            ////SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "\r\nUSB Host MSD: MSD Instance %d in USB_HOST_MSD_Transfer is not valid.", msdInstanceIndex);
+            SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "\r\nUSB Host MSD: MSD Instance %d in USB_HOST_MSD_Transfer is not valid.", msdInstanceIndex);
             result = USB_HOST_MSD_RESULT_FAILURE;
         }
         else
@@ -1657,7 +1672,7 @@ USB_HOST_MSD_RESULT USB_HOST_MSD_Transfer
             /* Try obtaining the mutex. In an RTOS application, the thread could
              * block at this point */
             
-            if(OSAL_MUTEX_Lock(&(msdInstanceInfo->mutexMSDInstanceObject), OSAL_WAIT_FOREVER) == OSAL_RESULT_TRUE)
+            if(OSAL_MUTEX_Lock(&(msdInstanceInfo->mutexMSDInstanceObject), OSAL_WAIT_FOREVER) == (OSAL_RESULT)OSAL_RESULT_TRUE)
             {
                 /* We got the mutex. Now check if the BOT transfer object is
                  * free and if the MSD state machine can accept transfer
@@ -1672,23 +1687,23 @@ USB_HOST_MSD_RESULT USB_HOST_MSD_Transfer
                     msdInstanceInfo->transferObj.inUse = true;
 
                     /* We can release the mutex now */
-                    OSAL_MUTEX_Unlock(&(msdInstanceInfo->mutexMSDInstanceObject));
+                    (void) OSAL_MUTEX_Unlock(&(msdInstanceInfo->mutexMSDInstanceObject));
                     
                     /* Setup the CBW */
                     msdInstanceInfo->msdCBW->dCBWSignature = USB_MSD_VALID_CBW_SIGNATURE;
                     msdInstanceInfo->msdCBW->dCBWTag = USB_MSD_VALID_CBW_TAG;
                     msdInstanceInfo->msdCBW->bCBWCBLength = cdbLength;
                     msdInstanceInfo->msdCBW->dCBWDataTransferLength = size;
-                    msdInstanceInfo->msdCBW->bmCBWFlags.value = transferDirection;
+                    msdInstanceInfo->msdCBW->bmCBWFlags.value = (uint8_t)transferDirection;
                     
                     /* Reset the phase error flag. This flag gets set is a phase
                      * error has occurred. */
                     msdInstanceInfo->cswPhaseError = false;
 
-                    msdInstanceInfo->msdCBW->bCBWLUN = USB_HOST_MSD_LUN(lunHandle);
+                    msdInstanceInfo->msdCBW->bCBWLUN = (uint8_t)USB_HOST_MSD_LUN(lunHandle);
 
                     /* Copy the cdb. It should be zero padded */
-                    for(iterator = 0; iterator < 16; iterator ++)
+                    for(iterator = 0; iterator < 16U; iterator ++)
                     {
                         /* Clear the command block */
                         msdInstanceInfo->msdCBW->CBWCB[iterator] = 0;
@@ -1717,32 +1732,32 @@ USB_HOST_MSD_RESULT USB_HOST_MSD_Transfer
                     hostResult = USB_HOST_DeviceTransfer(msdInstanceInfo->bulkOutPipeHandle, &transferHandle, msdInstanceInfo->msdCBW, 31, (uintptr_t)(msdInstanceIndex));
 
                     /* Map the result */
-                    result = _USB_HOST_MSD_HostResultToMSDResultMap(hostResult); 
+                    result = F_USB_HOST_MSD_HostResultToMSDResultMap(hostResult); 
                 }
                 else if(msdInstanceInfo->msdState < USB_HOST_MSD_STATE_NOT_READY)
                 {
                     /* This means the device is in an error state. We should not
                      * accept the transfer request*/
                     
-                    ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r msdInstanceInfo->msdState = 0x%X \n\r", msdInstanceInfo->msdState );
-                    ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d is in error state. Cannot schedule BOT.", msdInstanceIndex);
-                    OSAL_MUTEX_Unlock(&(msdInstanceInfo->mutexMSDInstanceObject));
-                    _USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_FAILED_BOT_TRANSFER);
+                    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\n\r msdInstanceInfo->msdState = 0x%X \n\r", msdInstanceInfo->msdState );
+                    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d is in error state. Cannot schedule BOT.", msdInstanceIndex);
+                    (void) OSAL_MUTEX_Unlock(&(msdInstanceInfo->mutexMSDInstanceObject));
+                    M_USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_FAILED_BOT_TRANSFER);
                     result = USB_HOST_MSD_RESULT_FAILURE;
                 }
                 else
                 {
                     /* Un-commenting this line could result in too many messages on the console */
-                    ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d is busy. Cannot schedule BOT.", msdInstanceIndex);
-                    OSAL_MUTEX_Unlock(&(msdInstanceInfo->mutexMSDInstanceObject));
-                    _USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_TRANSFER_BUSY);
+                    SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d is busy. Cannot schedule BOT.", msdInstanceIndex);
+                    (void) OSAL_MUTEX_Unlock(&(msdInstanceInfo->mutexMSDInstanceObject));
+                    M_USB_HOST_MSD_ERROR_CALLBACK(msdInstanceIndex, USB_HOST_MSD_ERROR_CODE_TRANSFER_BUSY);
                     result = USB_HOST_MSD_RESULT_BUSY;
                 }
             }
             else
             {
                 /* Could not get the mutex lock */
-                ////SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d mutex lock failed in BOT transfer request.", msdInstanceIndex);
+                SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\nUSB Host MSD: MSD Instance %d mutex lock failed in BOT transfer request.", msdInstanceIndex);
                 result = USB_HOST_MSD_RESULT_BUSY;
             }
         }
@@ -1750,3 +1765,5 @@ USB_HOST_MSD_RESULT USB_HOST_MSD_Transfer
 
     return(result);
 }
+
+/* MISRAC 2012 deviation block end */

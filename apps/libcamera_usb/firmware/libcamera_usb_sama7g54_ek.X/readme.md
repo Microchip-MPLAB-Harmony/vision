@@ -11,7 +11,10 @@ Defining the Architecture
 This application demonstrates the use of  MIPI CSI DPHY, CSI2DC, ISC and USB peripherals. The camera module used in this application is Sony IMX219 image sensor and this application capture raw video frames of VGA resolution from Sony IMX219 camera module using MIPI CSI2 
 interface and captured frame is saved to a bmp file and copied it USB drive using SAMA7G54-EK target board.
 
-![](../../../../images/imx219_and_15pin_camera_cable.jpg) 
+|Hardware components|Images|Details|
+|:-------------------|:------------------|:------------------|
+| Development Board | ![](../../../../images/sama7g54-ev21h18a.jpg) | [SAMA7G54-EK](https://www.microchip.com/en-us/development-tool/ev21h18a)|
+| Camera Module | ![](../../../../images/imx219_and_15pin_camera_cable.jpg) | [imx219 image sensor](https://www.raspberrypi.com/products/camera-module-v2/) |
 
 The camera module can be purchased from [this](https://www.raspberrypi.com/products/camera-module-v2/) link.
 
@@ -65,6 +68,27 @@ The interrupts should be enabled in the "Interrupt for "CSI", "CSI2DC", "FLEXCOM
 
 <b>Note:  The IMX219 image sensor is an off-the-shelf module and is not officially supported by MPLAB Harmony 3. While a driver for this module is included as part of this demo, it is not guaranteed to be complete. Nor are the IMX219 configuration values guaranteed to be optimal. The primary purpose of this application is to demonstrate the functionality of the CSI2DC and Image Sensor Controller modules. </b>
 
+Project Configurations
+---------------------
+MPU32"s do not have an internal flash memory to boot from. Hence the boot process for these mpu's is different 
+than for flash based MCUs. The boot process is described in detail in the device datasheets, but the general flow is as 
+follows:
+1. On power-up the device executes the first stage bootloader from internal ROM. This looks for an second stage bootloader
+on external non-volatile memory such as eMMC, SD, NAND flash, NOR-SPI and QSPI as second stage boot devices. For SD and eMMC,
+ROM bootloader expects a file named “boot.bin” to reside in the root directory of a FAT file system.
+2. The second stage bootloader is copied to on-chip SRAM and executed. The second stage boot loader initialize the external
+DRAM and its controller, then load other program from external non-volatile memory into DRAM and execute it. The second stage
+bootloader must be configured for the board in use and for the external NVM containing the application.
+A comprehensive description of the boot process for the Microchip MPU's can be found in this application note: 
+https://ww1.microchip.com/downloads/en/AppNotes/AN2791-Booting-from-External-Non-Volatile-Memory-on-SAMA5D2-MPU-Application-Note-DS00002791A.pdf
+3. The vision application is linked to run/debug on the external DRAM. During a debug process, MPLAB X will first run (load) the at91bootstrap program and this file can be found in the <project>.X folder whose function is to initialize the chip, its clocks, debug port to view log messages and initialize the external DRAM.
+
+Below are Project configuration steps to Debug or Run Vision application.
+On the MPLAB X IDE, right click on the project and click “Properties”.
+1. In “Connected Hardware Tool”, select JLink or J-Tag, and in “Compiler Toolchain”, select XC32 and click apply.
+2. Under Categories, click on “Bootstrap”, ensure that “Use bootstrap” is checked and the path to the bootstrap.elf file is set. 
+3. The harmony.bin should be generated as a post-build command. Under Categories, click on "Building", ensure that "Execute this line after build" is checked and set "\$\{MP_CC_DIR\}/xc32-objcopy -O binary \$\{DISTDIR\}\/\$\{PROJECTNAME\}.\$\{IMAGE_TYPE\}.elf \$\{DISTDIR\}\/harmony.bin"
+
 Building the Application
 ------------------------
 
@@ -77,6 +101,10 @@ The following table lists configuration properties:
 |Project Name|BSP Used|Description|
 |:-----------|:-------|:----------|
 |libcamera_usb_sama7g54_ek.X|[SAMA7G5 Evaluation Kit BSP](https://www.microchip.com/en-us/development-tool/ev21h18a) |[SAMA7G54-EK Board](https://www.microchip.com/en-us/development-tool/ev21h18a) using the MIPI CSI interface to capture video frames from the [Sony IMX219 Camera Module](https://www.raspberrypi.com/products/camera-module-v2/)|
+
+Prebuilt binaries 
+-------------------------
+Latest release prebuilt binaries are available for a [SAMA7G54-EK](https://www.microchip.com/en-us/development-tool/ev21h18a) board is [here](https://microchiptechnology-my.sharepoint.com/:u:/g/personal/sandeepsheriker_mallikarjun_microchip_com/EQc7eAEXOyZCtFbarLrjhhUBHJAKeNdi3PDov8EGfOzwBw?e=DbzAKT)
 
 Configuring the Hardware
 ------------------------

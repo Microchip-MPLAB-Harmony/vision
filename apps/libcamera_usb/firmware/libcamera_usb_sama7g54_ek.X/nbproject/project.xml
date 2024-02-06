@@ -4,13 +4,11 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>libcamera_usb_sama7g54_ek</name>
-            <creation-uuid>1bc4b1c3-37a5-4c80-bc3d-56cfca58628a</creation-uuid>
+            <creation-uuid>5651df06-c9ac-46c8-b91b-a35c4456e6f9</creation-uuid>
             <make-project-type>0</make-project-type>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
-            <sourceRootList>
-                <sourceRootElem>../src/config/imx219_mipi_csi_isc_usb_msd/system/fs</sourceRootElem>
-            </sourceRootList>
+            <sourceRootList/>
             <confList>
                 <confElem>
                     <name>imx219_mipi_csi_isc_usb_msd</name>

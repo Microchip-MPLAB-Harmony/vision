@@ -2,9 +2,12 @@
 #include "vision/drivers/image_sensor/drv_image_sensor.h"
 
 
-#define IMX219_SLAVE_ADDRESS   (0x10)
-#define IMX219_CHIPID_ADDRESS  (0x0000)
-#define IMX219_CHIP_ID         (0x0219)
+#define IMX219_SLAVE_ADDRESS      0x10
+#define IMX219_CHIPIDH_ADDRESS    0x00
+#define IMX219_CHIPIDL_ADDRESS    0x01
+#define IMX219_CHIPIDH            0x02
+#define IMX219_CHIPIDL            0x19
+#define IMX219_CHIPID_MASK        0xFFFF
 
 static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
 {
@@ -23,8 +26,12 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
     {0x012B, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
     {0x0157, 0x40},
-    {0x015a, 0x0A},
-    {0x015b, 0x80},
+
+    {0x015a, 0x03},
+    {0x015b, 0x00},
+
+    {0x0160, 0x03},
+    {0x0161, 0x00},
 
     {0x0162, 0x0D}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
@@ -196,14 +203,18 @@ const DRV_IMAGE_SENSOR_OBJ imx219_device =
 {
     "IMX219",
     IMX219_SLAVE_ADDRESS,
-    IMX219_CHIPID_ADDRESS,
-    IMX219_CHIP_ID,
-    0x100,
+    DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,    /* I2C interface mode  */
+    IMX219_CHIPIDH_ADDRESS,             /* Register address for product ID high byte */
+    IMX219_CHIPIDL_ADDRESS,             /* Register address for product ID low byte*/
+    IMX219_CHIPIDH,                     /* product ID high byte */
+    IMX219_CHIPIDL,                     /* product ID low byte */
+    IMX219_CHIPID_MASK,             /* version mask */
+    0x0100,
     0x01,
     0x00,
     {
         &imx219_raw_vga_config,
-        & imx219_raw_1080p_config
+        &imx219_raw_1080p_config
     },
     (DRV_HANDLE)NULL
 };

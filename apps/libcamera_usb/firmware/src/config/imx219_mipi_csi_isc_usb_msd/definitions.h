@@ -48,11 +48,12 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "peripheral/flexcom/twi/master/plib_flexcom8_twi_master.h"
 #include "peripheral/flexcom/usart/plib_flexcom3_usart.h"
 #include "peripheral/tc/plib_tc0.h"
-#include "system/time/sys_time.h"
 #include "driver/i2c/drv_i2c.h"
+#include "system/time/sys_time.h"
 #include "usb/usb_chapter_9.h"
 #include "usb/usb_host.h"
 #include "bsp/bsp.h"
@@ -79,8 +80,6 @@
 #include "system/fs/fat_fs/file_system/ff.h"
 #include "system/fs/fat_fs/file_system/ffconf.h"
 #include "system/fs/fat_fs/hardware_access/diskio.h"
-#include "system/console/sys_console.h"
-#include "system/console/src/sys_console_uart_definitions.h"
 #include "app.h"
 
 
@@ -217,10 +216,6 @@ typedef struct
 
     SYS_MODULE_OBJ  sysTime;
     SYS_MODULE_OBJ  usbHostObject0;
-
-    SYS_MODULE_OBJ  sysConsole0;
-
-    SYS_MODULE_OBJ  sysDebug;
 
     SYS_MODULE_OBJ  drvUSBEHCIObject;
     SYS_MODULE_OBJ  drvUSBOHCIObject;

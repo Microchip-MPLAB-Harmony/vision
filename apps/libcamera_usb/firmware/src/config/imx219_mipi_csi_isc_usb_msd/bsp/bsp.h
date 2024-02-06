@@ -89,10 +89,6 @@
 #define LED_RED_Get() ((PIOB_REGS->PIO_PDSR >> 8) & 0x1)
 #define LED_RED_On() (PIOB_REGS->PIO_SODR = (1UL<<8))
 #define LED_RED_Off() (PIOB_REGS->PIO_CODR = (1UL<<8))
-/*** SWITCH Macros for USER_BUTTON ***/
-#define USER_BUTTON_Get() ((PIOA_REGS->PIO_PDSR >> 12) & 0x1)
-#define USER_BUTTON_STATE_PRESSED 0
-#define USER_BUTTON_STATE_RELEASED 1
 /*** VBUS Macros for VBUS_AH_PC6 ***/
 #define VBUS_AH_PC6_PowerEnable() (PIOC_REGS->PIO_SODR = (1UL<<6))
 #define VBUS_AH_PC6_PowerDisable() (PIOC_REGS->PIO_CODR = (1UL<<6))

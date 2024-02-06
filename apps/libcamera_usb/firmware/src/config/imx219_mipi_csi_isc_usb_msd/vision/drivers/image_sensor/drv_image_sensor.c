@@ -9,6 +9,8 @@
 
 static const DRV_IMAGE_SENSOR_OBJ* Devices[DRV_IMAGE_SENSOR_MAX_DEVICES] =
 {
+    &ov2640_device,
+    &ov5640_device,
     &imx219_device,
 };
 
@@ -30,16 +32,18 @@ static void DRV_ImageSensor_I2C_EventHandler(DRV_I2C_TRANSFER_EVENT evt,
         return;
     }
 
-    if (evt == DRV_I2C_TRANSFER_EVENT_ERROR)
-    {
-        return;
-    }
-    else if ((hdl == obj->objReadHandle || hdl == obj->objWriteHandle) &&
-             evt == DRV_I2C_TRANSFER_EVENT_COMPLETE)
-    {
-        obj->drvI2cSuccess = true;
-    }
     obj->drvI2cLock = false;
+    if ((hdl == obj->objReadHandle) || (hdl == obj->objWriteHandle))
+    {
+        if (evt == DRV_I2C_TRANSFER_EVENT_ERROR)
+        {
+            return;
+        }
+        else if (evt == DRV_I2C_TRANSFER_EVENT_COMPLETE)
+        {
+            obj->drvI2cSuccess = true;
+        }
+    }
 }
 
 bool DRV_ImageSensor_I2C_ReadReg(DRV_IMAGE_SENSOR_OBJ* isensor,
@@ -55,22 +59,51 @@ bool DRV_ImageSensor_I2C_ReadReg(DRV_IMAGE_SENSOR_OBJ* isensor,
         return false;
     }
 
-    addrBuf[0] = (addr & 0x7F00) >> 8;
-    addrBuf[1] = addr & 0xFF;
-
     isensor->drvI2cLock = true;
 
+    //TOdo Do it only once.
     DRV_I2C_TransferEventHandlerSet(isensor->drvI2CHandle,
                                     DRV_ImageSensor_I2C_EventHandler,
                                     (uintptr_t)isensor);
 
-    DRV_I2C_WriteReadTransferAdd(isensor->drvI2CHandle,
-                                 isensor->devAddr,
-                                 addrBuf,
-                                 2,
-                                 readBuf,
-                                 sz,
-                                 &isensor->objReadHandle);
+    if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_BYTE)
+    {
+        DRV_I2C_WriteReadTransferAdd(isensor->drvI2CHandle,
+                                     isensor->devAddr,
+                                     (uint8_t*)&addr,
+                                     1,
+                                     readBuf,
+                                     sz,
+                                     &isensor->objReadHandle);
+    }
+    else if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE)
+    {
+        addrBuf[0] = (addr & 0x7F00) >> 8;
+        addrBuf[1] = addr & 0xFF;
+        DRV_I2C_WriteReadTransferAdd(isensor->drvI2CHandle,
+                                     isensor->devAddr,
+                                     addrBuf,
+                                     2,
+                                     readBuf,
+                                     sz,
+                                     &isensor->objReadHandle);
+
+    }
+    else if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_2BYTE)
+    {
+        DRV_I2C_WriteReadTransferAdd(isensor->drvI2CHandle,
+                                     isensor->devAddr,
+                                     (uint8_t*)&addr,
+                                     1,
+                                     readBuf,
+                                     sz,
+                                     &isensor->objReadHandle);
+    }
+    else
+    {
+        printf("\r\n DRV_ImageSensor_I2C_ReadReg: Invalid I2C interface mode \r\n");
+        return false;
+    }
 
     while (isensor->drvI2cLock == true)
     {
@@ -95,31 +128,48 @@ bool DRV_ImageSensor_I2C_WriteReg(DRV_IMAGE_SENSOR_OBJ* isensor,
         return false;
     }
 
-    buf[0] = (addr & 0x7F00) >> 8;
-    buf[1] = (addr & 0xFF);
-    buf[2] = val & 0xFF;
-    buf[3] = (val >> 8) & 0xFF;
-
     isensor->drvI2cLock = true;
 
     DRV_I2C_TransferEventHandlerSet(isensor->drvI2CHandle,
                                     DRV_ImageSensor_I2C_EventHandler,
                                     (uintptr_t)isensor);
-    if (buf[3] != 0)
+
+    if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_BYTE)
     {
+        buf[0] = (addr & 0xFF);
+        buf[1] = val & 0xFF;
         DRV_I2C_WriteTransferAdd(isensor->drvI2CHandle,
                                  isensor->devAddr,
                                  buf,
-                                 4,
+                                 2,
                                  &isensor->objWriteHandle);
     }
-    else
+    else if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE)
     {
+        buf[0] = (addr & 0x7F00) >> 8;
+        buf[1] = (addr & 0xFF);
+        buf[2] = val & 0xFF;
         DRV_I2C_WriteTransferAdd(isensor->drvI2CHandle,
                                  isensor->devAddr,
                                  buf,
                                  3,
                                  &isensor->objWriteHandle);
+    }
+    else if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_2BYTE)
+    {
+        buf[0] = (addr & 0xFF);
+        buf[1] = val & 0xFF;
+        buf[2] = (val >> 8) & 0xFF;
+        DRV_I2C_WriteTransferAdd(isensor->drvI2CHandle,
+                                 isensor->devAddr,
+                                 buf,
+                                 3,
+                                 &isensor->objWriteHandle);
+    }
+    else
+    {
+        printf("\r\n DRV_ImageSensor_I2C_WriteReg: Invalid I2C interface mode \r\n");
+        return false;
     }
 
     while (isensor->drvI2cLock == true)
@@ -135,22 +185,47 @@ bool DRV_ImageSensor_I2C_WriteReg(DRV_IMAGE_SENSOR_OBJ* isensor,
 uint32_t DRV_ImageSensor_Read_ChipId(DRV_IMAGE_SENSOR_OBJ* isensor)
 {
     uint8_t buf[2] = {0, 0};
-    uint16_t id;
+    uint8_t chipIdH = 0;
+    uint8_t chipIdL = 0;
+    uint16_t id = 0;
+    uint32_t rsize = 0;
 
     if (isensor == NULL)
     {
         return DRV_IMAGE_SENSOR_ERROR;
     }
 
-    DRV_ImageSensor_I2C_ReadReg(isensor, isensor->chipIdAddr, buf, 2);
-
-    id = buf[1];
-    id |= buf[0] << 8;
-
-    if (id != isensor->chipId)
+    if ((isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_BYTE) ||
+        (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE))
+    {
+        rsize = 1;
+    }
+    else if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_2BYTE)
+    {
+        rsize = 2;
+    }
+    else
+    {
+        printf("\r\n DRV_ImageSensor_Read_ChipId: Invalid I2C interface mode \r\n");
         return DRV_IMAGE_SENSOR_ERROR;
+    }
 
-    return DRV_IMAGE_SENSOR_SUCCESS;
+    DRV_ImageSensor_I2C_ReadReg(isensor, isensor->chipIdAddrHigh, buf, rsize);
+
+    chipIdH = buf[0];
+
+    DRV_ImageSensor_I2C_ReadReg(isensor, isensor->chipIdAddrLow, buf, rsize);
+
+    chipIdL |= buf[0];
+
+    id = (chipIdH << 8) | chipIdL;
+
+    printf("\r\n chipIdH = 0x%x  chipIdL = 0x%x id = 0x%x\r\n", chipIdH, chipIdL, id);
+
+    if ((id & isensor->chipIdMask) == (((isensor->chipIdHigh << 8) | isensor->chipIdLow) & isensor->chipIdMask))
+        return DRV_IMAGE_SENSOR_SUCCESS;
+
+    return DRV_IMAGE_SENSOR_ERROR;
 }
 
 static uint32_t DRV_ImageSensor_I2C_WriteRegs(DRV_IMAGE_SENSOR_OBJ* isensor,
@@ -207,7 +282,7 @@ uint32_t DRV_ImageSensor_Configure(DRV_IMAGE_SENSOR_OBJ* isensor,
     }
     if (found == 0)
     {
-        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n DRV_IMAGE_SENSOR_CONFIGS Not found \r\n");
+        printf("\r\n DRV_IMAGE_SENSOR_CONFIGS Not found \r\n");
         return DRV_IMAGE_SENSOR_ERROR;
     }
 
@@ -331,31 +406,24 @@ DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Init(uint32_t drvI2CIndex, const char* dev
         I2CHandle = DRV_I2C_Open(drvI2CIndex, DRV_IO_INTENT_READWRITE);
         if (I2CHandle == DRV_HANDLE_INVALID)
         {
-            SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n Camera: I2C Driver Open Failed\r\n");
+            printf("\r\n Camera: I2C Driver Open Failed\r\n");
             return NULL;
         }
     }
     else
     {
-        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n Camera: Invalid I2C Driver Index\r\n");
+        printf("\r\n Camera: Invalid I2C Driver Index\r\n");
         return NULL;
     }
 
     sensor = DRV_ImageSensor_Probe(I2CHandle, true, 0);
     if (sensor != NULL)
     {
-        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "\r\n Found %s Image Sensor \r\n", sensor->name);
-        //		if (strcmp(sensor->name, devname) == 0)
-        //		{
-        //			if (DRV_ImageSensor_Configure(sensor, DRV_IMAGE_SENSOR_VGA, DRV_IMAGE_SENSOR_RAW_BAYER) != DRV_IMAGE_SENSOR_SUCCESS)
-        //			{
-        //				SYS_DEBUG_MESSAGE(SYS_ERROR_INFO,"\r\n Sensor setup failed.\r\n");
-        //			}
-        //		}
+        printf("\r\n Found %s Image Sensor \r\n", sensor->name);
     }
     else
     {
-        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\n Image Sensor probe failed.\r\n");
+        printf("\r\n Image Sensor probe failed.\r\n");
         return NULL;
     }
     return sensor;

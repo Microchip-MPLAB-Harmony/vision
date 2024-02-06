@@ -97,22 +97,42 @@
 
 
 /*** Macros for CAMERA_RESET pin ***/
-#define CAMERA_RESET_Set()               (PIOE_REGS->PIO_SODR = (1<<1))
-#define CAMERA_RESET_Clear()             (PIOE_REGS->PIO_CODR = (1<<1))
+#define CAMERA_RESET_Set()               (PIOE_REGS->PIO_SODR = ((uint32_t)1U<<1U))
+#define CAMERA_RESET_Clear()             (PIOE_REGS->PIO_CODR = ((uint32_t)1U<<1U))
 #define CAMERA_RESET_Toggle()            do {\
-                                            PIOE_REGS->PIO_MSKR = (1<<1); \
-                                            PIOE_REGS->PIO_ODSR ^= (1<<1);\
+                                            PIOE_REGS->PIO_MSKR = ((uint32_t)1U<<1U); \
+                                            PIOE_REGS->PIO_ODSR ^= ((uint32_t)1U<<1U);\
                                         } while (0)
 #define CAMERA_RESET_OutputEnable()      do {\
-                                            PIOE_REGS->PIO_MSKR = (1<<1); \
-                                            PIOE_REGS->PIO_CFGR |=(1 << PIO_CFGR_DIR_Pos);\
+                                            PIOE_REGS->PIO_MSKR = ((uint32_t)1U<<1U); \
+                                            PIOE_REGS->PIO_CFGR |=((uint32_t)1U << PIO_CFGR_DIR_Pos);\
                                         }while(0)
 #define CAMERA_RESET_InputEnable()       do { \
-                                            PIOE_REGS->PIO_MSKR = (1<<1); \
-                                            PIOE_REGS->PIO_CFGR &= ~(1 << PIO_CFGR_DIR_Pos);\
+                                            PIOE_REGS->PIO_MSKR = ((uint32_t)1U<<1U); \
+                                            PIOE_REGS->PIO_CFGR &= ~((uint32_t)1U << PIO_CFGR_DIR_Pos);\
                                         } while (0)
-#define CAMERA_RESET_Get()               ((PIOE_REGS->PIO_PDSR >> 1) & 0x1)
+#define CAMERA_RESET_Get()               ((PIOE_REGS->PIO_PDSR >> 1U) & 0x1U)
 #define CAMERA_RESET_PIN                  PIO_PIN_PE1
+
+/*** Macros for USER_BUTTON pin ***/
+#define USER_BUTTON_Set()               (PIOA_REGS->PIO_SODR = ((uint32_t)1U<<12U))
+#define USER_BUTTON_Clear()             (PIOA_REGS->PIO_CODR = ((uint32_t)1U<<12U))
+#define USER_BUTTON_Toggle()            do {\
+                                            PIOA_REGS->PIO_MSKR = ((uint32_t)1U<<12U); \
+                                            PIOA_REGS->PIO_ODSR ^= ((uint32_t)1U<<12U);\
+                                        } while (0)
+#define USER_BUTTON_OutputEnable()      do {\
+                                            PIOA_REGS->PIO_MSKR = ((uint32_t)1U<<12U); \
+                                            PIOA_REGS->PIO_CFGR |=((uint32_t)1U << PIO_CFGR_DIR_Pos);\
+                                        }while(0)
+#define USER_BUTTON_InputEnable()       do { \
+                                            PIOA_REGS->PIO_MSKR = ((uint32_t)1U<<12U); \
+                                            PIOA_REGS->PIO_CFGR &= ~((uint32_t)1U << PIO_CFGR_DIR_Pos);\
+                                        } while (0)
+#define USER_BUTTON_Get()               ((PIOA_REGS->PIO_PDSR >> 12U) & 0x1U)
+#define USER_BUTTON_PIN                  PIO_PIN_PA12
+#define USER_BUTTON_InterruptEnable()   (PIOA_REGS->PIO_IER = (1<<12))
+#define USER_BUTTON_InterruptDisable()  (PIOA_REGS->PIO_IDR = (1<<12))
 // *****************************************************************************
 /* PIO Ports
 

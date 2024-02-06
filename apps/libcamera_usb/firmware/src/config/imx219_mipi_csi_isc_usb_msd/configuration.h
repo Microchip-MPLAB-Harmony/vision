@@ -88,18 +88,6 @@ extern "C" {
 #define SYS_TIME_CPU_CLOCK_FREQUENCY                (800000000)
 #define SYS_TIME_COMPARE_UPDATE_EXECUTION_CYCLES    (936)
 
-#define SYS_CONSOLE_INDEX_0                       0
-
-
-
-
-
-#define SYS_DEBUG_ENABLE
-#define SYS_DEBUG_GLOBAL_ERROR_LEVEL       SYS_ERROR_DEBUG
-#define SYS_DEBUG_BUFFER_DMA_READY
-#define SYS_DEBUG_USE_CONSOLE
-
-
 
 /* File System Service Configuration */
 
@@ -121,7 +109,7 @@ extern "C" {
 #define SYS_FS_FAT_READONLY               false
 #define SYS_FS_FAT_CODE_PAGE              437
 #define SYS_FS_FAT_MAX_SS                 SYS_FS_MEDIA_MAX_BLOCK_SIZE
-#define SYS_FS_FAT_ALIGNED_BUFFER_LEN     512
+#define SYS_FS_FAT_ALIGNED_BUFFER_LEN     4096
 
 
 
@@ -133,12 +121,6 @@ extern "C" {
 #define SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0 			"/mnt/myDrive1"
 #define SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0			"/dev/sda1"
 								
-
-#define SYS_CONSOLE_DEVICE_MAX_INSTANCES   			(1U)
-#define SYS_CONSOLE_UART_MAX_INSTANCES 	   			(1U)
-#define SYS_CONSOLE_USB_CDC_MAX_INSTANCES 	   		(0U)
-#define SYS_CONSOLE_PRINT_BUFFER_SIZE        		(512U)
-
 
 
 
@@ -158,8 +140,8 @@ extern "C" {
 #define CSI2DC_DATA_PIPE_DMA_COUNT			320
 #define CSI2DC_ENABLE_MIPI_CLOCK_FREE_RUN		true
 #define CSI2DC_POST_ALIGNED		true
-#define CSI2DC_ENABLE_DATA_PIPE		true
-#define CSI2DC_DATA_PIPE_ENABLE_DMA		true
+#define CSI2DC_ENABLE_DATA_PIPE		false
+#define CSI2DC_DATA_PIPE_ENABLE_DMA	false
 
 
 /* I2C Driver Instance 0 Configuration Options */
@@ -169,15 +151,24 @@ extern "C" {
 #define DRV_I2C_CLOCK_SPEED_IDX0              400000
 
 
-/*** IMX219 Image Sensor Configuration ***/
-#define IMAGE_SENSOR_NAME					"IMX219"
-#define IMAGE_SENSOR_OUTPUT_RESOLUTION		DRV_IMAGE_SENSOR_VGA
-#define IMAGE_SENSOR_OUTPUT_FORMAT			DRV_IMAGE_SENSOR_RAW_BAYER
-#define IMAGE_SENSOR_OUTPUT_BUS_WIDTH		DRV_IMAGE_SENSOR_10_BIT
+/*** ISC PLib Configuration ***/
+#define PLIB_ISC_MCK_SEL_VAL			0
+#define PLIB_ISC_MCK_DIV_VAL			0
+#define PLIB_ISC_ISP_CLK_SEL_VAL		0
+#define PLIB_ISC_ISP_CLK_DIV_VAL		0
+#define ISC_HSYNC_POLARITY_VAL		0
+#define ISC_VSYNC_POLARITY_VAL		0
 
 /* I2C Driver Common Configuration Options */
 #define DRV_I2C_INSTANCES_NUMBER              (1U)
 
+
+
+/*** Image Sensor Configuration ***/
+#define IMAGE_SENSOR_NAME					"AutoDectect"
+#define IMAGE_SENSOR_OUTPUT_RESOLUTION		DRV_IMAGE_SENSOR_VGA
+#define IMAGE_SENSOR_OUTPUT_FORMAT			DRV_IMAGE_SENSOR_RAW_BAYER
+#define IMAGE_SENSOR_OUTPUT_BUS_WIDTH		DRV_IMAGE_SENSOR_10_BIT
 
 
 /*** CSI Driver Configuration ***/
@@ -186,18 +177,33 @@ extern "C" {
 
 
 /*** ISC Image Sensor Configuration ***/
-#define ISC_INPUT_FORMAT_TYPE		DRV_IMAGE_SENSOR_RAW_BAYER
-#define ISC_INPUT_BIT_WIDTH			DRV_IMAGE_SENSOR_10_BIT
-#define ISC_OUTPUT_FORMAT_TYPE		ISC_RLP_CFG_MODE_ARGB32
-#define ISC_OUTPUT_LAYOUT_TYPE		ISC_LAYOUT_PACKED32
-#define ISC_BAYER_PATTERN_TYPE		ISC_CFA_CFG_BAYCFG_RGRG_Val
-#define ISC_ENABLE_GAMMA		true
-#define ISC_ENABLE_WHITE_BALANCE	true
-#define ISC_ENABLE_HISTOGRAM	false
-#define ISC_ENABLE_MIPI_INTERFACE	true
-#define ISC_ENABLE_VIDEO_MODE		false
+#define ISC_INPUT_FORMAT_TYPE			DRV_IMAGE_SENSOR_RAW_BAYER
+#define ISC_INPUT_BIT_WIDTH				DRV_IMAGE_SENSOR_10_BIT
+#define ISC_OUTPUT_FORMAT_TYPE			ISC_RLP_CFG_MODE_ARGB32
+#define ISC_OUTPUT_LAYOUT_TYPE			ISC_LAYOUT_PACKED32
+#define ISC_BAYER_PATTERN_TYPE			ISC_CFA_CFG_BAYCFG_RGRG_Val
+#define ISC_ENABLE_GAMMA				true
+#define ISC_GAMMA_RED_ENTRIES			true
+#define ISC_GAMMA_BLUE_ENTRIES			true
+#define ISC_GAMMA_GREEN_ENTRIES			true
+#define ISC_ENABLE_WHITE_BALANCE		true
+#define ISC_WB_R_OFFSET					7928
+#define ISC_WB_GR_OFFSET				7928
+#define ISC_WB_B_OFFSET					7936
+#define ISC_WB_GB_OFFSET				7928
+#define ISC_WB_R_GAIN					1944
+#define ISC_WB_GR_GAIN					1103
+#define ISC_WB_B_GAIN					3403
+#define ISC_WB_GB_GAIN					1619
+#define ISC_ENABLE_HISTOGRAM			false
+#define ISC_ENABLE_MIPI_INTERFACE		true
+#define ISC_ENABLE_VIDEO_MODE			false
 #define ISC_ENABLE_BRIGHTNESS_CONTRAST	true
-#define ISC_ENABLE_PROGRESSIVE_MODE	true
+#define ISC_CBC_BRIGHTNESS_VAL			1
+#define ISC_CBC_CONTRAST_VAL			15
+#define ISC_CBHS_HUE_VAL				0
+#define ISC_CBHS_SATURATION_VAL			15
+#define ISC_ENABLE_PROGRESSIVE_MODE		true
 
 
 /*** Image Sensor Driver Configuration ***/
@@ -219,7 +225,7 @@ extern "C" {
 /* Number of Endpoints used */
 
 /* Total number of devices to be supported */
-#define USB_HOST_DEVICES_NUMBER                             1 
+#define USB_HOST_DEVICES_NUMBER                             1U
 
 /* Target peripheral list entries */
 #define  USB_HOST_TPL_ENTRIES                               1 
@@ -227,12 +233,12 @@ extern "C" {
 /* Maximum number of configurations supported per device */
 #define USB_HOST_DEVICE_INTERFACES_NUMBER                   5    
 
-#define USB_HOST_CONTROLLERS_NUMBER                         2
+#define USB_HOST_CONTROLLERS_NUMBER                         2U
 
-#define USB_HOST_TRANSFERS_NUMBER                           10
+#define USB_HOST_TRANSFERS_NUMBER                           10U
 
 /* Provides Host pipes number */
-#define USB_HOST_PIPES_NUMBER                               10
+#define USB_HOST_PIPES_NUMBER                               10U
 
 
 /* Number of MSD Function driver instances in the application */
@@ -243,11 +249,11 @@ extern "C" {
 #define USB_HOST_MSD_LUN_NUMBERS              1
 
 
-	
+    
 /*** USB EHCI Driver Configurations ***/
 
 /* Maximum USB driver instances */
-#define DRV_USB_EHCI_INSTANCES_NUMBER                     1
+#define DRV_USB_EHCI_INSTANCES_NUMBER                     1U
 
 /* Attach Debounce duration in milli Seconds */ 
 #define DRV_USB_EHCI_ATTACH_DEBOUNCE_DURATION           500
@@ -256,17 +262,17 @@ extern "C" {
 #define DRV_USB_EHCI_RESET_DURATION                     100
 
 /* Maximum Control Transfer Size */
-#define DRV_USB_EHCI_CONTROL_TRANSFER_BUFFER_SIZE 512
+#define DRV_USB_EHCI_CONTROL_TRANSFER_BUFFER_SIZE 512U
 
 /* Maximum Non Control Transfer Size */ 
 #define DRV_USB_EHCI_TRANSFER_BUFFER_SIZE  512
 
-	
+    
 
 
 /*** USB OHCI Driver Configurations ***/
 
-#define DRV_USB_OHCI_INSTANCES_NUMBER                        1
+#define DRV_USB_OHCI_INSTANCES_NUMBER                        1U
 
 /* Attach Debounce duration in milli Seconds */ 
 #define DRV_USB_OHCI_ATTACH_DEBOUNCE_DURATION           500
@@ -275,10 +281,10 @@ extern "C" {
 #define DRV_USB_OHCI_RESET_DURATION                     100
 
 /* Maximum Control Transfer Size */
-#define DRV_USB_OHCI_CONTROL_TRANSFER_BUFFER_SIZE 512
+#define DRV_USB_OHCI_CONTROL_TRANSFER_BUFFER_SIZE 512U
 
 /* Maximum Non Control Transfer Size */ 
-#define DRV_USB_OHCI_TRANSFER_BUFFER_SIZE  512
+#define DRV_USB_OHCI_TRANSFER_BUFFER_SIZE  512U
 
 
 /* Alignment for buffers that are submitted to USB Driver*/ 

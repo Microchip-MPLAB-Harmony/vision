@@ -60,7 +60,6 @@
 void PIOA_InterruptHandler (void);
 void XDMAC0_InterruptHandler (void);
 void CSI2DC_Handler (void);
-void FLEXCOM3_InterruptHandler (void);
 void FLEXCOM8_InterruptHandler (void);
 void ISC_Handler (void);
 void TC0_CH0_InterruptHandler (void);
