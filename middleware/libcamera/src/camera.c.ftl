@@ -158,14 +158,14 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject)
 
     if (pDrvObject->iscObj->whiteBalance.enableWB)
     {
-        pDrvObject->iscObj->whiteBalance.redOffset = 0x1ef8;
-        pDrvObject->iscObj->whiteBalance.greenRedOffset = 0x1ef8;
-        pDrvObject->iscObj->whiteBalance.blueOffset = 0x1f00;
-        pDrvObject->iscObj->whiteBalance.greenBlueOffset = 0x1ef0;
-        pDrvObject->iscObj->whiteBalance.redGain = 0x798;
-        pDrvObject->iscObj->whiteBalance.greenRedGain = 0x44f;
-        pDrvObject->iscObj->whiteBalance.blueGain = 0xd4b;
-        pDrvObject->iscObj->whiteBalance.greenBlueGain = 0x653;
+        pDrvObject->iscObj->whiteBalance.redOffset = ISC_WB_R_OFFSET;
+        pDrvObject->iscObj->whiteBalance.greenRedOffset = ISC_WB_GR_OFFSET;
+        pDrvObject->iscObj->whiteBalance.blueOffset = ISC_WB_B_OFFSET;
+        pDrvObject->iscObj->whiteBalance.greenBlueOffset = ISC_WB_GB_OFFSET;
+        pDrvObject->iscObj->whiteBalance.redGain = ISC_WB_R_GAIN;
+        pDrvObject->iscObj->whiteBalance.greenRedGain = ISC_WB_GR_GAIN;
+        pDrvObject->iscObj->whiteBalance.blueGain = ISC_WB_B_GAIN;
+        pDrvObject->iscObj->whiteBalance.greenBlueGain = ISC_WB_GB_GAIN;
     }
 
     if (pDrvObject->iscObj->cbc.enableCBC)

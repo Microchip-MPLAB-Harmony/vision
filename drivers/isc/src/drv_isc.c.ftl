@@ -264,12 +264,10 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
          * from the PFE module, each Bayer color component (R,
          * Gr, B, Gb) can be manually adjusted using an offset
          * and a gain. */
-        ISC_WB_Enable(1);
-        ISC_WB_Set_Bayer_Pattern(iscObj->bayerPattern);
-
-        /* Default value for White balance setting */
         if (iscObj->whiteBalance.enableWB)
         {
+            ISC_WB_Enable(1);
+            ISC_WB_Set_Bayer_Pattern(iscObj->bayerPattern);
             ISC_WB_Set_Bayer_Color(iscObj->whiteBalance.redOffset, \
                                    iscObj->whiteBalance.greenRedOffset, \
                                    iscObj->whiteBalance.blueOffset, \
@@ -279,10 +277,7 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
                                    iscObj->whiteBalance.blueGain, \
                                    iscObj->whiteBalance.greenBlueGain);
         }
-        else
-        {
-            ISC_WB_Set_Bayer_Color(0, 0, 0, 0, 0x200, 0x200, 0x200, 0x200);
-        }
+
         if (iscObj->cbc.enableCBC)
         {
             ISC_CBC_Enable(1);
