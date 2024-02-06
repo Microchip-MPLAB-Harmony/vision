@@ -53,11 +53,13 @@
 APP_DATA appData;
 static uint32_t filenumber = 0;
 char fileName[32];
-uint8_t writeData[640*480*4];
-
-/*Reference: https://en.wikipedia.org/wiki/BMP_file_format*/
-static uint8_t bmpfileheader[54]; // = {'B','M', 0, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0}; /*54 is the location of the image*/
-//static uint8_t bmpinfoheader[40];
+static uint32_t width = 800;
+static uint32_t height = 480;
+static uint32_t jpgFileSize = 0;
+static bool isJpegData = false;
+static uint8_t writeData[2592 * 1944 * 4];
+bool writeInProgress = false;
+static uint8_t bmpfileheader[54];
 
 // *****************************************************************************
 // *****************************************************************************
@@ -67,84 +69,140 @@ static uint8_t bmpfileheader[54]; // = {'B','M', 0, 0, 0, 0, 0, 0, 0, 0, 54, 0, 
 
 static void user_button_callback(PIO_PIN pin, uintptr_t context)
 {
-    appData.state = APP_STATE_OPEN_FILE;
+    if (appData.state == APP_STATE_IDLE)
+        appData.state = APP_STATE_CAMERA_START;
 }
 
 static size_t writeCanvasToFile(SYS_FS_HANDLE handle,
     uint8_t *buffer, uint32_t w, uint32_t h)
 {
+    size_t ret;
     int imagesize = 4 * w * h;
     int filesize = 54 + imagesize;  /*w is your image width, h is image height, both int*/
-    size_t ret;
-    /*The file header offset 2 has the size of the BMP file in bytes*/
-    bmpfileheader[0] = 'B';
-    bmpfileheader[1] = 'M';
-    bmpfileheader[2] = (uint8_t)(filesize);
-    bmpfileheader[3] = (uint8_t)(filesize >> 8);
-    bmpfileheader[4] = (uint8_t)(filesize >> 16);
-    bmpfileheader[5] = (uint8_t)(filesize >> 24);
     
-    bmpfileheader[10] = 54;
-    
-    //The info header size
-    bmpfileheader[14] = 40;
-    // The info header has the width
-    bmpfileheader[18] = bmpfileheader[38] = (uint8_t)(w);
-    bmpfileheader[19] = bmpfileheader[39] = (uint8_t)(w >> 8);
-    bmpfileheader[20] = bmpfileheader[40] = (uint8_t)(w >> 16);
-    bmpfileheader[21] = bmpfileheader[41] = (uint8_t)(w >> 24);
-    
-    // The info header has the height
-    bmpfileheader[22] = bmpfileheader[42] = (uint8_t)(h);
-    bmpfileheader[23] = bmpfileheader[43] = (uint8_t)(h >> 8);
-    bmpfileheader[24] = bmpfileheader[44] = (uint8_t)(h >> 16);
-    bmpfileheader[25] = bmpfileheader[48] = (uint8_t)(h >> 24);
-    
-    //the number of color planes (must be 1)
-    bmpfileheader[26] = 1;
-    bmpfileheader[27] = 0;
-    
-    //the number of bits per pixel, which is the color depth of the image.
-    //Typical values are 1, 4, 8, 16, 24 and 32.
-    bmpfileheader[28] = 32;
-    bmpfileheader[29] = 0;
-    
-    bmpfileheader[34] = (uint8_t)(imagesize);
-    bmpfileheader[35] = (uint8_t)(imagesize >> 8);
-    bmpfileheader[36] = (uint8_t)(imagesize >> 16);
-    bmpfileheader[37] = (uint8_t)(imagesize >> 24);
-    
-    // write header and data to file
-    ret = SYS_FS_FileWrite(handle, (const void *) bmpfileheader, sizeof(bmpfileheader));
+    if (isJpegData)
+    {
+        printf("\n\r writing to jpg File : size = %ld \n\r", jpgFileSize);
+        ret = SYS_FS_FileWrite(handle, (const void *) &buffer[0], jpgFileSize);
+        if (ret != jpgFileSize) {
+            printf("\n\r writeCanvasToFile : %d bytes of data written to file\r\n", ret);
+            return ret;
+        }
+    }
+    else
+    {
+        printf("\n\r writing to BMP File : width = %ld height = %ld \n\r", w, h);
 
-    SYS_FS_FileWrite(handle, (const void *)&buffer[0], imagesize);
-    
+        /*The file header offset 2 has the size of the BMP file in bytes*/
+        bmpfileheader[0] = 'B';
+        bmpfileheader[1] = 'M';
+        bmpfileheader[2] = (uint8_t) (filesize);
+        bmpfileheader[3] = (uint8_t) (filesize >> 8);
+        bmpfileheader[4] = (uint8_t) (filesize >> 16);
+        bmpfileheader[5] = (uint8_t) (filesize >> 24);
+
+        bmpfileheader[10] = 54;
+
+        //The info header size
+        bmpfileheader[14] = 40;
+        // The info header has the width
+        bmpfileheader[18] = bmpfileheader[38] = (uint8_t) (w);
+        bmpfileheader[19] = bmpfileheader[39] = (uint8_t) (w >> 8);
+        bmpfileheader[20] = bmpfileheader[40] = (uint8_t) (w >> 16);
+        bmpfileheader[21] = bmpfileheader[41] = (uint8_t) (w >> 24);
+
+        // The info header has the height
+        bmpfileheader[22] = bmpfileheader[42] = (uint8_t) (h);
+        bmpfileheader[23] = bmpfileheader[43] = (uint8_t) (h >> 8);
+        bmpfileheader[24] = bmpfileheader[44] = (uint8_t) (h >> 16);
+        bmpfileheader[25] = bmpfileheader[48] = (uint8_t) (h >> 24);
+
+        //the number of color planes (must be 1)
+        bmpfileheader[26] = 1;
+        bmpfileheader[27] = 0;
+
+        //the number of bits per pixel, which is the color depth of the image.
+        //Typical values are 1, 4, 8, 16, 24 and 32.
+        bmpfileheader[28] = 32;
+        bmpfileheader[29] = 0;
+
+        bmpfileheader[34] = (uint8_t) (imagesize);
+        bmpfileheader[35] = (uint8_t) (imagesize >> 8);
+        bmpfileheader[36] = (uint8_t) (imagesize >> 16);
+        bmpfileheader[37] = (uint8_t) (imagesize >> 24);
+
+        // write header and data to file
+        ret = SYS_FS_FileWrite(handle, (const void *) bmpfileheader, sizeof (bmpfileheader));
+        if (ret != sizeof (bmpfileheader)) {
+            printf("\n\r writeCanvasToFile : failed to bmp file header \r\n");
+        }
+
+        ret = SYS_FS_FileWrite(handle, (const void *) &buffer[0], imagesize);
+        if (ret != imagesize) {
+            printf("\n\r writeCanvasToFile : %d bytes of data written to file\r\n", ret);
+            return ret;
+        }
+    }
     return ret;
 }
 
 
 void camera_callback(uintptr_t context)
 {
-    uint32_t addr = 0;
-    uint32_t width = 640;
-    uint32_t height = 480;    
-    size_t size = 0;
+    uint8_t *p;
+    uint32_t buffer = 0;
+    uint32_t i = 0;
+    bool foundSOI = false;
+    bool foundEOI = false;
+    size_t bufsize = 0;
     
     if(context == SYS_MODULE_OBJ_INVALID)
         return;
     
     SYS_MODULE_OBJ object = (SYS_MODULE_OBJ) context;
 
-    CAMERA_Get_Frame(object, &addr, &width, &height);
-    
-    if (addr != 0)
+    CAMERA_Get_Frame(object, &buffer, &width, &height);
+    if ((buffer != 0) && (writeInProgress == false))
     {
-        size = width * height * 4;
-        memcpy((void*) writeData, (const void *) addr, size);
-        appData.state = APP_STATE_WRITE_TO_FILE;
+        printf("addr :  %ld width %ld, height %ld \r\n" , buffer, width, height);
+        bufsize = width * height * 4;
+        p = (uint8_t*)buffer; 
+        if ((p[i] == 0XFF) && (p[i + 1] == 0XD8) && (p[i + 2] == 0XFF) && (p[i + 3] == 0XE0)) //search for 0XFF 0XD8 and 0XFF 0XD9, get size of JPG
+        {
+            printf("p[0] = 0x%x p[1] = 0x%x  p[2] = 0x%x  p[3] = 0x%x  \r\n" , p[i], p[i + 1], p[i + 2], p[i + 3]);
+            foundSOI = true;
+            i = i + 4;
+            while(1)
+            {
+                if ((p[i] == 0XFF)&&(p[i + 1] == 0XD9) && foundSOI) //search for FF D9
+                {
+                    foundEOI = true;
+                    break;
+                }
+            
+                i++;
+            
+                if (i >= bufsize)
+                    break;
+            }
+        
+            if(foundEOI)	 
+            {
+                isJpegData = true;
+                jpgFileSize = i + 2;
+                memcpy((void*) writeData, (const void *) buffer, jpgFileSize);
+                printf("jpg File Size :  %ld \r\n", jpgFileSize);
+                appData.state = APP_STATE_OPEN_FILE;
+            }
+        }
+        else
+        {
+            isJpegData = false;
+            printf("copying raw Image of bufsize :  %d \r\n", bufsize);
+            memcpy((void*) writeData, (const void *) buffer, bufsize);
+            appData.state = APP_STATE_OPEN_FILE;
+        } 
     }
-    
-    SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r camera_callback : Done \n\r");
 }
 
 USB_HOST_EVENT_RESPONSE APP_USBHostEventHandler (USB_HOST_EVENT event, void * eventData, uintptr_t context)
@@ -177,7 +235,7 @@ void APP_SYSFSEventHandler(SYS_FS_EVENT event, void * eventData, uintptr_t conte
         default:
             break;
     }
-    SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_SYSFSEventHandler : Done \n\r");
+    printf( "\n\r APP_SYSFSEventHandler : Done \n\r");
 }
 
 // *****************************************************************************
@@ -233,19 +291,23 @@ void APP_Tasks ( void )
             
             
             CAMERA_Register_CallBack(camera_callback, sysObj.devCamera);
-    
-            PIO_PinInterruptEnable(PIO_PIN_PA12);
-            PIO_PinInterruptCallbackRegister(PIO_PIN_PA12, user_button_callback, 0);
+            
+#ifndef USER_BUTTON_PIN
+#error "Configure USER_BUTTON_PIN is not configured in pin configuration"
+#endif            
+            printf( "\n\r USER_BUTTON_PIN() : %d \n\r", USER_BUTTON_PIN);
+            PIO_PinInterruptEnable(USER_BUTTON_PIN);
+            PIO_PinInterruptCallbackRegister(USER_BUTTON_PIN, user_button_callback, 0);
                 
             appData.state = APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE;
-            SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_STATE_BUS_ENABLE : Done \n\r");
+            printf( "\n\r APP_STATE_BUS_ENABLE : Done \n\r");
             break;
         }    
         case APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE:
         {
             if(USB_HOST_BusIsEnabled(USB_HOST_BUS_ALL))
             {
-                SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE : Done \n\r");
+                printf( "\n\r APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE : Done \n\r");
                 appData.state = APP_STATE_WAIT_FOR_DEVICE_ATTACH;
             }
             break;
@@ -257,7 +319,7 @@ void APP_Tasks ( void )
              * is received.  */
             if(appData.deviceIsConnected)
             {
-                SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_STATE_WAIT_FOR_DEVICE_ATTACH : Done \n\r");
+                printf( "\n\r APP_STATE_WAIT_FOR_DEVICE_ATTACH : Done \n\r");
                 appData.state = APP_STATE_DEVICE_CONNECTED;
             }
             break;
@@ -265,29 +327,31 @@ void APP_Tasks ( void )
         case APP_STATE_DEVICE_CONNECTED:
         {
             /* Device was connected. We can try mounting the disk */
-            SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_STATE_DEVICE_CONNECTED : Done \n\r");
-            appData.state = APP_STATE_OPEN_FILE;
+            printf( "\n\r APP_STATE_DEVICE_CONNECTED : Done \n\r");
+            appData.state = APP_STATE_CAMERA_OPEN;
             break;
         }
         case APP_STATE_OPEN_FILE:
         {
             /* Try opening the file for append */
-            sprintf(fileName,
-                "/mnt/myDrive1/file_%ld.bmp",
-                filenumber++);
+            if (isJpegData)
+                sprintf(fileName, "/mnt/myDrive1/file_%ld.jpg", filenumber++);
+            else
+                sprintf(fileName, "/mnt/myDrive1/file_%ld.bmp", filenumber++);
+                
             appData.fileHandle = SYS_FS_FileOpen(fileName, (SYS_FS_FILE_OPEN_APPEND_PLUS));
             if(appData.fileHandle == SYS_FS_HANDLE_INVALID)
             {
                 /* Could not open the file. Error out*/
-                SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r SYS_FS_FileOpen : error \n\r");
+                printf( "\n\r SYS_FS_FileOpen : error \n\r");
                 appData.state = APP_STATE_ERROR;
 
             }
             else
             {
                 /* File opened successfully. Write to file */
-                SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_STATE_OPEN_FILE : Done \n\r");
-                appData.state = APP_STATE_CAMERA_OPEN;
+                printf( "\n\r APP_STATE_OPEN_FILE : Done \n\r");
+                appData.state = APP_STATE_WRITE_TO_FILE;
             }
             break;
         }
@@ -298,7 +362,7 @@ void APP_Tasks ( void )
                 if (CAMERA_Open(sysObj.devCamera))
                 {
                     appData.state = APP_STATE_CAMERA_START;    
-                    SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r CAMERA_Open : success \n\r");                    
+                    printf( "\n\r CAMERA_Open : success \n\r");                    
                 }
                 else
                 {                    
@@ -315,45 +379,48 @@ void APP_Tasks ( void )
                 LED_BLUE_On();
                 CAMERA_Start_Capture(sysObj.devCamera);
                 appData.state = APP_STATE_IDLE;    
-                SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r CAMERA_Start_Capture : success \n\r");
+                printf( "\n\r CAMERA_Start_Capture : success \n\r");
             }
             break;
         }
         case APP_STATE_WRITE_TO_FILE:
         {
-            if(writeCanvasToFile(appData.fileHandle, (uint8_t*) writeData, 640, 480) == -1)
+            writeInProgress = true;
+            if(writeCanvasToFile(appData.fileHandle, (uint8_t*) writeData, width, height) == -1)
             {
                 /* Write was not successful. Close the file
                  * and error out.*/
-                SYS_FS_FileClose(appData.fileHandle);
-                appData.state = APP_STATE_ERROR;
-                SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r SYS_FS_FileWrite : error \n\r");
+                printf( "\n\r SYS_FS_FileWrite : error \n\r");
             }
             else
             {
                 /* We are done writing. Close the file */
-                appData.state = APP_STATE_CLOSE_FILE;
-                SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_STATE_WRITE_TO_FILE : Done \n\r");
+                printf( "\n\r APP_STATE_WRITE_TO_FILE : Done \n\r");
             }
+            appData.state = APP_STATE_CLOSE_FILE;
+            break;
+        }
+        case APP_STATE_CAMERA_STOP:
+        {
+            if (sysObj.devCamera != SYS_MODULE_OBJ_INVALID)
+            {
+                CAMERA_Stop_Capture(sysObj.devCamera);
+                printf( "\n\r CAMERA_Stop_Capture : success \n\r");
+            }
+            appData.state = APP_STATE_IDLE;
             break;
         }
         case APP_STATE_CLOSE_FILE:
         {    
-            if (sysObj.devCamera != SYS_MODULE_OBJ_INVALID)
-            {
-                CAMERA_Stop_Capture(sysObj.devCamera);
-                SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r CAMERA_Stop_Capture : success \n\r");
-            }
-            
             /* Close the file */
             SYS_FS_FileClose(appData.fileHandle);
-            
+            writeInProgress = false;
             /* Indicate User that File operation has been completed */
             LED_BLUE_Off();
             LED_GREEN_On();
             /* The test was successful. Lets idle. */
             appData.state = APP_STATE_IDLE;
-            SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_STATE_CLOSE_FILE : Done \n\r");
+            printf( "\n\r APP_STATE_CLOSE_FILE : Done \n\r");
             break;
         }
         case APP_STATE_IDLE:
@@ -367,6 +434,18 @@ void APP_Tasks ( void )
                 appData.state = APP_STATE_WAIT_FOR_DEVICE_ATTACH;
             }
             break;
+        }
+        case APP_STATE_UNMOUNT_DISK:
+        {
+            if(SYS_FS_Unmount("/mnt/myDrive1") != 0)
+            {
+                /* The disk could not be un mounted. Try
+                 * un mounting again untill success. */
+
+                appData.state = APP_STATE_ERROR;
+            }
+            appData.state =  APP_STATE_WAIT_FOR_DEVICE_ATTACH;
+            appData.deviceIsConnected = false; 
         }
         case APP_STATE_ERROR:
         {
@@ -387,7 +466,7 @@ void APP_Tasks ( void )
                 appData.deviceIsConnected = false; 
 
             }
-            SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r APP_STATE_ERROR : Done \n\r");
+            printf( "\n\r APP_STATE_ERROR : Done \n\r");
             break;
         }
         default:
