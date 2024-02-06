@@ -29,14 +29,13 @@
 
 #include "app.h"
 
-
 #define CANVAS_XPOS    0
 #define CANVAS_YPOS    0
-#define CANVAS_WIDTH   640
+#define CANVAS_WIDTH   800
 #define CANVAS_HEIGHT  480
 
 #define ISC_CANVAS_ID 0
-#define ISC_CANVAS_LAYER 2 /* HEO Layer */
+#define ISC_CANVAS_LAYER 1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -61,6 +60,7 @@
 
 APP_DATA appData;
 
+uint8_t canvasfb01[CANVAS_WIDTH * CANVAS_HEIGHT * 2] = { 0 };
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Functions
@@ -79,13 +79,13 @@ void camera_callback(uintptr_t context)
     SYS_MODULE_OBJ object = (SYS_MODULE_OBJ) context;
 
     CAMERA_Get_Frame(object, &addr, &width, &height);
+    //printf("\n\r width = %ld height = %ld \r\n",width, height);
     if (addr != 0)
     { 
         gfxcSetPixelBuffer(ISC_CANVAS_ID, width, height, GFX_COLOR_MODE_RGB_565, (void *)addr);  
         gfxcCanvasUpdate(ISC_CANVAS_ID);
     }
 }
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Local Functions
@@ -128,6 +128,7 @@ void APP_Initialize ( void )
 
 void APP_Tasks ( void )
 {
+    int i = 0;
     uint32_t bufferPtr = 0;
     uint32_t width = CANVAS_WIDTH;
     uint32_t height = CANVAS_HEIGHT;
@@ -139,12 +140,11 @@ void APP_Tasks ( void )
         {
             bool appInitialized = true;
             if (appInitialized)
-            {
+            {    
                 gfxcSetLayer(ISC_CANVAS_ID, ISC_CANVAS_LAYER);
-                gfxcSetWindowSize(ISC_CANVAS_ID, width, height);
-                gfxcSetWindowPosition(ISC_CANVAS_ID, 80, 0);    
-                gfxcShowCanvas(ISC_CANVAS_ID);
-                
+                gfxcSetWindowSize(0, width, height);
+                gfxcSetWindowPosition(0, 0, 0);    
+                gfxcShowCanvas(0);
                 appData.state = APP_STATE_SERVICE_TASKS;
             }
             break;
@@ -155,13 +155,24 @@ void APP_Tasks ( void )
             static bool once = true;            
             if(once)
             {
-                /* Enable AC69T88A Display Backlight */
-                AC69T88A_BACKLIGHT_EN_Set();
+                for(i=0; i < sizeof(canvasfb01); i=i+2)
+                {
+                    canvasfb01[i] = 0x73;
+                    canvasfb01[i+1] = 0x93;
+                }
+                gfxcSetPixelBuffer(ISC_CANVAS_ID,
+                               CANVAS_WIDTH,
+                               CANVAS_HEIGHT,
+                               GFX_COLOR_MODE_RGB_565,
+                               (void *)canvasfb01);
+            
+            gfxcShowCanvas(ISC_CANVAS_ID);
+            gfxcCanvasUpdate(ISC_CANVAS_ID);   
                 once = false;
             }
             appData.state = APP_STATE_CAMERA_OPEN;
             break;
-        }        
+        }
         case APP_STATE_CAMERA_OPEN:
         {
             if (sysObj.devCamera != SYS_MODULE_OBJ_INVALID)
@@ -203,7 +214,7 @@ void APP_Tasks ( void )
         case APP_STATE_CANVAS_UPDATE:
         {
             if (bufferPtr != 0)
-            {       
+            {        
                 gfxcSetPixelBuffer(ISC_CANVAS_ID, width, height, GFX_COLOR_MODE_RGB_565, (void *)bufferPtr);  
                 gfxcCanvasUpdate(ISC_CANVAS_ID);
             }
