@@ -410,7 +410,14 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
     const CAMERA_INIT* pInit = (const CAMERA_INIT * const)init;
     DEVICE_OBJECT* pDrvInstance = (DEVICE_OBJECT*)&DrvCameraInstances;
 
-#if !defined(CAMERA_RESET_PIN)
+    pDrvInstance->iscObj = DRV_ISC_Initialize();
+    if (pDrvInstance->iscObj == NULL)
+    {
+        printf("\r\nCamera: DRV_ISC_Initialize Failed \r\n");
+        return SYS_MODULE_OBJ_INVALID;
+    }
+
+#ifndef CAMERA_RESET_PIN
 #error "Configure CAMERA_RESET_PIN is not configured in pin configuration"
 #endif
 
@@ -544,12 +551,6 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
         pDrvInstance->csi2dcObj->dataPipeDataType = CSI2_DATA_FORMAT_RAW10;
     }
 
-    pDrvInstance->iscObj = DRV_ISC_Initialize();
-    if (pDrvInstance->iscObj == NULL)
-    {
-        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\r\nCamera: DRV_ISC_Initialize Failed \r\n");
-        return SYS_MODULE_OBJ_INVALID;
-    }
 
     if (pInit->iscInputFormat >= 0)
     {
