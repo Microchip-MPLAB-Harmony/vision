@@ -66,7 +66,7 @@ bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj)
 
     while (count--)
     {
-        if ((ISC_Interrupt_Status() & ISC_INTSR_VD_Msk) == ISC_INTSR_VD_1)
+        if ((ISC_Interrupt_Status() & ISC_INTSR_VD_Msk) == ISC_INTSR_VD(1))
         {
             ISC_Start_Capture();
             break;
@@ -100,7 +100,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         dma_view0 = isc_dma_pool.view0;
         for (i = 0; i < iscObj->dmaDescSize; i++)
         {
-            dma_view0[i].ctrl =  ISC_DCTRL_DVIEW_PACKED | ISC_DCTRL_DE_1;
+            dma_view0[i].ctrl =  ISC_DCTRL_DVIEW_PACKED | ISC_DCTRL_DE(1);
             dma_view0[i].nextDesc = (uint32_t)&dma_view0[i + 1];
             dma_view0[i].addr = (uint32_t)iscObj->dma.address0 + (i * iscObj->dma.size);
             dma_view0[i].stride = 0;
@@ -116,7 +116,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
 #endif
         else
             ISC_DMA_Configure_Input_Mode(ISC_DCFG_IMODE(iscObj->layout) | ISC_DCFG_YMBSIZE_BEATS16);
-        ISC_DMA_Enable(ISC_DCTRL_DVIEW_PACKED | ISC_DCTRL_DE_1);
+        ISC_DMA_Enable(ISC_DCTRL_DVIEW_PACKED | ISC_DCTRL_DE(1));
         break;
     }
     case ISC_LAYOUT_YC420SP:
@@ -127,7 +127,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         dma_view1 = isc_dma_pool.view1;
         for (i = 0; i < iscObj->dmaDescSize; i++)
         {
-            dma_view1[i].ctrl = ISC_DCTRL_DVIEW_SEMIPLANAR | ISC_DCTRL_DE_1;
+            dma_view1[i].ctrl = ISC_DCTRL_DVIEW_SEMIPLANAR | ISC_DCTRL_DE(1);
             dma_view1[i].nextDesc = (uint32_t)&dma_view1[i + 1];
             dma_view1[i].addr0 = (uint32_t)iscObj->dma.address0 + i * iscObj->dma.size;
             dma_view1[i].stride0 = 0;
@@ -139,7 +139,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         ISC_DMA_Configure_Desc_Entry((uint32_t)&dma_view1[0]);
         ISC_DMA_Configure_Input_Mode(ISC_DCFG_IMODE(iscObj->layout) |
                                      ISC_DCFG_YMBSIZE_BEATS8 | ISC_DCFG_CMBSIZE_BEATS8);
-        ISC_DMA_Enable(ISC_DCTRL_DVIEW_SEMIPLANAR | ISC_DCTRL_DE_1);
+        ISC_DMA_Enable(ISC_DCTRL_DVIEW_SEMIPLANAR | ISC_DCTRL_DE(1));
         break;
     }
     case ISC_LAYOUT_YC422P:
@@ -150,7 +150,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         dma_view2 = isc_dma_pool.view2;
         for (i = 0; i < iscObj->dmaDescSize; i++)
         {
-            dma_view2[i].ctrl = ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE_1;
+            dma_view2[i].ctrl = ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE(1);
             dma_view2[i].nextDesc = (uint32_t)&dma_view2[i + 1];
             dma_view2[i].addr0 = (uint32_t)iscObj->dma.address0 + i * iscObj->dma.size;;
             dma_view2[i].stride0 = 0;
@@ -164,7 +164,7 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
         ISC_DMA_Configure_Desc_Entry((uint32_t)&dma_view2[0]);
         ISC_DMA_Configure_Input_Mode(ISC_DCFG_IMODE(iscObj->layout) |
                                      ISC_DCFG_YMBSIZE_BEATS8 | ISC_DCFG_CMBSIZE_BEATS8);
-        ISC_DMA_Enable(ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE_1);
+        ISC_DMA_Enable(ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE(1));
         break;
     }
     default:
@@ -222,9 +222,9 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
         else
         {
             // Todo move to plib
-            ISC_Gamma_Enable(1, ISC_GAM_CTRL_RENABLE_1 |
-                             ISC_GAM_CTRL_GENABLE_1 |
-                             ISC_GAM_CTRL_BENABLE_1,
+            ISC_Gamma_Enable(1, ISC_GAM_CTRL_RENABLE(1) |
+                             ISC_GAM_CTRL_GENABLE(1) |
+                             ISC_GAM_CTRL_BENABLE(1),
                              iscObj->gamma.enableBiPart);
 
             ge = iscObj->gamma.greenEntries;
