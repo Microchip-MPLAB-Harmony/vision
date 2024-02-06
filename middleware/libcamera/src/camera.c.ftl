@@ -152,9 +152,9 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject)
     if (pDrvObject->iscObj->gamma.enableGamma)
     {
         pDrvObject->iscObj->gamma.enableBiPart = true;
-        pDrvObject->iscObj->gamma.enableRed = true;
-        pDrvObject->iscObj->gamma.enableGreen = true;
-        pDrvObject->iscObj->gamma.enableBlue = true;
+        pDrvObject->iscObj->gamma.enableRed = ISC_GAMMA_RED_ENTRIES;
+        pDrvObject->iscObj->gamma.enableGreen = ISC_GAMMA_GREEN_ENTRIES;
+        pDrvObject->iscObj->gamma.enableBlue = ISC_GAMMA_BLUE_ENTRIES;
         pDrvObject->iscObj->gamma.redEntries = gamma_22_table;
         pDrvObject->iscObj->gamma.greenEntries = gamma_22_table;
         pDrvObject->iscObj->gamma.blueEntries = gamma_22_table;
