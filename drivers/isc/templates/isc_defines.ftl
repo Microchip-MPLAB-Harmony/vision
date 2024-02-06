@@ -41,45 +41,72 @@
 -->
 
 /*** ISC Image Sensor Configuration ***/
-#define ISC_INPUT_FORMAT_TYPE		${ISCInputFormatType}
-#define ISC_INPUT_BIT_WIDTH			${ISCInputBitWidth}
-#define ISC_OUTPUT_FORMAT_TYPE		${ISCOutputFormatType}
-#define ISC_OUTPUT_LAYOUT_TYPE		${ISCOutputLayoutType}
-#define ISC_BAYER_PATTERN_TYPE		${ISCBayerPatternType}
+#define ISC_INPUT_FORMAT_TYPE			${ISCInputFormatType}
+#define ISC_INPUT_BIT_WIDTH				${ISCInputBitWidth}
+#define ISC_OUTPUT_FORMAT_TYPE			${ISCOutputFormatType}
+#define ISC_OUTPUT_LAYOUT_TYPE			${ISCOutputLayoutType}
+#define ISC_BAYER_PATTERN_TYPE			${ISCBayerPatternType}
 <#if ISCEnableGamma == true>
-	<#lt>#define ISC_ENABLE_GAMMA		true
+	<#lt>#define ISC_ENABLE_GAMMA				true
 <#else>
-	<#lt>#define ISC_ENABLE_GAMMA		false
+	<#lt>#define ISC_ENABLE_GAMMA				false
+</#if>
+<#if ISCGammaRedEntries == true>
+	<#lt>#define ISC_GAMMA_RED_ENTRIES			true
+<#else>
+	<#lt>#define ISC_GAMMA_RED_ENTRIES			false
+</#if>
+<#if ISCGammaBlueEntries == true>
+	<#lt>#define ISC_GAMMA_BLUE_ENTRIES			true
+<#else>
+	<#lt>#define ISC_GAMMA_BLUE_ENTRIES			false
+</#if>
+<#if ISCGammaGreenEntries == true>
+	<#lt>#define ISC_GAMMA_GREEN_ENTRIES			true
+<#else>
+	<#lt>#define ISC_GAMMA_GREEN_ENTRIES			false
 </#if>
 <#if ISCEnableWhiteBalance == true>
-	<#lt>#define ISC_ENABLE_WHITE_BALANCE	true
+	<#lt>#define ISC_ENABLE_WHITE_BALANCE		true
 <#else>
-	<#lt>#define ISC_ENABLE_WHITE_BALANCE	false
+	<#lt>#define ISC_ENABLE_WHITE_BALANCE		false
 </#if>
+#define ISC_WB_R_OFFSET					${ISCWhiteBalance_R_Offset}
+#define ISC_WB_GR_OFFSET				${ISCWhiteBalance_GR_Offset}
+#define ISC_WB_B_OFFSET					${ISCWhiteBalance_B_Offset}
+#define ISC_WB_GB_OFFSET				${ISCWhiteBalance_GB_Offset}
+#define ISC_WB_R_GAIN					${ISCWhiteBalance_R_Gain}
+#define ISC_WB_GR_GAIN					${ISCWhiteBalance_GR_Gain}
+#define ISC_WB_B_GAIN					${ISCWhiteBalance_B_Gain}
+#define ISC_WB_GB_GAIN					${ISCWhiteBalance_GB_Gain}
 <#if ISCEnableHistogram == true>
-	<#lt>#define ISC_ENABLE_HISTOGRAM		true
+	<#lt>#define ISC_ENABLE_HISTOGRAM			true
 <#else>
-	<#lt>#define ISC_ENABLE_HISTOGRAM	false
+	<#lt>#define ISC_ENABLE_HISTOGRAM			false
 </#if>
 <#if ISCEnableMIPI == true>
-	<#lt>#define ISC_ENABLE_MIPI_INTERFACE	true
+	<#lt>#define ISC_ENABLE_MIPI_INTERFACE		true
 <#else>
-	<#lt>#define ISC_ENABLE_MIPI_INTERFACE	false
+	<#lt>#define ISC_ENABLE_MIPI_INTERFACE		false
 </#if>
 <#if ISCEnableVideoMode == true>
-	<#lt>#define ISC_ENABLE_VIDEO_MODE		true
+	<#lt>#define ISC_ENABLE_VIDEO_MODE			true
 <#else>
-	<#lt>#define ISC_ENABLE_VIDEO_MODE		false
+	<#lt>#define ISC_ENABLE_VIDEO_MODE			false
 </#if>
 <#if ISCEnableBightnessAndContrast == true>
 	<#lt>#define ISC_ENABLE_BRIGHTNESS_CONTRAST	true
 <#else>
 	<#lt>#define ISC_ENABLE_BRIGHTNESS_CONTRAST	false
 </#if>
+#define ISC_CBC_BRIGHTNESS_VAL			${ISCBightness}
+#define ISC_CBC_CONTRAST_VAL			${ISCContrast}
+#define ISC_CBHS_HUE_VAL				${ISCHue}
+#define ISC_CBHS_SATURATION_VAL			${ISCSaturation}
 <#if ISCEnableProgressiveMode == true>
-	<#lt>#define ISC_ENABLE_PROGRESSIVE_MODE	true
+	<#lt>#define ISC_ENABLE_PROGRESSIVE_MODE		true
 <#else>
-	<#lt>#define ISC_ENABLE_PROGRESSIVE_MODE	false
+	<#lt>#define ISC_ENABLE_PROGRESSIVE_MODE		false
 </#if>
 <#--
 /*******************************************************************************
