@@ -214,7 +214,7 @@ const DRV_IMAGE_SENSOR_OBJ imx219_device =
     0x00,
     {
         &imx219_raw_vga_config,
-        & imx219_raw_1080p_config
+        &imx219_raw_1080p_config
     },
     (DRV_HANDLE)NULL
 };

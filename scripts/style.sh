@@ -29,7 +29,7 @@ OPTIONS="--style=allman \
 --pad-header \
 --mode=c \
 --preserve-date \
---lineend=linux \
+--lineend=windows \
 --indent-col1-comments \
 --align-reference=type \
 --align-pointer=type \

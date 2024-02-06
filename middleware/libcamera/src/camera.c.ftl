@@ -360,10 +360,10 @@ bool CAMERA_Open(SYS_MODULE_OBJ object)
                                       pDrvObject->imageSensorOutputFormat,
                                       &pDrvObject->imageSensorOutputBitWidth,
                                       &pDrvObject->imageWidth,
-                                      &pDrvObject->imageHeight) != DRV_IMAGE_SENSOR_SUCCESS)
+                                      &pDrvObject->imageHeight) == DRV_IMAGE_SENSOR_SUCCESS)
         {
-            printf("\r\n Image Sensor Configurations: success \r\n");
-            printf("\r\n\t OutputBitWidth = 0x%x \r\n", pDrvObject->imageSensorOutputBitWidth);
+            printf("\r\n Image Sensor Configurations: \r\n");
+            printf("\r\n\t OutputBitWidth = %d \r\n", (pDrvObject->imageSensorOutputBitWidth + 8));
             printf("\r\n\t imageWidth = %ld \r\n", pDrvObject->imageWidth);
             printf("\r\n\t imageHeight = %ld \r\n", pDrvObject->imageHeight);
         }
@@ -485,8 +485,8 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
                                       &pDrvInstance->imageWidth,
                                       &pDrvInstance->imageHeight) == DRV_IMAGE_SENSOR_SUCCESS)
         {
-            printf("\r\n Image Sensor Configurations: success \r\n");
-            printf("\r\n\t OutputBitWidth = 0x%x \r\n", pDrvInstance->imageSensorOutputBitWidth);
+            printf("\r\n Image Sensor Configurations: \r\n");
+            printf("\r\n\t OutputBitWidth = 0x%x \r\n", pDrvInstance->imageSensorOutputBitWidth + 8);
             printf("\r\n\t imageWidth = %ld \r\n", pDrvInstance->imageWidth);
             printf("\r\n\t imageHeight = %ld \r\n", pDrvInstance->imageHeight);
         }
@@ -552,18 +552,6 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
     if (pDrvInstance->csiObj->csiFrameHeight != pDrvInstance->imageHeight)
     {
         pDrvInstance->csiObj->csiFrameHeight = pDrvInstance->imageHeight;
-    }
-
-
-    if (pInit->csiDataFormat >= 0)
-    {
-        pDrvInstance->csi2dcObj->videoPipeDataType = pInit->csiDataFormat;
-        pDrvInstance->csi2dcObj->dataPipeDataType = pInit->csiDataFormat;
-    }
-    else
-    {
-        pDrvInstance->csi2dcObj->videoPipeDataType = CSI2_DATA_FORMAT_RAW10;
-        pDrvInstance->csi2dcObj->dataPipeDataType = CSI2_DATA_FORMAT_RAW10;
     }
 
 #endif
