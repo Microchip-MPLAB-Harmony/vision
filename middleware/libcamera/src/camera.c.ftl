@@ -124,6 +124,14 @@ static void updateFps_Callback(uintptr_t context)
     }
 }
 
+static void DelayMS(uint32_t us)
+{
+    SYS_TIME_HANDLE timer = SYS_TIME_HANDLE_INVALID;
+    if (SYS_TIME_DelayMS(us, &timer) != SYS_TIME_SUCCESS)
+        return;
+    while (SYS_TIME_DelayIsComplete(timer) == false);
+}
+
 void CAMERA_Register_CallBack(const CAMERA_CALLBACK eventHandler,
                               const uintptr_t contextHandle)
 {
@@ -421,11 +429,14 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
 
 #ifndef CAMERA_RESET_PIN
 #error "Configure CAMERA_RESET_PIN is not configured in pin configuration"
+#else
+#ifdef CAMERA_PWD_PIN
+    CAMERA_PWD_Clear();
 #endif
-
-    /* Reset ImageSensor*/
-    if (CAMERA_RESET_PIN >= 0)
-        CAMERA_RESET_Set();
+    CAMERA_RESET_Clear();
+    CAMERA_RESET_Set();
+    DelayMS(10);
+#endif
 
     if (pInit->drvI2CIndex >= 0)
     {
