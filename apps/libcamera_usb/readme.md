@@ -4,11 +4,9 @@ title: Libcamera USB
 nav_order: 1
 ---
 
-# Camera Demo using SAMA7G54-EK board
+# Camera Demo Applications
 
-![](../../images/sama7g54_ek_imx219.png)
-
-This application capture a raw video frame of VGA resolution from Sony IMX219 camera module using MIPI CSI2 interface and save the captured frame in a bmp file and copied to a USB drive using SAMA7G54-EK target board.
+These application capture video frames from image sensor module either using MIPI CSI2 or Parallel interface interface and save the captured frame in a bmp/jpeg file and copied to a USB drive using below listed development board.
 
 |MPLABX Configuration|Board Configuration|
 |:-------------------|:------------------|

@@ -1,0 +1,14 @@
+format_version: v1.0
+configName: isc_sama5d27_wlsom1_ek1_usb_msd
+folderName: libcamera_usb_sama5d27_wlsom1_ek1
+frameworkPath: C:\harmony
+processor: ATSAMA5D27CLD2G
+projectName: libcamera_usb_sama5d27_wlsom1_ek1
+settings:
+  PackageFilter: ''
+  FORCE_OPTIMIZATION: 'false'
+  GENERATE_BACKUP: 'true'
+  TRUSTZONE: 'false'
+  CMSISPath: dev_packs\arm\CMSIS\5.8.0
+  MERGE_STRATEGY: USER_ALL
+  DFPPath: dev_packs\Microchip\SAMA5D2_DFP\1.9.106\atdf\ATSAMA5D27CLD2G.atdf

@@ -34,7 +34,7 @@ D8,PC29,,Available,In,,,,,,,,
 D9,PB16,,Available,In,,,,,,,,
 D11,PB20,,Available,In,,,,,,,,
 D12,PB26,,Available,In,,,,,,,,
-E3,PC21,AC69T88A_BACKLIGHT_EN,GPIO,Out,Low,No,Disabled,No,No,Disabled,No,Low
+E3,PC21,AC69T88A_BACKLIGHT_EN,GPIO,Out,High,No,Disabled,No,No,Disabled,No,Low
 E4,PC19,LED_RGB_R,GPIO,Out,Low,No,Disabled,No,No,Disabled,No,Low
 E6,PC25,,Available,In,,,,,,,,
 E8,PC27,,Available,In,,,,,,,,

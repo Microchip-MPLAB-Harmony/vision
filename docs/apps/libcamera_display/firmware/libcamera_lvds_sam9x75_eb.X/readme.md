@@ -8,18 +8,15 @@ Defining the Architecture
 
 ![](../../../../images/achitecture_diagrams_vision_sam9x75_ddr3_eb_imx219_lvds.png)
 
-This application demonstrates the use of  MIPI CSI DPHY, CSI2DC, ISC and LVDS peripherals. The camera module used in this application is Sony IMX219 image sensor and AC69T88A LVDS display. This application capture raw video frames of VGA resolution from Sony IMX219 camera module using MIPI CSI2 
-interface and display the captured frames on the LVDS display using SAM9x75-DDR3-EB target board.
+This application demonstrates the use of  MIPI CSI DPHY, CSI2DC, ISC and LVDS peripherals. The camera module used in this application is Sony IMX219 image sensor and AC69T88A LVDS display. This application capture raw video frames of VGA resolution from Sony IMX219 camera module using MIPI CSI2 interface and display the captured frames on the LVDS display using SAM9x75-DDR3-EB target board.
 
-
-![](../../../../images/imx219.png) 
-
-The camera module can be purchased from [this](https://www.adafruit.com/product/3099?src=raspberrypi) link.
-
-
-![](../../../../images/Ribbon_cable_UC-376.png) 
-
-[Ribbon Cable](https://www.amazon.com/dp/B085RW9K13?ref_=cm_sw_r_apin_dp_T969WPBQ2K966HQHVAYZ) The ribbon cable 5.9"(150mm) is specifically used with MIPI camera module one end is 15 Pin and other end is 22 Pin interface 
+|Hardware components|Images|Details|
+|:-------------------|:------------------|:------------------|
+| Development Board | ![](../../../../images/sam9x75-ea14j50a.jpg) | [SAM9x75-DDR3-EB](https://www.microchip.com/en-us/development-tool/EA14J50A)|
+| Camera Module | ![](../../../../images/imx219.png) | [imx219 image sensor](https://www.raspberrypi.com/products/camera-module-v2/) |
+| Ribbon Cable | ![](../../../../images/ribbon_cable_uc_376.jpg) | [Ribbon Cable](https://www.amazon.com/dp/B085RW9K13?ref_=cm_sw_r_apin_dp_T969WPBQ2K966HQHVAYZ) is specifically designed for MIPI camera module with one end is 15 Pin 1.0mm Pitch interface and the other end is 22 Pin 0.5mm interface|
+| AC69T88A LVDS display | ![](../../../../images/ac69t88a_lvds_display.jpg) | Contact Microchip sales team|
+| LVDS Adapter board | ![](../../../../images/MPU32_EB_LVDS_ADAPTER_REV2.jpg) | Contact Microchip sales team|
 
 ### Demonstration Features
 
@@ -75,6 +72,28 @@ The interrupts should be enabled in the "Interrupt for "CSI", "CSI2DC", "DBGU" "
 
 <b>Note:  The IMX219 image sensor is an off-the-shelf module and is not officially supported by MPLAB Harmony 3. While a driver for this module is included as part of this demo, it is not guaranteed to be complete. Nor are the IMX219 configuration values guaranteed to be optimal. The primary purpose of this application is to demonstrate the functionality of the CSI2DC and Image Sensor Controller modules. </b>
 
+Project Configurations
+---------------------
+MPU32"s do not have an internal flash memory to boot from. Hence the boot process for these mpu's is different 
+than for flash based MCUs. The boot process is described in detail in the device datasheets, but the general flow is as 
+follows:
+1. On power-up the device executes the first stage bootloader from internal ROM. This looks for an second stage bootloader
+on external non-volatile memory such as eMMC, SD, NAND flash, NOR-SPI and QSPI as second stage boot devices. For SD and eMMC,
+ROM bootloader expects a file named “boot.bin” to reside in the root directory of a FAT file system.
+2. The second stage bootloader is copied to on-chip SRAM and executed. The second stage boot loader initialize the external
+DRAM and its controller, then load other program from external non-volatile memory into DRAM and execute it. The second stage
+bootloader must be configured for the board in use and for the external NVM containing the application.
+A comprehensive description of the boot process for the Microchip MPU's can be found in this application note: 
+https://ww1.microchip.com/downloads/en/AppNotes/AN2791-Booting-from-External-Non-Volatile-Memory-on-SAMA5D2-MPU-Application-Note-DS00002791A.pdf
+3. The vision application is linked to run/debug on the external DRAM. During a debug process, MPLAB X will first run (load) the at91bootstrap program and this file can be found in the <project>.X folder whose function is to initialize the chip, its clocks, debug port to view log messages and initialize the external DRAM.
+
+Below are Project configuration steps to Debug or Run Vision application.
+On the MPLAB X IDE, right click on the project and click “Properties”.
+1. In “Connected Hardware Tool”, select JLink or J-Tag, and in “Compiler Toolchain”, select XC32 and click apply.
+2. Under Categories, click on “Bootstrap”, ensure that “Use bootstrap” is checked and the path to the bootstrap.elf file is set. 
+3. The harmony.bin should be generated as a post-build command. Under Categories, click on "Building", ensure that "Execute this line after build" is checked and set "\$\{MP_CC_DIR\}/xc32-objcopy -O binary \$\{DISTDIR\}\/\$\{PROJECTNAME\}.\$\{IMAGE_TYPE\}.elf \$\{DISTDIR\}\/harmony.bin"
+
+
 Building the Application
 ------------------------
 
@@ -90,6 +109,10 @@ The following table lists configuration properties:
 
 Note: For information about MPU32-EB-LVDS-ADAPTER board and MPU32-LVDS-DISPLAY-WVGA contact Microchip sales team. 
 
+Prebuilt binaries 
+-------------------------
+Latest release prebuilt binaries are available for a [SAM9x75-DDR3-EB](https://www.microchip.com/en-us/development-tool/EA14J50A) board is [here](https://microchiptechnology-my.sharepoint.com/:u:/g/personal/sandeepsheriker_mallikarjun_microchip_com/ESf1f7vn_ppBhiZDlO2ptCUBkHROHfCGkuVwTCqTppLQYA?e=dccrfi)
+
 
 Configuring the Hardware
 ------------------------
@@ -102,7 +125,7 @@ Configure the hardware as follows:
 
 -	Connect the MPU32-EB-LVDS-ADAPTER - REV2 add-on board to the SAM 9X75 Evaluation Board. Make sure to remove any jumpers on the marked areas and start by inserting the mikroBUS header first for easy alignment.
 
-![](../../../../images/sam_9x75_eb.png)
+![](../../../../images/MPU32_EB_LVDS_ADAPTER_REV2.jpg)
 
 
 -   Connect the AC69T88A display to the MPU32-EB-LVDS-ADAPTER-REV2 add-on board using a 30-pin 0.5mm pitch FFC ribbon. <br/> **Important**: You may need a Type A FFC (upto REV2), or on newer LVDS-Adapter boards, a Type D FFC (contacts on opposite sides). Ultimately, you need to align pin 1 of the adapter to pin 1 of the display.

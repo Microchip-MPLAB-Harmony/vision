@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Module name="vision" id="52e3da9f-7e5c-42a0-be29-f461c865ce95" version="1.0.0">
+<Module name="Vision Package" id="52e3da9f-7e5c-42a0-be29-f461c865ce95" version="3.1.0" type="vision">
     <ConfigRoot path="config/module.py"/>
 </Module>
