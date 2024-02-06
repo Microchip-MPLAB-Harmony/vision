@@ -23,9 +23,13 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
     {0x012B, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
     {0x0157, 0x40},
-    {0x015a, 0x0A},
-    {0x015b, 0x80},
+    
+    {0x015a, 0x03},
+    {0x015b, 0x00},
 
+    {0x0160, 0x03},
+    {0x0161, 0x00},
+    
     {0x0162, 0x0D}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
     {0x0164, 0x01}, //XADD_STA_A[11:8]
