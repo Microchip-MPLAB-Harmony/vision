@@ -319,6 +319,7 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
 
     case DRV_IMAGE_SENSOR_YUV_422:
     case DRV_IMAGE_SENSOR_RGB:
+    case DRV_IMAGE_SENSOR_JPEG:
         ISC_CFA_Enable(0);
         ISC_WB_Enable(0);
         ISC_Gamma_Enable(0, 0, 0);

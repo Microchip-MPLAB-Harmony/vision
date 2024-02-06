@@ -64,6 +64,7 @@ def instantiateComponent(component):
     image_sensor_output_format.addKey("RGB", "DRV_IMAGE_SENSOR_RGB", "RGB")
     image_sensor_output_format.addKey("CCIR656", "DRV_IMAGE_SENSOR_CCIR656", "CCIR656")
     image_sensor_output_format.addKey("MONO", "DRV_IMAGE_SENSOR_MONO", "MONO")
+    image_sensor_output_format.addKey("JPEG", "DRV_IMAGE_SENSOR_JPEG", "JPEG")
     image_sensor_output_format.setOutputMode("Value")
     image_sensor_output_format.setDisplayMode("Description")
     image_sensor_output_format.setDefaultValue(0)

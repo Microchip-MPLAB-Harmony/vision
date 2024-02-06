@@ -31,6 +31,7 @@ def instantiateComponent(component):
     isc_input_format.addKey("RGB", "DRV_IMAGE_SENSOR_RGB", "RGB")
     isc_input_format.addKey("CCIR656", "DRV_IMAGE_SENSOR_CCIR656", "CCIR656")
     isc_input_format.addKey("MONO", "DRV_IMAGE_SENSOR_MONO", "MONO")
+    isc_input_format.addKey("JPEG", "DRV_IMAGE_SENSOR_JPEG", "JPEG")
     isc_input_format.setOutputMode("Value")
     isc_input_format.setDisplayMode("Description")
     isc_input_format.setDefaultValue(0)
