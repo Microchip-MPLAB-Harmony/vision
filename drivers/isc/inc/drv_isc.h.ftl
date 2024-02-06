@@ -139,4 +139,9 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj);
 
 uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj);
 
+bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj);
+
+void DRV_ISC_Stop_Capture();
+
+
 #endif  //DRV_ISC_H 

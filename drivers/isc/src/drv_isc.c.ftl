@@ -4,9 +4,10 @@
 #include <string.h>
 
 #include "device.h"
-#include "system/int/sys_int.h"
-#include "system/debug/sys_debug.h"
 #include "system/cache/sys_cache.h"
+#include "system/debug/sys_debug.h"
+#include "system/int/sys_int.h"
+#include "system/time/sys_time.h"
 
 #include "vision/drivers/image_sensor/drv_image_sensor.h"
 #include "vision/drivers/isc/drv_isc.h"
@@ -21,6 +22,14 @@ typedef union
 __attribute__((__section__(".region_cache_aligned")))  __attribute__((__aligned__(32))) ISC_DEVICE_DMA_Pool isc_dma_pool;
 
 static DRV_ISC_OBJ DrvISCObj;
+
+static void DelayUS(uint32_t us)
+{
+    SYS_TIME_HANDLE timer = SYS_TIME_HANDLE_INVALID;
+    if (SYS_TIME_DelayUS(us, &timer) != SYS_TIME_SUCCESS)
+        return;
+    while (SYS_TIME_DelayIsComplete(timer) == false);
+}
 
 void ISC_Handler(void)
 {
@@ -41,6 +50,38 @@ void ISC_Handler(void)
     // ToDo Handle other interrupts.
 }
 
+void DRV_ISC_Stop_Capture()
+{
+    ISC_Stop_Capture();
+}
+
+bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj)
+{
+    int count = 1000;
+
+    if (iscObj == NULL)
+        return false;
+
+    ISC_Start_Capture();
+
+    while (count--)
+    {
+        if ((ISC_Interrupt_Status() & ISC_INTSR_VD_Msk) == ISC_INTSR_VD_1)
+        {
+            ISC_Start_Capture();
+            break;
+        }
+        DelayUS(1000);
+    }
+
+    if (count <= 0)
+    {
+        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r ISC_Start_Capture timeout \n\r");
+        return false;
+    }
+
+    return true;
+}
 
 uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
 {

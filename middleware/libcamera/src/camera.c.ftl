@@ -243,7 +243,7 @@ bool CAMERA_Stop_Capture(SYS_MODULE_OBJ object)
 
     DRV_ImageSensor_Stop(pDrvObject->sensor);
 
-    ISC_Stop_Capture();
+    DRV_ISC_Stop_Capture();
 
     SYS_INT_SourceDisable(ID_ISC);
 
@@ -263,17 +263,14 @@ bool CAMERA_Start_Capture(SYS_MODULE_OBJ object)
 
     DRV_ImageSensor_Start(pDrvObject->sensor);
 
-    ISC_Start_Capture();
-    while (1)
+    if (DRV_ISC_Start_Capture(pDrvObject->iscObj) == false)
     {
-        volatile const uint32_t status = ISC_Interrupt_Status();
-        if ((status & ISC_INTSR_VD_Msk) == ISC_INTSR_VD_1)
-        {
-            ISC_Start_Capture();
-            break;
-        }
+        SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r DRV_ISC_Start_Capture : Failed \n\r");
+        return false;
     }
+
     SYS_INT_SourceEnable(ID_ISC);
+
 
     SYS_DEBUG_MESSAGE(SYS_ERROR_INFO, "\n\r ISC_Drv_Start_Capture : Done \n\r");
 
