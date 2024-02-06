@@ -369,7 +369,7 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT * const init)
 
 	/* Reset ImageSensor*/
 	if (CAMERA_RESET_PIN >= 0)
-		CAMERA_RESET_Clear();
+		CAMERA_RESET_Set();
 
 	if(pInit->drvI2CIndex >= 0)
 	{
