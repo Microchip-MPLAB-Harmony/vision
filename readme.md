@@ -46,6 +46,9 @@ The key features of the MPLAB® Harmony Vision are the following:
 |      |   image_sensor | Control interface Driver for the Image sensors | ![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 | library    | libcamera | Vision library | ![app-beta](https://img.shields.io/badge/library-beta-orange?style=plastic) |
 | image_sensors | driver | different Image sensor configurations| ![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
+|      | IMX219 | MIPI-CSI2 Sony IMX219 Image Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
+|      | OV5640 | OminiVision OV5640 Parallel interface Image Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
+|      | OV2640 | OminiVision OV2640 Parallel interface Image Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 | apps | examples | Vision Example applications | ![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 
 ***

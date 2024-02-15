@@ -10,14 +10,17 @@ nav_order: 99
 
 ## Vision Release v3.1.0
 
-### New Features and Fixed Known Issues
+### New Features
 
-* Add a SAMA5D2 MPU support
-* Add an application demo for sama7G5-ek board
+* Add SAMA5D2 MPU support
+* Add SAMA7G54 MPU support
 * Add an application demo to support SOM1EK board
 * Add an application demo to support WL SOM1EK board
-* Add support for ov2640 and ov5640 Image sensor
-* Add 1080p support in IMX219.
+* Add ov2640 and ov5640 Image sensor
+* Add 1080p support in IMX219 Image sensor
+
+### Fixed Known Issues
+
 * dynamically configure CSI N lanes & Bit rate
 * Add Applications demo for sama7G5-ek board
 * Replace Width and Height Image sensor MCC configuration with Resolution configuration
@@ -29,8 +32,6 @@ nav_order: 99
 * indent & format source code.
 * regenerate libcamera_display vision application code.
 * SAMA7G5: saving frames to MSD is very slow.
-* Add SAMA5D2 MPU support
-* Add support for ov2640 and ov5640 Image sensor
 * add new api to start and stop ISC capture
 * add a api to get FPS info.
 * Fix IMX219 to output 30fps for vga resolution

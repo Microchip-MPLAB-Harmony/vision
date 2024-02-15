@@ -15,7 +15,7 @@ This application demonstrates the use of  MIPI CSI DPHY, CSI2DC, ISC and LVDS pe
 | Development Board | ![](../../../../images/sam9x75-ea14j50a.jpg) | [SAM9x75-DDR3-EB](https://www.microchip.com/en-us/development-tool/EA14J50A)|
 | Camera Module | ![](../../../../images/imx219.png) | [imx219 image sensor](https://www.raspberrypi.com/products/camera-module-v2/) |
 | Ribbon Cable | ![](../../../../images/ribbon_cable_uc_376.jpg) | [Ribbon Cable](https://www.amazon.com/dp/B085RW9K13?ref_=cm_sw_r_apin_dp_T969WPBQ2K966HQHVAYZ) is specifically designed for MIPI camera module with one end is 15 Pin 1.0mm Pitch interface and the other end is 22 Pin 0.5mm interface|
-| AC69T88A LVDS display | ![](../../../../images/ac69t88a_lvds_display.jpg) | Contact Microchip sales team|
+| AC69T88A LVDS display | ![](../../../../images/ac69t88a_lvds_display.jpg) | [AC69T88A - MPU32-LVDS-DISPLAY-WVGA](https://www.microchipdirect.com/dev-tools/AC69T88A?allDevTools=true)|
 | LVDS Adapter board | ![](../../../../images/MPU32_EB_LVDS_ADAPTER_REV2.jpg) | Contact Microchip sales team|
 
 ### Demonstration Features
