@@ -36,7 +36,7 @@ def instantiateComponent(component):
     csi2dc_mipi_clock = component.createBooleanSymbol("CSI2DCMIPIClock", None)
     csi2dc_mipi_clock.setLabel("MIPI clock is free-running")
     csi2dc_mipi_clock.setDescription("Indicates the sensor MIPI clock is free-running or clock is gated.")
-    csi2dc_mipi_clock.setDefaultValue(True)
+    csi2dc_mipi_clock.setDefaultValue(False)
     csi2dc_mipi_clock.setVisible(True)
     
     csi2dc_pa = component.createBooleanSymbol("CSI2DCPostAligned", None)

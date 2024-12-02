@@ -30,8 +30,8 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
     {0x015a, 0x03},
     {0x015b, 0x00},
 
-    {0x0160, 0x03},
-    {0x0161, 0x00},
+    {0x0160, 0x06},
+    {0x0161, 0xE3},
 
     {0x0162, 0x0D}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
