@@ -78,6 +78,7 @@ void CSI_Exit_Reset_DPhy(void)
 
 void CSI_Configure_DataId(uint8_t id, uint8_t vchannel, uint8_t datatype)
 {
+#if 0  
     switch (id)
     {
     case 0:
@@ -113,6 +114,7 @@ void CSI_Configure_DataId(uint8_t id, uint8_t vchannel, uint8_t datatype)
         CSI_REGS->CSI_DATA_IDS_2 |= CSI_DATA_IDS_2_DI7_VC(vchannel);
         break;
     }
+#endif    
 }
 
 void CSI_Analog_Init(uint8_t bit_rate, uint8_t nlanes)

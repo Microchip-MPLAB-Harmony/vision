@@ -1,12 +1,13 @@
 
-#ifndef ISC_DRV_H    /* Guard against multiple inclusion */
-#define ISC_DRV_H
+#ifndef CAMERA_H    /* Guard against multiple inclusion */
+#define CAMERA_H
 
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "configuration.h"
 #include "system/system_module.h"
 #include "vision/drivers/image_sensor/drv_image_sensor.h"
 #include "vision/drivers/isc/drv_isc.h"
@@ -119,7 +120,7 @@ uint32_t CAMERA_Get_FPS();
 }
 #endif
 
-#endif /* ISC_DRV_H */
+#endif /* CAMERA_H */
 
 /* *****************************************************************************
  End of File

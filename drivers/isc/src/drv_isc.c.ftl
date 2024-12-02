@@ -45,7 +45,7 @@ void ISC_Handler(void)
 
         if (DrvISCObj.dma.callback)
             DrvISCObj.dma.callback((uintptr_t)&DrvISCObj);
-        printf("\r\n frameIndex =%d  status = 0x%lx\r\n", DrvISCObj.frameIndex, status);
+        //printf("\r\n frameIndex =%d  status = 0x%lx\r\n", DrvISCObj.frameIndex, status);
     }
     ISC_Enable_Interrupt(ISC_INTEN_DDONE_Msk);
     // ToDo Handle other interrupts.
