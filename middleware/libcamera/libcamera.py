@@ -62,4 +62,14 @@ def instantiateComponent(component):
     LIBCAMERA_INIT_C.setOutputName("core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_DRIVERS")
     LIBCAMERA_INIT_C.setSourcePath("templates/camera_initialize.c.ftl")
     LIBCAMERA_INIT_C.setMarkup(True)
+    
+    LIBCAMERA_ENABLE_DEBUG = component.createBooleanSymbol("LibcameraEnableDebug", None)
+    LIBCAMERA_ENABLE_DEBUG.setLabel("Enable Debug Messages")
+    LIBCAMERA_ENABLE_DEBUG.setDefaultValue(False)
+    
+    LIBCAMERA_CONFIG = component.createFileSymbol("LIBCAMERA_CONFIG_H", None)
+    LIBCAMERA_CONFIG.setType("STRING")
+    LIBCAMERA_CONFIG.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
+    LIBCAMERA_CONFIG.setSourcePath("templates/camera_defines.ftl")
+    LIBCAMERA_CONFIG.setMarkup(True)
 

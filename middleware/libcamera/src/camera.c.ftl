@@ -46,6 +46,8 @@
 #include "system/time/sys_time.h"
 #include "vision/peripheral/isc/plib_isc.h"
 
+#define debug_print(args ...) if (CAMERA_ENABLE_DEBUG) fprintf(stderr, args)
+
 // ToDO Instead of fixed memory, Implement a memory pool
 __attribute__((__section__(".region_cache"))) __attribute__((__aligned__(32))) static uint8_t GBuffer[1920 * 1080 * 4 * DMA_MAX_BUFFERS];
 
@@ -120,7 +122,7 @@ static void updateFps_Callback(uintptr_t context)
     {
         pDrvObject->fpsCount = fpsCounter;
         fpsCounter = 0;
-        printf("\r\n\t FPS = %ld \r\n", pDrvObject->fpsCount);
+        debug_print("\r\n\t FPS = %ld \r\n", pDrvObject->fpsCount);
     }
 }
 
@@ -232,7 +234,7 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject)
 
     DRV_ISC_Configure(pDrvObject->iscObj);
 
-    printf("\n\r CAMERA_configure: Done \n\r");
+    debug_print("\n\r CAMERA_configure: Done \n\r");
 
     return true;
 }
@@ -301,13 +303,13 @@ bool CAMERA_Start_Capture(SYS_MODULE_OBJ object)
         return false;
     }
 
-    printf("\n\r ISC_Drv_Start_Capture : Start \n\r");
+    debug_print("\n\r ISC_Drv_Start_Capture : Start \n\r");
 
     DRV_ImageSensor_Start(pDrvObject->sensor);
 
     if (DRV_ISC_Start_Capture(pDrvObject->iscObj) == false)
     {
-        printf("\n\r DRV_ISC_Start_Capture : Failed \n\r");
+        debug_print("\n\r DRV_ISC_Start_Capture : Failed \n\r");
         return false;
     }
 
@@ -326,7 +328,7 @@ bool CAMERA_Start_Capture(SYS_MODULE_OBJ object)
         fpsCounter = 0;
     }
 
-    printf("\n\r ISC_Drv_Start_Capture : Done \n\r");
+    debug_print("\n\r ISC_Drv_Start_Capture : Done \n\r");
     return true;
 }
 
@@ -344,7 +346,7 @@ bool CAMERA_Open(SYS_MODULE_OBJ object)
         return false;
     }
 
-    printf("\r\n CAMERA_Open: Start\r\n");
+    debug_print("\r\n CAMERA_Open: Start\r\n");
 
     if (pDrvObject->sensor)
     {
@@ -352,7 +354,7 @@ bool CAMERA_Open(SYS_MODULE_OBJ object)
                                       pDrvObject->imageSensorResolution,
                                       pDrvObject->imageSensorOutputFormat) != DRV_IMAGE_SENSOR_SUCCESS)
         {
-            printf("\r\n Sensor setup failed.\r\n");
+            debug_print("\r\n Sensor setup failed.\r\n");
         }
 
         if (DRV_ImageSensor_GetConfig(pDrvObject->sensor,
@@ -362,10 +364,10 @@ bool CAMERA_Open(SYS_MODULE_OBJ object)
                                       &pDrvObject->imageWidth,
                                       &pDrvObject->imageHeight) == DRV_IMAGE_SENSOR_SUCCESS)
         {
-            printf("\r\n Image Sensor Configurations: \r\n");
-            printf("\r\n\t OutputBitWidth = %d \r\n", (pDrvObject->imageSensorOutputBitWidth + 8));
-            printf("\r\n\t imageWidth = %ld \r\n", pDrvObject->imageWidth);
-            printf("\r\n\t imageHeight = %ld \r\n", pDrvObject->imageHeight);
+            debug_print("\r\n Image Sensor Configurations: \r\n");
+            debug_print("\r\n\t OutputBitWidth = %d \r\n", (pDrvObject->imageSensorOutputBitWidth + 8));
+            debug_print("\r\n\t imageWidth = %ld \r\n", pDrvObject->imageWidth);
+            debug_print("\r\n\t imageHeight = %ld \r\n", pDrvObject->imageHeight);
         }
     }
 
@@ -402,18 +404,18 @@ bool CAMERA_Open(SYS_MODULE_OBJ object)
 
     CAMERA_configure(pDrvObject);
 
-    printf("\r\n CAMERA_Open: End\r\n");
+    debug_print("\r\n CAMERA_Open: End\r\n");
 
     return true;
 }
 
 SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
 {
-    printf("\r\n CAMERA_Initialize : START\r\n");
+    debug_print("\r\n CAMERA_Initialize : START\r\n");
 
     if (init == NULL)
     {
-        printf("\r\nCamera: Init is Null\r\n");
+        debug_print("\r\nCamera: Init is Null\r\n");
         return SYS_MODULE_OBJ_INVALID;
     }
 
@@ -423,7 +425,7 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
     pDrvInstance->iscObj = DRV_ISC_Initialize();
     if (pDrvInstance->iscObj == NULL)
     {
-        printf("\r\nCamera: DRV_ISC_Initialize Failed \r\n");
+        debug_print("\r\nCamera: DRV_ISC_Initialize Failed \r\n");
         return SYS_MODULE_OBJ_INVALID;
     }
 
@@ -443,7 +445,7 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
         pDrvInstance->sensor =  DRV_ImageSensor_Init(pInit->drvI2CIndex, pInit->imageSensorName);
         if (pDrvInstance->sensor == NULL)
         {
-            printf("\r\nCamera: DRV_ImageSensor_Init Failed \r\n");
+            debug_print("\r\nCamera: DRV_ImageSensor_Init Failed \r\n");
             return SYS_MODULE_OBJ_INVALID;
         }
 
@@ -475,7 +477,7 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
                                       pDrvInstance->imageSensorResolution,
                                       pDrvInstance->imageSensorOutputFormat) != DRV_IMAGE_SENSOR_SUCCESS)
         {
-            printf("\r\n Sensor setup failed.\r\n");
+            debug_print("\r\n Sensor setup failed.\r\n");
         }
 
         if (DRV_ImageSensor_GetConfig(pDrvInstance->sensor,
@@ -485,15 +487,15 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
                                       &pDrvInstance->imageWidth,
                                       &pDrvInstance->imageHeight) == DRV_IMAGE_SENSOR_SUCCESS)
         {
-            printf("\r\n Image Sensor Configurations: \r\n");
-            printf("\r\n\t OutputBitWidth = 0x%x \r\n", pDrvInstance->imageSensorOutputBitWidth + 8);
-            printf("\r\n\t imageWidth = %ld \r\n", pDrvInstance->imageWidth);
-            printf("\r\n\t imageHeight = %ld \r\n", pDrvInstance->imageHeight);
+            debug_print("\r\n Image Sensor Configurations: \r\n");
+            debug_print("\r\n\t OutputBitWidth = 0x%x \r\n", pDrvInstance->imageSensorOutputBitWidth + 8);
+            debug_print("\r\n\t imageWidth = %ld \r\n", pDrvInstance->imageWidth);
+            debug_print("\r\n\t imageHeight = %ld \r\n", pDrvInstance->imageHeight);
         }
     }
     else
     {
-        printf("\r\nCamera: Invalid I2C Driver Index\r\n");
+        debug_print("\r\nCamera: Invalid I2C Driver Index\r\n");
         return SYS_MODULE_OBJ_INVALID;
     }
 
@@ -520,14 +522,14 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
     pDrvInstance->csi2dcObj = DRV_CSI2DC_Initalize();
     if (pDrvInstance->csi2dcObj == NULL)
     {
-        printf("\r\nCamera: DRV_CSI2DC_Initalize Failed \r\n");
+        debug_print("\r\nCamera: DRV_CSI2DC_Initalize Failed \r\n");
         return SYS_MODULE_OBJ_INVALID;
     }
 
     pDrvInstance->csiObj = DRV_CSI_Initalize();
     if (pDrvInstance->csiObj == NULL)
     {
-        printf("\r\nCamera: DRV_CSI_Initalize Failed \r\n");
+        debug_print("\r\nCamera: DRV_CSI_Initalize Failed \r\n");
         return SYS_MODULE_OBJ_INVALID;
     }
 
@@ -613,7 +615,7 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
     pDrvInstance->fpsTimer = SYS_TIME_HANDLE_INVALID;
     pDrvInstance->fpsCount = 0;
 
-    printf("\r\n CAMERA_Initialize : END\r\n");
+    debug_print("\r\n CAMERA_Initialize : END\r\n");
 
     return (SYS_MODULE_OBJ)pDrvInstance;
 }

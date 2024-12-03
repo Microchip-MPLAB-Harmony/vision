@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "configuration.h"
 #include "device.h"
 #include "system/cache/sys_cache.h"
 #include "system/debug/sys_debug.h"
@@ -12,6 +13,8 @@
 
 #include "vision/drivers/image_sensor/drv_image_sensor.h"
 #include "vision/drivers/isc/drv_isc.h"
+
+#define debug_print(args ...) if (CAMERA_ENABLE_DEBUG) fprintf(stderr, args)
 
 typedef union
 {
@@ -45,7 +48,7 @@ void ISC_Handler(void)
 
         if (DrvISCObj.dma.callback)
             DrvISCObj.dma.callback((uintptr_t)&DrvISCObj);
-        //printf("\r\n frameIndex =%d  status = 0x%lx\r\n", DrvISCObj.frameIndex, status);
+        //debug_print("\r\n frameIndex =%d  status = 0x%lx\r\n", DrvISCObj.frameIndex, status);
     }
     ISC_Enable_Interrupt(ISC_INTEN_DDONE_Msk);
     // ToDo Handle other interrupts.
@@ -77,7 +80,7 @@ bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj)
 
     if (count <= 0)
     {
-        printf("\n\r ISC_Start_Capture timeout \n\r");
+        debug_print("\n\r ISC_Start_Capture timeout \n\r");
         return false;
     }
 

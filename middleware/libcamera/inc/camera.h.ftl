@@ -19,7 +19,6 @@
 #include "vision/peripheral/csi2dc/plib_csi2dc.h"
 #endif
 
-
 #define DMA_MAX_BUFFERS		(4)
 #define COUNTER_FREQ		(1)
 
