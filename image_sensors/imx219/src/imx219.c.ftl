@@ -25,16 +25,17 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
     {0x012A, 0x18}, //EXCLK_FREQ[15:8]
     {0x012B, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
-    {0x0157, 0x40},
+    {0x0157, 0xc4}, //ANA_GAIN_GLOBAL_A
 
-    {0x015a, 0x03},
-    {0x015b, 0x00},
+    {0x015a, 0x0A},
+    {0x015b, 0xE8},
 
-    {0x0160, 0x06},
-    {0x0161, 0xE3},
+    {0x0160, 0x06}, //FRAME_LENGHT_A[15:8]
+    {0x0161, 0xE3}, //FRAME_LENGHT_B[7:0]
 
     {0x0162, 0x0D}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
+    
     {0x0164, 0x01}, //XADD_STA_A[11:8]
     {0x0165, 0x48}, //XADD_STA_A[7:0]
     {0x0166, 0x0B}, //XADD_END_A[11:8]
@@ -52,8 +53,12 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
 
     {0x0170, 0x01}, //X_ODD_INC_A
     {0x0171, 0x01}, //Y_ODD_INC_A
+    
+    {0x0172, 0x00}, //image_orientation
+    
     {0x0174, 0x02}, //BINNING_MODE_H_A
     {0x0175, 0x02}, //BINNING_MODE_V_A
+    
     {0x018C, 0x0A}, //CSI_DATA_FORMAT_A [15:8]
     {0x018D, 0x0A}, //CSI_DATA_FORMAT_A [7:0] = RAW10
 
