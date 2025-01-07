@@ -80,14 +80,14 @@ def instantiateComponent(component):
         isc_isp_clk_sel.setVisible(True)
 
     isc_isp_clk_div = component.createIntegerSymbol("PLIB_ISC_ISP_CLK_DIV", isc_clk_menu)
-    isc_isp_clk_div.setLabel("MCK clock divider")
-    isc_isp_clk_div.setDescription("ISC MClock divider value")
+    isc_isp_clk_div.setLabel("ISP Clock divider")
+    isc_isp_clk_div.setDescription("ISP Clock divider value")
     isc_isp_clk_div.setDefaultValue(2)
     isc_isp_clk_div.setMin(0)
     if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
-        isc_isp_clk_sel.setVisible(False)
+        isc_isp_clk_div.setVisible(False)
     else:
-        isc_isp_clk_sel.setVisible(True)
+        isc_isp_clk_div.setVisible(True)
 
     isc_polarity_menu = component.createMenuSymbol("PLIB_ISC_PolarityMenu", None)
     isc_polarity_menu.setLabel("Polarity Settings")
