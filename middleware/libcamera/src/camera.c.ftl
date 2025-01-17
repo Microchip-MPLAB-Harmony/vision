@@ -88,7 +88,7 @@ typedef struct
     uint32_t drvI2CIndex;
     uint32_t bufferSize;
     bool enableFps;
-    uint32_t fpsCount;
+    volatile uint32_t fpsCount;
     SYS_TIME_HANDLE fpsTimer;
     DRV_ISC_OBJ* iscObj;
     DRV_IMAGE_SENSOR_OBJ* sensor;
@@ -101,13 +101,10 @@ typedef struct
 /* Camera Driver instance object */
 DEVICE_OBJECT DrvCameraInstances;
 
-static uint32_t fpsCounter;
 CAMERA_CALLBACK_OBJECT CameraCallbackObj;
 
 static void CAMERA_ISC_Callback(uintptr_t context)
 {
-    fpsCounter++;
-
     if (CameraCallbackObj.callback_fn != NULL)
     {
         CameraCallbackObj.callback_fn(CameraCallbackObj.context);
@@ -116,13 +113,12 @@ static void CAMERA_ISC_Callback(uintptr_t context)
 
 static void updateFps_Callback(uintptr_t context)
 {
-
     DEVICE_OBJECT* pDrvObject = (DEVICE_OBJECT*)context;
     if (pDrvObject != NULL)
     {
-        pDrvObject->fpsCount = fpsCounter;
-        fpsCounter = 0;
-        debug_print("\r\n\t FPS = %ld \r\n", pDrvObject->fpsCount);
+        pDrvObject->fpsCount = (pDrvObject->iscObj->frameCount);
+        pDrvObject->iscObj->frameCount = 0;
+        debug_print("\r\n\t fps = %ld\r\n", pDrvObject->fpsCount);
     }
 }
 
@@ -297,7 +293,6 @@ bool CAMERA_Stop_Capture(SYS_MODULE_OBJ object)
         {
             pDrvObject->fpsTimer = SYS_TIME_HANDLE_INVALID;
             pDrvObject->fpsCount = 0;
-            fpsCounter = 0;
         }
     }
 
@@ -335,7 +330,6 @@ bool CAMERA_Start_Capture(SYS_MODULE_OBJ object)
                                1000,
                                SYS_TIME_PERIODIC);
         pDrvObject->fpsCount = 0;
-        fpsCounter = 0;
     }
 
     debug_print("\n\r ISC_Drv_Start_Capture : Done \n\r");

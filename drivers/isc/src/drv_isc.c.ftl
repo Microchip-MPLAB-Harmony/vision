@@ -38,9 +38,9 @@ static void DelayUS(uint32_t us)
 void ISC_Handler(void)
 {
     volatile const uint32_t status = ISC_Interrupt_Status();
-    ISC_Disable_Interrupt(ISC_INTEN_DDONE_Msk);
     if ((status & ISC_INTSR_DDONE_Msk) == ISC_INTSR_DDONE_Msk)
     {
+        ISC_Disable_Interrupt(ISC_INTEN_DDONE_Msk);
         if (DrvISCObj.frameIndex == (DrvISCObj.dmaDescSize - 1))
             DrvISCObj.frameIndex = 0;
         else
@@ -48,9 +48,12 @@ void ISC_Handler(void)
 
         if (DrvISCObj.dma.callback)
             DrvISCObj.dma.callback((uintptr_t)&DrvISCObj);
-        //debug_print("\r\n frameIndex =%d  status = 0x%lx\r\n", DrvISCObj.frameIndex, status);
+        ISC_Enable_Interrupt(ISC_INTEN_DDONE_Msk);
     }
-    ISC_Enable_Interrupt(ISC_INTEN_DDONE_Msk);
+    if ((status & ISC_INTSR_VD_Msk) == ISC_INTSR_VD_Msk)
+    {
+        DrvISCObj.frameCount++;
+    }
     // ToDo Handle other interrupts.
 }
 
@@ -362,7 +365,7 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
 
     ISC_Update_Profile();
 
-    ISC_Enable_Interrupt(ISC_INTEN_DDONE_Msk);
+    ISC_Enable_Interrupt(ISC_INTEN_Msk);
 
     ISC_Interrupt_Status();
 

@@ -135,6 +135,7 @@ typedef struct
     uint16_t imageHeight;
     uint16_t outputWidth;
     uint16_t outputHeight;
+    volatile uint32_t frameCount;
     DRV_ISC_DMA dma;
 } DRV_ISC_OBJ;
 

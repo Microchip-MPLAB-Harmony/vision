@@ -19,8 +19,7 @@
 #include "vision/peripheral/csi2dc/plib_csi2dc.h"
 #endif
 
-#define DMA_MAX_BUFFERS		(4)
-#define COUNTER_FREQ		(1)
+#define DMA_MAX_BUFFERS		(2)
 
 /** Video frame buffer size calculation */
 #define FRAME_BUFFER_SIZE(W,H,BPP)	((W)*(H)* (BPP/8))
