@@ -42,6 +42,9 @@ const CAMERA_INIT drvCAMERAInitData =
     .iscEnableVideoMode            = ISC_ENABLE_VIDEO_MODE,
     .iscEnableBightnessAndContrast = ISC_ENABLE_BRIGHTNESS_CONTRAST,
     .iscEnableProgressiveMode      = ISC_ENABLE_PROGRESSIVE_MODE,
+    .iscEnableScaling              = ISC_ENABLE_SCALING,
+    .iscScaleImageWidth            = ISC_SCALE_OUTPUT_WIDTH,
+    .iscScaleImageHeight           = ISC_SCALE_OUTPUT_HEIGHT,
 #if ISC_ENABLE_MIPI_INTERFACE	
     .csiDataFormat                 = CSI_DATA_FORMAT_TYPE,
 #endif	

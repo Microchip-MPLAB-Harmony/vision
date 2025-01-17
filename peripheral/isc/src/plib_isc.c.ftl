@@ -537,6 +537,26 @@ void ISC_Scaler_Destination_Size(uint16_t hxsize, uint16_t vxsize)
 {
     ISC_REGS->ISC_VHXS_DS = ISC_VHXS_DS_XD(hxsize) | ISC_VHXS_DS_YD(vxsize);
 }
+
+void ISC_Scaler_Vertical_Scaling_Factor(uint32_t vxfact)
+{
+    ISC_REGS->ISC_VXS_FACT = ISC_VXS_FACT_VFACT(vxfact);
+}
+
+void ISC_Scaler_Horizontal_Scaling_Factor(uint32_t hxfact)
+{
+    ISC_REGS->ISC_HXS_FACT = ISC_HXS_FACT_HFACT(hxfact);
+}
+
+void ISC_Scaler_Configure_Vertical_Scaling()
+{
+    ISC_REGS->ISC_VXS_CFG = ISC_VXS_CFG_FILTCFG(0) | ISC_VXS_CFG_TAP2(1);
+}
+
+void ISC_Scaler_Configure_Horizontal_Scaling()
+{
+     ISC_REGS->ISC_HXS_CFG = ISC_HXS_CFG_FILTCFG(0) | ISC_HXS_CFG_TAP2(1);
+}
 #endif
 
 /**

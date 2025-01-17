@@ -287,6 +287,26 @@ def instantiateComponent(component):
     isc_pm = component.createBooleanSymbol("ISCEnableProgressiveMode", None)
     isc_pm.setLabel("Enable Progressive Mode")
     isc_pm.setDefaultValue(True)
+    
+    isc_scale_menu = component.createMenuSymbol("ISCScalingMenu", None)
+    isc_scale_menu.setLabel("Scaling Settings")
+    isc_scale_menu.setDescription("Contains the ISC Scaling Settings.")
+    
+    isc_scaler = component.createBooleanSymbol("ISCEnableScaling", isc_scale_menu)
+    isc_scaler.setLabel("Enable Scaling")
+    isc_scaler.setDefaultValue(False)
+
+    isc_scaler_output_width = component.createIntegerSymbol("ISCScaleOutputWidth", isc_scale_menu)
+    isc_scaler_output_width.setLabel("Output Width size")
+    isc_scaler_output_width.setDescription("ISC Output Width Size value ")
+    isc_scaler_output_width.setDefaultValue(0)
+    isc_scaler_output_width.setMin(0)
+
+    isc_scaler_output_height = component.createIntegerSymbol("ISCScaleOutputHeight", isc_scale_menu)
+    isc_scaler_output_height.setLabel("Output Height size")
+    isc_scaler_output_height.setDescription("ISC Output Height Size value ")
+    isc_scaler_output_height.setDefaultValue(0)
+    isc_scaler_output_height.setMin(0)
 
     DRV_ISC_C = component.createFileSymbol("DRV_ISC_C", None)
     DRV_ISC_C.setDestPath("vision/drivers/isc/")

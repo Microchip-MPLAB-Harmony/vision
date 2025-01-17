@@ -93,6 +93,9 @@ typedef struct
     bool iscEnableVideoMode;
     bool iscEnableBightnessAndContrast;
     bool iscEnableProgressiveMode;
+    bool iscEnableScaling;
+    uint16_t iscScaleImageWidth;
+    uint16_t iscScaleImageHeight;
 } CAMERA_INIT;
 
 SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init);

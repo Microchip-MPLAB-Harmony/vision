@@ -225,8 +225,10 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject)
         break;
     }
     }
-
-    pDrvObject->bufferSize = FRAME_BUFFER_SIZE(pDrvObject->imageWidth, pDrvObject->imageHeight, bpp);
+    if(pDrvObject->iscObj->enableScaling)
+        pDrvObject->bufferSize = FRAME_BUFFER_SIZE(pDrvObject->iscObj->outputWidth, pDrvObject->iscObj->outputHeight, bpp);
+    else
+        pDrvObject->bufferSize = FRAME_BUFFER_SIZE(pDrvObject->imageWidth, pDrvObject->imageHeight, bpp);
     pDrvObject->iscObj->dma.address0 = (uint32_t) GBuffer;
     pDrvObject->iscObj->dma.size = pDrvObject->bufferSize;
     pDrvObject->iscObj->dma.callback = CAMERA_ISC_Callback;
@@ -260,8 +262,16 @@ bool CAMERA_Get_Frame(SYS_MODULE_OBJ object,
     index = (pDrvObject->iscObj->frameIndex == 0) ? (DMA_MAX_BUFFERS - 1) : (pDrvObject->iscObj->frameIndex - 1);
     *buffer = (uint32_t)GBuffer + (index * pDrvObject->bufferSize);
 
-    *width = pDrvObject->imageWidth;
-    *height = pDrvObject->imageHeight;
+    if(pDrvObject->iscObj->enableScaling)
+    {
+        *width = pDrvObject->iscObj->outputWidth;
+        *height = pDrvObject->iscObj->outputHeight;
+    }
+    else
+    {
+        *width = pDrvObject->imageWidth;
+        *height = pDrvObject->imageHeight;
+    }
 
     return true;
 }
@@ -610,7 +620,20 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
 
     if (pDrvInstance->imageHeight <= 0)
         pDrvInstance->imageHeight = DEFAULT_FRAME_HEIGHT;
-
+    
+    pDrvInstance->iscObj->imageWidth = pDrvInstance->imageWidth;
+    pDrvInstance->iscObj->imageHeight = pDrvInstance->imageHeight;
+    
+    pDrvInstance->iscObj->enableScaling = pInit->iscEnableScaling;
+    pDrvInstance->iscObj->outputWidth = pInit->iscScaleImageWidth;
+    pDrvInstance->iscObj->outputHeight = pInit->iscScaleImageHeight;
+    
+    if (pDrvInstance->iscObj->outputWidth <= 0)
+        pDrvInstance->iscObj->outputWidth = pDrvInstance->iscObj->imageWidth;
+    
+    if (pDrvInstance->iscObj->outputHeight <= 0)
+        pDrvInstance->iscObj->outputHeight = pDrvInstance->iscObj->imageHeight;
+    
     pDrvInstance->enableFps = true;
     pDrvInstance->fpsTimer = SYS_TIME_HANDLE_INVALID;
     pDrvInstance->fpsCount = 0;

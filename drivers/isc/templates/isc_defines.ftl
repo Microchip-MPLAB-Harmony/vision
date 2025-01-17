@@ -108,6 +108,13 @@
 <#else>
 	<#lt>#define ISC_ENABLE_PROGRESSIVE_MODE		false
 </#if>
+<#if ISCEnableScaling == true>
+	<#lt>#define ISC_ENABLE_SCALING		true
+<#else>
+	<#lt>#define ISC_ENABLE_SCALING		false
+</#if>
+#define ISC_SCALE_OUTPUT_WIDTH				${ISCScaleOutputWidth}
+#define ISC_SCALE_OUTPUT_HEIGHT				${ISCScaleOutputHeight}
 <#--
 /*******************************************************************************
  End of File

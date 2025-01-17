@@ -130,6 +130,11 @@ typedef struct
     bool enableVideoMode;
     bool enableMIPI;
     bool enableProgressiveMode;
+    bool enableScaling;
+    uint16_t imageWidth;
+    uint16_t imageHeight;
+    uint16_t outputWidth;
+    uint16_t outputHeight;
     DRV_ISC_DMA dma;
 } DRV_ISC_OBJ;
 
@@ -138,6 +143,8 @@ DRV_ISC_OBJ* DRV_ISC_Initialize(void);
 uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj);
 
 uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj);
+
+void DRV_ISC_Configure_Scaler(DRV_ISC_OBJ* iscObj);
 
 bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj);
 

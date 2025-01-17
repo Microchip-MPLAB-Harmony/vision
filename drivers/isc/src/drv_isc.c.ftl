@@ -178,6 +178,22 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj)
     return ISC_SUCCESS;
 }
 
+void DRV_ISC_Configure_Scaler(DRV_ISC_OBJ* iscObj)
+{
+    if(iscObj->enableScaling)
+    {     
+        ISC_Scaler_Enable(1, 1);
+        ISC_Scaler_Source_Size(iscObj->imageWidth - 1, iscObj->imageHeight - 1);
+        ISC_Scaler_Destination_Size(iscObj->outputWidth - 1, iscObj->outputHeight - 1);
+        uint32_t vfactor = (uint32_t)((uint64_t)(iscObj->imageHeight << 20)/iscObj->outputHeight);
+        ISC_Scaler_Vertical_Scaling_Factor(vfactor);
+        uint32_t hfactor =  (uint32_t)((uint64_t)(iscObj->imageWidth << 20)/iscObj->outputWidth);
+        ISC_Scaler_Horizontal_Scaling_Factor(hfactor);
+        ISC_Scaler_Configure_Vertical_Scaling();
+        ISC_Scaler_Configure_Horizontal_Scaling();        
+    }
+}
+
 uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
 {
     uint32_t i;
@@ -280,7 +296,9 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
                                    iscObj->whiteBalance.greenRedGain, \
                                    iscObj->whiteBalance.blueGain, \
                                    iscObj->whiteBalance.greenBlueGain);
-        }
+        }        
+        
+        DRV_ISC_Configure_Scaler(iscObj);    
 
         if (iscObj->cbc.enableCBC)
         {

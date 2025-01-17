@@ -133,6 +133,10 @@ void ISC_Gamma_Configure(uint16_t* r_gam_constant, uint16_t* r_gam_slope,
 void ISC_Scaler_Enable(uint8_t h_enable, uint8_t v_enable);
 void ISC_Scaler_Source_Size(uint16_t hxsize, uint16_t vxsize);
 void ISC_Scaler_Destination_Size(uint16_t hxsize, uint16_t vxsize);
+void ISC_Scaler_Vertical_Scaling_Factor(uint32_t vxfact);
+void ISC_Scaler_Horizontal_Scaling_Factor(uint32_t hxfact);
+void ISC_Scaler_Configure_Vertical_Scaling();
+void ISC_Scaler_Configure_Horizontal_Scaling();
 #endif
 
 void ISC_CSC_Enable(uint8_t enabled);
