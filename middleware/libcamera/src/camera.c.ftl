@@ -40,7 +40,6 @@
 #include <stdio.h>
 #include "camera.h"
 #include "device.h"
-#include "peripheral/pio/plib_pio.h"
 #include "system/debug/sys_debug.h"
 #include "system/int/sys_int.h"
 #include "system/time/sys_time.h"
@@ -120,14 +119,6 @@ static void updateFps_Callback(uintptr_t context)
         pDrvObject->iscObj->frameCount = 0;
         debug_print("\r\n\t fps = %ld\r\n", pDrvObject->fpsCount);
     }
-}
-
-static void DelayMS(uint32_t us)
-{
-    SYS_TIME_HANDLE timer = SYS_TIME_HANDLE_INVALID;
-    if (SYS_TIME_DelayMS(us, &timer) != SYS_TIME_SUCCESS)
-        return;
-    while (SYS_TIME_DelayIsComplete(timer) == false);
 }
 
 void CAMERA_Register_CallBack(const CAMERA_CALLBACK eventHandler,
@@ -432,17 +423,6 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
         debug_print("\r\nCamera: DRV_ISC_Initialize Failed \r\n");
         return SYS_MODULE_OBJ_INVALID;
     }
-
-#ifndef CAMERA_RESET_PIN
-#error "Configure CAMERA_RESET_PIN is not configured in pin configuration"
-#else
-#ifdef CAMERA_PWD_PIN
-    CAMERA_PWD_Clear();
-#endif
-    CAMERA_RESET_Clear();
-    CAMERA_RESET_Set();
-    DelayMS(10);
-#endif
 
     if (pInit->drvI2CIndex >= 0)
     {
