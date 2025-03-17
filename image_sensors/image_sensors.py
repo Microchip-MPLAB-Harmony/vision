@@ -29,6 +29,7 @@ def instantiateComponent(component):
     image_sensor_type.addKey("AutoDectect", "AutoDectect", "AutoDectect")
     image_sensor_type.addKey("OV2640", "OV2640", "OV2640")
     image_sensor_type.addKey("OV5640", "OV5640", "OV5640")
+    image_sensor_type.addKey("OV5647", "OV5640", "OV5647")
     image_sensor_type.addKey("IMX219", "IMX219", "IMX219")
     image_sensor_type.setOutputMode("Value")
     image_sensor_type.setDisplayMode("Description")
@@ -83,7 +84,7 @@ def instantiateComponent(component):
     image_sensor_bit_width.setDisplayMode("Description")
     image_sensor_bit_width.setDefaultValue(2)
     image_sensor_bit_width.setVisible(True)
-    
+
     OV2640_C = component.createFileSymbol("OV2640_C", None)
     OV2640_C.setDestPath("vision/image_sensors/ov2640/")
     OV2640_C.setOutputName("ov2640.c")
@@ -91,7 +92,15 @@ def instantiateComponent(component):
     OV2640_C.setType("SOURCE")
     OV2640_C.setMarkup(True)
     OV2640_C.setSourcePath("ov2640/src/ov2640.c.ftl")
-    
+
+    OV5647_C = component.createFileSymbol("OV5647_C", None)
+    OV5647_C.setDestPath("vision/image_sensors/ov5647/")
+    OV5647_C.setOutputName("ov5647.c")
+    OV5647_C.setProjectPath("config/" + Variables.get("__CONFIGURATION_NAME") + "/vision/image_sensors/ov5647")
+    OV5647_C.setType("SOURCE")
+    OV5647_C.setMarkup(True)
+    OV5647_C.setSourcePath("ov5647/src/ov5647.c.ftl")
+
     OV5640_C = component.createFileSymbol("OV5640_C", None)
     OV5640_C.setDestPath("vision/image_sensors/ov5640/")
     OV5640_C.setOutputName("ov5640.c")
@@ -99,7 +108,7 @@ def instantiateComponent(component):
     OV5640_C.setType("SOURCE")
     OV5640_C.setMarkup(True)
     OV5640_C.setSourcePath("ov5640/src/ov5640.c.ftl")
-    
+
     IMX219_C = component.createFileSymbol("IMX219_C", None)
     IMX219_C.setDestPath("vision/image_sensors/imx219/")
     IMX219_C.setOutputName("imx219.c")
@@ -107,7 +116,7 @@ def instantiateComponent(component):
     IMX219_C.setType("SOURCE")
     IMX219_C.setMarkup(True)
     IMX219_C.setSourcePath("imx219/src/imx219.c.ftl")
-    
+
     IMAGE_SENSOR_CONFIG_H = component.createFileSymbol("IMAGE_SENSOR_CONFIG_H", None)
     IMAGE_SENSOR_CONFIG_H.setType("STRING")
     IMAGE_SENSOR_CONFIG_H.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")

@@ -100,6 +100,7 @@ typedef struct
 
 extern const DRV_IMAGE_SENSOR_OBJ ov2640_device;
 extern const DRV_IMAGE_SENSOR_OBJ ov5640_device;
+extern const DRV_IMAGE_SENSOR_OBJ ov5647_device;
 extern const DRV_IMAGE_SENSOR_OBJ imx219_device;
 
 DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Probe(DRV_HANDLE drvI2CHandle, bool detect_auto, uint8_t id);

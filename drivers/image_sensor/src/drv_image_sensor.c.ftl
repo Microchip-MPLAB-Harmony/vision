@@ -12,9 +12,10 @@
 
 static const DRV_IMAGE_SENSOR_OBJ* Devices[DRV_IMAGE_SENSOR_MAX_DEVICES] =
 {
+    &imx219_device,
+    &ov5647_device,
     &ov2640_device,
     &ov5640_device,
-    &imx219_device,
 };
 
 
@@ -423,11 +424,8 @@ DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Init(uint32_t drvI2CIndex, const char* dev
     if (sensor != NULL)
     {
         debug_print("\r\n Found %s Image Sensor \r\n", sensor->name);
+        return sensor;
     }
-    else
-    {
-        debug_print("\r\n Image Sensor probe failed.\r\n");
-        return NULL;
-    }
-    return sensor;
+    debug_print("\r\n Image Sensor probe failed.\r\n");
+    return NULL;
 }
