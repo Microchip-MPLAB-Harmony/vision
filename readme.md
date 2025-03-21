@@ -46,7 +46,8 @@ The key features of the MPLAB® Harmony Vision are the following:
 |      |   image_sensor | Control interface Driver for the Image sensors | ![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 | library    | libcamera | Vision library | ![app-beta](https://img.shields.io/badge/library-beta-orange?style=plastic) |
 | image_sensors | driver | different Image sensor configurations| ![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
-|      | IMX219 | MIPI-CSI2 Sony IMX219 Image Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
+|      | IMX219 | MIPI-CSI2 Sony IMX219 MIPI CSI Image Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
+|      | OV5647 | OminiVision OV5647 MIPI CSI mage Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 |      | OV5640 | OminiVision OV5640 Parallel interface Image Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 |      | OV2640 | OminiVision OV2640 Parallel interface Image Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 | apps | examples | Vision Example applications | ![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
@@ -57,8 +58,8 @@ The key features of the MPLAB® Harmony Vision are the following:
 
 | Category | Item | Description | Release Type |
 | --- | --- | ---- |---- |
-|  apps | [libcamera_display](./apps/libcamera_display/readme.md) | This application capture live frames from an image sensor and display it on LCD dispaly. | ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
-|     | [libcamera_usb](./apps/libcamera_usb/readme.md) | This application capture a frame from a image sensor and the captured frame is saved to a bmp file and copied to a USB drive. | ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
+|  apps | [SAM9x75_Curiosity](./apps/sam9x75_curiosity/readme.md) | This application captures real-time frames from an image sensor and displays them on an LCD screen.| ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
+|     | [libcamera_usb](./apps/libcamera_usb/readme.md) | This application is designed to capture a frame from an image sensor, subsequently saving the captured frame as a BMP file. Once saved, the file is then transferred to a USB drive.| ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
 
 ____
 
