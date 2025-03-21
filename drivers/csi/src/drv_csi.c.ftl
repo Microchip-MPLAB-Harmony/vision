@@ -40,7 +40,7 @@
 
 #include "configuration.h"
 #include "vision/drivers/csi/drv_csi.h"
-#include "vision/peripheral/csi/plib_csi.h"
+#include "vision/drivers/csi/plib_csi.h"
 
 #define debug_print(args ...) if (CAMERA_ENABLE_DEBUG) fprintf(stderr, args)
 

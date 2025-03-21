@@ -39,9 +39,9 @@
 *******************************************************************************/
 
 #include "configuration.h"
-#include "vision/drivers/csi2dc/drv_csi2dc.h"
-#include "vision/peripheral/csi2dc/plib_csi2dc.h"
-#include "vision/peripheral/csi/plib_csi.h"
+#include "vision/drivers/csi/drv_csi2dc.h"
+#include "vision/drivers/csi/plib_csi.h"
+#include "vision/drivers/csi/plib_csi2dc.h"
 #include "system/int/sys_int.h"
 
 static DRV_CSI2DC_OBJ csi2dcObj;

@@ -51,9 +51,7 @@ def instantiateComponent(component):
 	DRV_IMAGE_SENSOR_CONFIG_H.setSourcePath("templates/image_sensor_defines.ftl")
 	DRV_IMAGE_SENSOR_CONFIG_H.setMarkup(True)
 	
-def onAttachmentConnected(source, target):
-	print(component)
-	
+def onAttachmentConnected(source, target):	
 	if source["id"] == "i2c":
 		I2CIndex = source["component"].getSymbolByID("IMAGE_SENSOR_I2C_INDEX")
 		I2CIndex.setValue(int(target["component"].getID()[-1]), 1)

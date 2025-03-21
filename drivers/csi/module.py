@@ -28,7 +28,6 @@ def loadModule():
         component = Module.CreateComponent("vision_driver_csi", "Camera Serial Interface(CSI)", "/Vision/Drivers", "csi.py")
         component.setDisplayType("Driver")
         component.addCapability("vision_driver_csi", "DRV_CSI", False)
-        component.addDependency("vision_peripheral_csi", "CSI", False, True)
         component.addDependency("vision_image_sensor_data_bus", "ImageSensor Data Bus", False)
     else:
         print("CSI module not loaded.  No support for " + str(Variables.get("__PROCESSOR")))

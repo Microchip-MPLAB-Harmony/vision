@@ -23,7 +23,11 @@
 ##############################################################################
 
 def instantiateComponent(component):
-    isc_input_format = component.createKeyValueSetSymbol("ISCInputFormatType", None)
+    isc_drv_menu = component.createMenuSymbol("ISCDriver", None)
+    isc_drv_menu.setLabel("ISC Driver Settings")
+    isc_drv_menu.setDescription("ISC Driver Settings.")
+    
+    isc_input_format = component.createKeyValueSetSymbol("ISCInputFormatType", isc_drv_menu)
     isc_input_format.setLabel("Input Format")
     isc_input_format.setDescription("Must match the Output format selected in Sensor Device.")
     isc_input_format.addKey("RAW_BAYER", "DRV_IMAGE_SENSOR_RAW_BAYER", "RAW_BAYER")
@@ -37,7 +41,7 @@ def instantiateComponent(component):
     isc_input_format.setDefaultValue(0)
     isc_input_format.setVisible(True)
 
-    isc_input_bits = component.createKeyValueSetSymbol("ISCInputBitWidth", None)
+    isc_input_bits = component.createKeyValueSetSymbol("ISCInputBitWidth", isc_drv_menu)
     isc_input_bits.setLabel("Bit Width")
     isc_input_bits.setDescription("Must match the outpur bus width selected in Sensor Device")
     isc_input_bits.addKey("BIT_8", "DRV_IMAGE_SENSOR_8_BIT", "BIT_8")
@@ -54,7 +58,7 @@ def instantiateComponent(component):
         isc_input_bits.setDefaultValue(0)
     isc_input_bits.setVisible(True)
 
-    isc_output_format = component.createKeyValueSetSymbol("ISCOutputFormatType", None)
+    isc_output_format = component.createKeyValueSetSymbol("ISCOutputFormatType", isc_drv_menu)
     isc_output_format.setLabel("Output Format")
     isc_output_format.setDescription("Output Format")
     isc_output_format.addKey("RLP_MODE_DAT8", "ISC_RLP_CFG_MODE_DAT8", "RLP_MODE_DAT8")
@@ -81,7 +85,7 @@ def instantiateComponent(component):
         isc_output_format.setDefaultValue(9)
     isc_output_format.setVisible(True)
 
-    isc_output_layout = component.createKeyValueSetSymbol("ISCOutputLayoutType", None)
+    isc_output_layout = component.createKeyValueSetSymbol("ISCOutputLayoutType", isc_drv_menu)
     isc_output_layout.setLabel("Outpur Layout Format")
     isc_output_layout.setDescription("Outpur Layout Format")
     isc_output_layout.addKey("LAYOUT_PACKED8", "ISC_LAYOUT_PACKED8", "LAYOUT_PACKED8")
@@ -100,7 +104,7 @@ def instantiateComponent(component):
         isc_output_layout.setDefaultValue(1)
     isc_output_layout.setVisible(True)
 
-    isc_bayer_pattern = component.createKeyValueSetSymbol("ISCBayerPatternType", None)
+    isc_bayer_pattern = component.createKeyValueSetSymbol("ISCBayerPatternType", isc_drv_menu)
     isc_bayer_pattern.setLabel("Bayer Pattern Type")
     isc_bayer_pattern.setDescription("Bayer Mode")
     isc_bayer_pattern.addKey("BayerPattern_GRGR", "ISC_CFA_CFG_BAYCFG_GRGR_Val", "BayerPattern_GRGR")
@@ -115,7 +119,7 @@ def instantiateComponent(component):
         isc_bayer_pattern.setDefaultValue(3)
     isc_bayer_pattern.setVisible(True)
 
-    isc_gamma_menu = component.createMenuSymbol("ISCGammaMenu", None)
+    isc_gamma_menu = component.createMenuSymbol("ISCGammaMenu", isc_drv_menu)
     isc_gamma_menu.setLabel("Gamma Settings")
     isc_gamma_menu.setDescription("ISC Gamma Settings.")
 
@@ -144,7 +148,7 @@ def instantiateComponent(component):
     else:
         isc_gamma_blue.setDefaultValue(False)
 
-    isc_wb_menu = component.createMenuSymbol("ISCWhiteBalanceMenu", None)
+    isc_wb_menu = component.createMenuSymbol("ISCWhiteBalanceMenu", isc_drv_menu)
     isc_wb_menu.setLabel("WhiteBalance Settings")
     isc_wb_menu.setDescription("Contains the ISC White Balance Settings.")
 
@@ -224,22 +228,22 @@ def instantiateComponent(component):
         isc_wb_GB_Gain.setDefaultValue(512)
     isc_wb_GB_Gain.setMin(0)
 
-    isc_hg = component.createBooleanSymbol("ISCEnableHistogram", None)
+    isc_hg = component.createBooleanSymbol("ISCEnableHistogram", isc_drv_menu)
     isc_hg.setLabel("Enable Histogram")
     isc_hg.setDefaultValue(False)
 
-    isc_mipi = component.createBooleanSymbol("ISCEnableMIPI", None)
+    isc_mipi = component.createBooleanSymbol("ISCEnableMIPI", isc_drv_menu)
     isc_mipi.setLabel("Enable MIPI Interface")
     if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
         isc_mipi.setDefaultValue(True)
     else:
         isc_mipi.setDefaultValue(False)
 
-    isc_vm = component.createBooleanSymbol("ISCEnableVideoMode", None)
+    isc_vm = component.createBooleanSymbol("ISCEnableVideoMode", isc_drv_menu)
     isc_vm.setLabel("Continuous Video Mode")
     isc_vm.setDefaultValue(True)
 
-    isc_cbhs_menu = component.createMenuSymbol("ISCBightnessAndContrastMenu", None)
+    isc_cbhs_menu = component.createMenuSymbol("ISCBightnessAndContrastMenu", isc_drv_menu)
     isc_cbhs_menu.setLabel("Bightness And Contrast Settings")
     isc_cbhs_menu.setDescription("Contains the ISC White Balance Settings.")
 
@@ -284,11 +288,11 @@ def instantiateComponent(component):
         isc_saturation.setDefaultValue(0)
         isc_saturation.setVisible(False)
 
-    isc_pm = component.createBooleanSymbol("ISCEnableProgressiveMode", None)
+    isc_pm = component.createBooleanSymbol("ISCEnableProgressiveMode", isc_drv_menu)
     isc_pm.setLabel("Enable Progressive Mode")
     isc_pm.setDefaultValue(True)
     
-    isc_scale_menu = component.createMenuSymbol("ISCScalingMenu", None)
+    isc_scale_menu = component.createMenuSymbol("ISCScalingMenu", isc_drv_menu)
     isc_scale_menu.setLabel("Scaling Settings")
     isc_scale_menu.setDescription("Contains the ISC Scaling Settings.")
     
@@ -307,6 +311,82 @@ def instantiateComponent(component):
     isc_scaler_output_height.setDescription("ISC Output Height Size value ")
     isc_scaler_output_height.setDefaultValue(0)
     isc_scaler_output_height.setMin(0)
+    
+    isc_plib_menu = component.createMenuSymbol("ISCPeripheralLibrary", None)
+    isc_plib_menu.setLabel("ISC Peripheral Library Settings")
+    isc_plib_menu.setDescription("ISC Peripheral Library Settings.")
+    
+    isc_clk_menu = component.createMenuSymbol("PLIB_ISC_ClockMenu", isc_plib_menu)
+    isc_clk_menu.setLabel("ISC Clock Configuration")
+    isc_clk_menu.setDescription("Contains ISC Clock Configuration Settings.")
+
+    isc_mck_sel = component.createKeyValueSetSymbol("PLIB_ISC_MCK_SEL", isc_clk_menu)
+    isc_mck_sel.setLabel("MCK Source Selection")
+    isc_mck_sel.setDescription("ISC_MCK selectable clock sources")
+    isc_mck_sel.addKey("hclock", "0", "hclock")
+    isc_mck_sel.addKey("iscclk", "1", "iscclk")
+    isc_mck_sel.addKey("gclk", "2", "gclk")
+    isc_mck_sel.setOutputMode("Value")
+    isc_mck_sel.setDisplayMode("Description")
+    isc_mck_sel.setDefaultValue(0)
+    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
+        isc_mck_sel.setVisible(False)
+    else:
+        isc_mck_sel.setVisible(True)
+
+    isc_mck_div = component.createIntegerSymbol("PLIB_ISC_MCK_DIV", isc_clk_menu)
+    isc_mck_div.setLabel("MCK clock divider")
+    isc_mck_div.setDescription("ISC MClock divider value")
+    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
+        isc_mck_div.setDefaultValue(0)
+    else:
+        isc_mck_div.setDefaultValue(7)
+
+    isc_isp_clk_sel = component.createKeyValueSetSymbol("PLIB_ISC_ISP_CLK_SEL", isc_clk_menu)
+    isc_isp_clk_sel.setLabel("ISP Clock Source Selection")
+    isc_isp_clk_sel.setDescription("ISP Clock selectable clock sources")
+    isc_isp_clk_sel.addKey("hclock", "0", "hclock")
+    isc_isp_clk_sel.addKey("iscclk", "1", "iscclk")
+    isc_isp_clk_sel.addKey("gclk", "2", "gclk")
+    isc_isp_clk_sel.setOutputMode("Value")
+    isc_isp_clk_sel.setDisplayMode("Description")
+    isc_isp_clk_sel.setDefaultValue(0)
+    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
+        isc_isp_clk_sel.setVisible(False)
+    else:
+        isc_isp_clk_sel.setVisible(True)
+
+    isc_isp_clk_div = component.createIntegerSymbol("PLIB_ISC_ISP_CLK_DIV", isc_clk_menu)
+    isc_isp_clk_div.setLabel("ISP Clock divider")
+    isc_isp_clk_div.setDescription("ISP Clock divider value")
+    isc_isp_clk_div.setDefaultValue(2)
+    isc_isp_clk_div.setMin(0)
+    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
+        isc_isp_clk_div.setVisible(False)
+    else:
+        isc_isp_clk_div.setVisible(True)
+
+    isc_polarity_menu = component.createMenuSymbol("PLIB_ISC_PolarityMenu", isc_plib_menu)
+    isc_polarity_menu.setLabel("Polarity Settings")
+    isc_polarity_menu.setDescription("Contains the ISC polarity values.")
+
+    isc_hsync_polarity = component.createIntegerSymbol("PLIB_ISC_HSYNC_POLARITY", isc_polarity_menu)
+    isc_hsync_polarity.setLabel("HSYNC Polarity")
+    isc_hsync_polarity.setDescription("HSYNC signal is active high, i.e. valid pixels are sampled when HSYNC is asserted" 
+                             "HSYNC signal is active low, i.e. valid pixels are sampled when HSYNC is deasserted")
+    isc_hsync_polarity.setDefaultValue(0)
+    isc_hsync_polarity.setMax(1)
+
+    isc_vsync_polarity = component.createIntegerSymbol("PLIB_ISC_VSYNC_POLARITY", isc_polarity_menu)
+    isc_vsync_polarity.setLabel("VSYNC Polarity")
+    isc_vsync_polarity.setDescription("VSYNC signal is active high, i.e. valid pixels are sampled when VSYNC is asserted" 
+                             "VSYNC signal is active low, i.e. valid pixels are sampled when VSYNC is deasserted")
+    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
+        isc_vsync_polarity.setDefaultValue(0)
+    else:
+        isc_vsync_polarity.setDefaultValue(1)
+    isc_vsync_polarity.setMin(0)
+    isc_vsync_polarity.setMax(1)
 
     DRV_ISC_C = component.createFileSymbol("DRV_ISC_C", None)
     DRV_ISC_C.setDestPath("vision/drivers/isc/")
@@ -323,9 +403,31 @@ def instantiateComponent(component):
     DRV_ISC_H.setType("HEADER")
     DRV_ISC_H.setMarkup(True)
     DRV_ISC_H.setSourcePath("inc/drv_isc.h.ftl")
+    
+    PLIB_ISC_C = component.createFileSymbol("PLIB_ISC_C", None)
+    PLIB_ISC_C.setDestPath("vision/drivers/isc/")
+    PLIB_ISC_C.setOutputName("plib_isc.c")
+    PLIB_ISC_C.setProjectPath("config/" + Variables.get("__CONFIGURATION_NAME") + "/vision/drivers/isc")
+    PLIB_ISC_C.setType("SOURCE")
+    PLIB_ISC_C.setMarkup(True)
+    PLIB_ISC_C.setSourcePath("src/plib_isc.c.ftl")
+    
+    PLIB_ISC_H = component.createFileSymbol("PLIB_ISC_H", None)
+    PLIB_ISC_H.setDestPath("vision/drivers/isc/")
+    PLIB_ISC_H.setOutputName("plib_isc.h")
+    PLIB_ISC_H.setProjectPath("config/" + Variables.get("__CONFIGURATION_NAME") + "/vision/drivers/isc")
+    PLIB_ISC_H.setType("HEADER")
+    PLIB_ISC_H.setMarkup(True)
+    PLIB_ISC_H.setSourcePath("inc/plib_isc.h.ftl")
 
     DRV_ISC_CONFIG = component.createFileSymbol("DRV_ISC_CONFIG_H", None)
     DRV_ISC_CONFIG.setType("STRING")
     DRV_ISC_CONFIG.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
     DRV_ISC_CONFIG.setSourcePath("templates/isc_defines.ftl")
     DRV_ISC_CONFIG.setMarkup(True)
+    
+    PLIB_ISC_CONFIG_H = component.createFileSymbol("PLIB_ISC_CONFIG_H", None)
+    PLIB_ISC_CONFIG_H.setType("STRING")
+    PLIB_ISC_CONFIG_H.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
+    PLIB_ISC_CONFIG_H.setSourcePath("templates/plib_isc_defines.ftl")
+    PLIB_ISC_CONFIG_H.setMarkup(True)

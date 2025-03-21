@@ -28,14 +28,12 @@ def loadModule():
         component = Module.CreateComponent("vision_driver_isc", "Image Sensor Controller(ISC)", "/Vision/Drivers", "isc.py")
         component.setDisplayType("Driver")
         component.addCapability("vision_driver_isc", "DRV_ISC", False)
-        component.addDependency("vision_peripheral_isc", "ISC", False, True)
-        component.addDependency("vision_driver_csi2dc", "DRV_CSI2DC", False, True)
+        component.addDependency("vision_driver_csi", "DRV_CSI", False, True)
     elif any(x in Variables.get("__PROCESSOR") for x in ["SAMA5D2"]):
         print("ISC module loaded to support " + str(Variables.get("__PROCESSOR")))
         component = Module.CreateComponent("vision_driver_isc", "Image Sensor Controller(ISC)", "/Vision/Drivers", "isc.py")
         component.setDisplayType("Driver")
         component.addCapability("vision_driver_isc", "DRV_ISC", False)
-        component.addDependency("vision_peripheral_isc", "ISC", False, True)
         component.addDependency("vision_image_sensor_data_bus", "ImageSensor Data Bus", False)
     else:
         print("ISC module not loaded.  No support for " + str(Variables.get("__PROCESSOR")))

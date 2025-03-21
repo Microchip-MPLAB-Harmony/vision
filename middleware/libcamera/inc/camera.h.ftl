@@ -14,9 +14,9 @@
 
 #if ISC_ENABLE_MIPI_INTERFACE
 #include "vision/drivers/csi/drv_csi.h"
-#include "vision/drivers/csi2dc/drv_csi2dc.h"
-#include "vision/peripheral/csi/plib_csi.h"
-#include "vision/peripheral/csi2dc/plib_csi2dc.h"
+#include "vision/drivers/csi/drv_csi2dc.h"
+#include "vision/drivers/csi/plib_csi.h"
+#include "vision/drivers/csi/plib_csi2dc.h"
 #endif
 
 #define DMA_MAX_BUFFERS		(2)

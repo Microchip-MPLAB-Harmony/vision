@@ -43,7 +43,7 @@
 #include "system/debug/sys_debug.h"
 #include "system/int/sys_int.h"
 #include "system/time/sys_time.h"
-#include "vision/peripheral/isc/plib_isc.h"
+#include "vision/drivers/isc/plib_isc.h"
 
 #define debug_print(args ...) if (CAMERA_ENABLE_DEBUG) fprintf(stderr, args)
 

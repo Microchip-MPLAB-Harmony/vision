@@ -1,7 +1,7 @@
 #ifndef DRV_ISC_H
 #define DRV_ISC_H
 
-#include "vision/peripheral/isc/plib_isc.h"
+#include "vision/drivers/isc/plib_isc.h"
 #include <stdint.h>
 #include <stdbool.h>
 
