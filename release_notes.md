@@ -8,6 +8,45 @@ nav_order: 99
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Vision Release v3.2.0
+
+### New Features
+
+* Introduce support for the SAM9x75 Curiosity Board.
+* Implement a demonstration application for the SAM9x75 Curiosity Board utilizing the IMX219 and NewVision LVDS Display.
+* Implement a demonstration application for the SAM9x75 Curiosity Board utilizing the IMX219 and NewVision AC69T88A Display.
+* Integrate the OV5647 MIPI CSI Image Sensor with support for VGA, 720p, and 1080p resolutions.
+* Enable 720p and 1080p resolution support in the IMX219 Image Sensor.
+* Add image scaling support in the ISC.
+
+### Fixed Known Issues
+
+* Provide options in the MCC to enable or disable log messages.
+* Manage the FPS count based on the VSync detect interrupt.
+* Fix duplicate MCK clock divider entries in the MCC.
+* Configure CAMERA_RESET and CAMERA_PWD peripheral I/O pin settings within the MCC instead of managing them through libcamera.
+* Merge the CSI and CS2DC driver MCC menus, as well as the CSI and CSI2DC PLIBs MCC menus, into a single MCC menu under CSI.
+* Combine the ISC driver menu and ISC PLIB menu into one consolidated MCC menu under ISC.
+* Relocate all PLIB source and header files to their respective modules under drivers.
+* Perform code cleanup and remove any unused code.
+
+### Development Tools
+
+* [MPLAB® X IDE v6.25](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v4.60](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * [MPLAB® Code Configurator Plug-In v5.5.2](https://github.com/Microchip-MPLAB-Harmony/mplabx-plugin)
+    * [MPLAB® Code Configurator Core v5.7.1](https://github.com/Microchip-MPLAB-Harmony/mplabx-plugin)
+
+### Dependent Components
+
+* [dev_packs v3.18.1](https://github.com/Microchip-MPLAB-Harmony/dev_packs/releases/tag/v3.18.1)
+* [csp v3.21.0](https://github.com/Microchip-MPLAB-Harmony/csp/releases/tag/v3.18.2)
+* [core v3.14.2](https://github.com/Microchip-MPLAB-Harmony/core/tree/v3.13.2)
+* [bsp v3.22.0](https://github.com/Microchip-MPLAB-Harmony/bsp/releases/tag/v3.17.0)
+* [Gfx v3.16.0](https://github.com/Microchip-MPLAB-Harmony/core/releases/tag/v3.14.0)
+* [usb v3.15.0](https://github.com/Microchip-MPLAB-Harmony/usb/releases/tag/v3.12.0)
+
 ## Vision Release v3.1.0
 
 ### New Features
