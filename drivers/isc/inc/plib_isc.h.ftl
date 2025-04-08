@@ -135,8 +135,8 @@ void ISC_Scaler_Source_Size(uint16_t hxsize, uint16_t vxsize);
 void ISC_Scaler_Destination_Size(uint16_t hxsize, uint16_t vxsize);
 void ISC_Scaler_Vertical_Scaling_Factor(uint32_t vxfact);
 void ISC_Scaler_Horizontal_Scaling_Factor(uint32_t hxfact);
-void ISC_Scaler_Configure_Vertical_Scaling();
-void ISC_Scaler_Configure_Horizontal_Scaling();
+void ISC_Scaler_Configure_Vertical_Scaling(void);
+void ISC_Scaler_Configure_Horizontal_Scaling(void);
 #endif
 
 void ISC_CSC_Enable(uint8_t enabled);

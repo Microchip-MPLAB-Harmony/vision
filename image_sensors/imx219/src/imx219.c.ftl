@@ -185,6 +185,12 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_1080p[] =
     {0x0128, 0x00}, //DPHY_CTRL => 0=auto mode              //10
     {0x012a, 0x18}, //EXCLK_FREQ[15:8]
     {0x012b, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
+    
+    {0x0157, 0xc4}, //ANA_GAIN_GLOBAL_A
+
+    {0x015a, 0x0A},
+    {0x015b, 0xE8},    
+    
     {0x0162, 0x0d}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
     {0x0164, 0x02}, //XADD_STA_A[11:8]

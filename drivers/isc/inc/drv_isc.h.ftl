@@ -149,7 +149,7 @@ void DRV_ISC_Configure_Scaler(DRV_ISC_OBJ* iscObj);
 
 bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj);
 
-void DRV_ISC_Stop_Capture();
+void DRV_ISC_Stop_Capture(void);
 
 
 #endif  //DRV_ISC_H 

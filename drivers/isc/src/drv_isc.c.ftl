@@ -27,14 +27,6 @@ __attribute__((__section__(".region_cache_aligned")))  __attribute__((__aligned_
 
 static DRV_ISC_OBJ DrvISCObj;
 
-static void DelayUS(uint32_t us)
-{
-    SYS_TIME_HANDLE timer = SYS_TIME_HANDLE_INVALID;
-    if (SYS_TIME_DelayUS(us, &timer) != SYS_TIME_SUCCESS)
-        return;
-    while (SYS_TIME_DelayIsComplete(timer) == false);
-}
-
 void ISC_Handler(void)
 {
     volatile const uint32_t status = ISC_Interrupt_Status();
@@ -64,28 +56,10 @@ void DRV_ISC_Stop_Capture()
 
 bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj)
 {
-    int count = 1000;
-
     if (iscObj == NULL)
         return false;
 
     ISC_Start_Capture();
-
-    while (count--)
-    {
-        if ((ISC_Interrupt_Status() & ISC_INTSR_VD_Msk) == ISC_INTSR_VD(1))
-        {
-            ISC_Start_Capture();
-            break;
-        }
-        DelayUS(1000);
-    }
-
-    if (count <= 0)
-    {
-        debug_print("\n\r ISC_Start_Capture timeout \n\r");
-        return false;
-    }
 
     return true;
 }
