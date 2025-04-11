@@ -1,9 +1,7 @@
-﻿---
-title: Harmony 3 Vision Package
-nav_order: 1
----
+﻿![Microchip logo](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_logo.png)
+![Microchip Technology](./images/mh.png)
 
-# ![Microchip Technology](./images/mh.png) MPLAB® Harmony 3 Vision Package
+# MPLAB® Harmony 3 Vision Package
 
 MPLAB® Harmony 3 is an extension of the MPLAB® ecosystem for creating
 embedded firmware solutions for Microchip 32-bit SAM and PIC® microcontroller
@@ -58,8 +56,8 @@ The key features of the MPLAB® Harmony Vision are the following:
 
 | Category | Item | Description | Release Type |
 | --- | --- | ---- |---- |
-|  apps | [SAM9x75_Curiosity](./apps/sam9x75_curiosity/readme.md) | This application captures real-time frames from an image sensor and displays them on an LCD screen.| ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
-|     | [libcamera_usb](./apps/libcamera_usb/readme.md) | This application is designed to capture a frame from an image sensor, subsequently saving the captured frame as a BMP file. Once saved, the file is then transferred to a USB drive.| ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
+|  apps | [SAM9x75_Curiosity](./apps/readme.md) | This application captures real-time frames from an image sensor and displays them on an LCD screen.| ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
+|     | [sama7g54_ek](./apps/readme.md) | This application is designed to capture a frame from an image sensor, subsequently saving the captured frame as a BMP file. Once saved, the file is then transferred to a USB drive.| ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
 
 ____
 

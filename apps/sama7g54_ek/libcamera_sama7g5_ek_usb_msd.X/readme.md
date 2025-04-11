@@ -1,4 +1,3 @@
-
 ![](../../../images/mh.png)
 
 libcamera_sama7g5_ek_usb_msd.X

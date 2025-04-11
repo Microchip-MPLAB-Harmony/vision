@@ -1,9 +1,4 @@
-﻿---
-title: Release notes
-nav_order: 99
----
-
-![Microchip logo](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_logo.png)
+﻿![Microchip logo](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_logo.png)
 ![Harmony logo small](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_mplab_harmony_logo_small.png)
 
 # Microchip MPLAB® Harmony 3 Release Notes
@@ -40,7 +35,6 @@ nav_order: 99
 
 ### Dependent Components
 
-* [dev_packs v3.18.1](https://github.com/Microchip-MPLAB-Harmony/dev_packs/releases/tag/v3.18.1)
 * [csp v3.21.0](https://github.com/Microchip-MPLAB-Harmony/csp/releases/tag/v3.18.2)
 * [core v3.14.2](https://github.com/Microchip-MPLAB-Harmony/core/tree/v3.13.2)
 * [bsp v3.22.0](https://github.com/Microchip-MPLAB-Harmony/bsp/releases/tag/v3.17.0)

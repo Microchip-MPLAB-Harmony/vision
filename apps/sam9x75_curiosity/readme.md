@@ -1,9 +1,3 @@
----
-parent: Vision Example Applications
-title: Libcamera Display
-nav_order: 1
----
-
 # Camera Demo Applications
 
 This application captures video frames directly from the image sensor module through either a MIPI CSI-2 or a Parallel interface. It then displays the acquired frames on the screen using the following development boards.
