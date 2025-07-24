@@ -9,8 +9,7 @@
 #define IMX219_CHIPIDL            0x19
 #define IMX219_CHIPID_MASK        0xFFFF
 
-static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
-{
+static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] ={
     {0x0100, 0x00},
     //Begin - Acces command sequence to access in this address area "0x3000-0x5FFF"
     {0x30EB, 0x05},
@@ -25,17 +24,15 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
     {0x012A, 0x18}, //EXCLK_FREQ[15:8]
     {0x012B, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
-    {0x0157, 0xc4}, //ANA_GAIN_GLOBAL_A
-
-    {0x015a, 0x0A},
-    {0x015b, 0xE8},
+    {0x015a, 0x07},
+    {0x015b, 0x00},
 
     {0x0160, 0x06}, //FRAME_LENGHT_A[15:8]
     {0x0161, 0xE3}, //FRAME_LENGHT_B[7:0]
 
     {0x0162, 0x0D}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
-    
+
     {0x0164, 0x01}, //XADD_STA_A[11:8]
     {0x0165, 0x48}, //XADD_STA_A[7:0]
     {0x0166, 0x0B}, //XADD_END_A[11:8]
@@ -53,12 +50,12 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
 
     {0x0170, 0x01}, //X_ODD_INC_A
     {0x0171, 0x01}, //Y_ODD_INC_A
-    
+
     {0x0172, 0x00}, //image_orientation
-    
+
     {0x0174, 0x02}, //BINNING_MODE_H_A
     {0x0175, 0x02}, //BINNING_MODE_V_A
-    
+
     {0x018C, 0x0A}, //CSI_DATA_FORMAT_A [15:8]
     {0x018D, 0x0A}, //CSI_DATA_FORMAT_A [7:0] = RAW10
 
@@ -88,8 +85,7 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] =
-{
+static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] ={
     {0x0100, 0x00},
     //Begin - Acces command sequence to access in this address area "0x3000-0x5FFF"
     {0x30EB, 0x05},
@@ -104,17 +100,15 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] =
     {0x012A, 0x18}, //EXCLK_FREQ[15:8]
     {0x012B, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
-    {0x0157, 0xc4}, //ANA_GAIN_GLOBAL_A
+    {0x015a, 0x07},
+    {0x015b, 0x00},
 
-    {0x015a, 0x0A},
-    {0x015b, 0xE8},
-
-    {0x0160, 0x06}, //FRAME_LENGHT_A[15:8]
-    {0x0161, 0xE3}, //FRAME_LENGHT_B[7:0]
+    {0x0160, 0x02}, //FRAME_LENGHT_A[15:8]
+    {0x0161, 0xE4}, //FRAME_LENGHT_B[7:0]
 
     {0x0162, 0x0D}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
-    
+
     {0x0164, 0x01}, //XADD_STA_A[11:8]
     {0x0165, 0x48}, //XADD_STA_A[7:0]
     {0x0166, 0x0B}, //XADD_END_A[11:8]
@@ -132,12 +126,12 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] =
 
     {0x0170, 0x01}, //X_ODD_INC_A
     {0x0171, 0x01}, //Y_ODD_INC_A
-    
+
     {0x0172, 0x00}, //image_orientation
-    
+
     {0x0174, 0x03}, //BINNING_MODE_H_A
     {0x0175, 0x03}, //BINNING_MODE_V_A
-    
+
     {0x018C, 0x0A}, //CSI_DATA_FORMAT_A [15:8]
     {0x018D, 0x0A}, //CSI_DATA_FORMAT_A [7:0] = RAW10
 
@@ -168,8 +162,7 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG imx219_raw_1080p[] =
-{
+static const DRV_IMAGE_SENSOR_REG imx219_raw_1080p[] ={
     {0x0100, 0x00},
     //Begin - Acces command sequence to access in this address area "0x3000-0x5FFF"
     {0x30eb, 0x05},
@@ -185,12 +178,13 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_1080p[] =
     {0x0128, 0x00}, //DPHY_CTRL => 0=auto mode              //10
     {0x012a, 0x18}, //EXCLK_FREQ[15:8]
     {0x012b, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
-    
-    {0x0157, 0xc4}, //ANA_GAIN_GLOBAL_A
 
-    {0x015a, 0x0A},
-    {0x015b, 0xE8},    
-    
+    {0x015a, 0x07},
+    {0x015b, 0x00},
+
+    {0x0160, 0x04}, // frame length lines = 1113
+    {0x0161, 0x42},
+
     {0x0162, 0x0d}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
     {0x0164, 0x02}, //XADD_STA_A[11:8]
@@ -256,18 +250,17 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_1080p[] =
     {0x4713, 0x30},
     {0x478b, 0x10},
     {0x478f, 0x10},
-    {0x4793, 0x10},                                         //70
+    {0x4793, 0x10}, //70
     {0x4797, 0x0e},
     {0x479b, 0x0e},
     {0x0162, 0x0d},
     {0x0163, 0x78},
 
-    {0x0100, 0x01}, /* mode select streaming off */         //75
+    {0x0100, 0x01}, /* mode select streaming off */ //75
     {0xFF, 0xFF},
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_vga_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_vga_config ={
     0,
     DRV_IMAGE_SENSOR_VGA,
     DRV_IMAGE_SENSOR_RAW_BAYER,
@@ -278,8 +271,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_vga_config =
     imx219_raw_vga
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_720p_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_720p_config ={
     0,
     DRV_IMAGE_SENSOR_720P,
     DRV_IMAGE_SENSOR_RAW_BAYER,
@@ -290,8 +282,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_720p_config =
     imx219_raw_720p
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_1080p_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_1080p_config ={
     0,
     DRV_IMAGE_SENSOR_1080P,
     DRV_IMAGE_SENSOR_RAW_BAYER,
@@ -302,16 +293,15 @@ static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_1080p_config =
     imx219_raw_1080p
 };
 
-const DRV_IMAGE_SENSOR_OBJ imx219_device =
-{
+const DRV_IMAGE_SENSOR_OBJ imx219_device ={
     "IMX219",
     IMX219_SLAVE_ADDRESS,
-    DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,    /* I2C interface mode  */
-    IMX219_CHIPIDH_ADDRESS,             /* Register address for product ID high byte */
-    IMX219_CHIPIDL_ADDRESS,             /* Register address for product ID low byte*/
-    IMX219_CHIPIDH,                     /* product ID high byte */
-    IMX219_CHIPIDL,                     /* product ID low byte */
-    IMX219_CHIPID_MASK,             /* version mask */
+    DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE, /* I2C interface mode  */
+    IMX219_CHIPIDH_ADDRESS, /* Register address for product ID high byte */
+    IMX219_CHIPIDL_ADDRESS, /* Register address for product ID low byte*/
+    IMX219_CHIPIDH, /* product ID high byte */
+    IMX219_CHIPIDL, /* product ID low byte */
+    IMX219_CHIPID_MASK, /* version mask */
     0x0100,
     0x01,
     0x00,
@@ -320,5 +310,5 @@ const DRV_IMAGE_SENSOR_OBJ imx219_device =
         &imx219_raw_720p_config,
         &imx219_raw_1080p_config
     },
-    (DRV_HANDLE)NULL
+    (DRV_HANDLE) NULL
 };
