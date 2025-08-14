@@ -241,7 +241,23 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
     switch (iscObj->inputFormat)
     {
     case DRV_IMAGE_SENSOR_RAW_BAYER:
-
+        
+        if (iscObj->dpc.enableBLC) {
+            ISC_Enable_Black_Level(iscObj->dpc.enableBLC, iscObj->dpc.blofstVal);
+        }
+        
+        if (iscObj->dpc.enableGDC) {
+            ISC_Enable_Green_Correction(iscObj->dpc.enableGDC, iscObj->dpc.gdcclpVal);
+        }
+        
+        if (iscObj->dpc.enableDPC) {
+            ISC_Enable_Defective_Pixel_Correction(iscObj->dpc.enableDPC);
+            ISC_DPC_Configure(iscObj->dpc.bayerPattern, iscObj->dpc.enableEITPOL,
+                    iscObj->dpc.enableTM, iscObj->dpc.enableTA, iscObj->dpc.enableTC,
+                    iscObj->dpc.reModeVal, iscObj->dpc.ndModeVal, iscObj->dpc.ThreshMVal,
+                    iscObj->dpc.ThreshAVal, iscObj->dpc.ThreshCVal);
+        }
+        
         if (iscObj->gamma.enableGamma)
         {
             if ((!iscObj->gamma.greenEntries) ||

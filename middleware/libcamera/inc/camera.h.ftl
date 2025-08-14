@@ -85,6 +85,9 @@ typedef struct
     uint32_t imageWidth;
     uint32_t imageHeight;
     uint32_t drvI2CIndex;
+    bool iscEnableDPC;
+    bool iscEnableGDC;
+    bool iscEnableBLC;
     bool iscEnableGamma;
     bool iscEnableMIPI;
     bool iscEnableWhiteBalance;

@@ -235,6 +235,53 @@ void ISC_Enable_Green_Correction(uint8_t enable, uint8_t clip)
         ISC_REGS->ISC_DPC_CTRL &= ~ISC_DPC_CTRL_GDCEN(1);
     }
 }
+
+/**
+ *  Defective Pixel Correction.
+ */
+void ISC_Enable_Defective_Pixel_Correction(uint8_t enable)
+{
+    if (enable)
+    {
+        ISC_REGS->ISC_DPC_CTRL |= ISC_DPC_CTRL_DPCEN(1);
+    }
+    else
+    {
+        ISC_REGS->ISC_DPC_CTRL &= ~ISC_DPC_CTRL_DPCEN(1);
+    }    
+}
+
+void ISC_DPC_Configure(uint8_t bayerPattern, uint8_t enableEITPOL, uint8_t enableTM,
+        uint8_t enableTA, uint8_t enableTC, uint8_t enableREMode, uint8_t enableNDMode,
+        uint16_t ThreshM, uint16_t ThreshA, uint16_t ThreshC) {
+
+    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_BAYCFG(bayerPattern);
+
+    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_EITPOL(enableEITPOL);
+
+    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_TM_ENABLE(enableTM);
+
+    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_TA_ENABLE(enableTA);
+
+    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_TC_ENABLE(enableTC);
+
+    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_RE_MODE(enableREMode);
+
+    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_ND_MODE(enableNDMode);
+
+    if (enableTM) {
+        ISC_REGS->ISC_DPC_THRESHM = ISC_DPC_THRESHM_THRESHM(ThreshM);
+    }
+
+    if (enableTC) {
+        ISC_REGS->ISC_DPC_THRESHC = ISC_DPC_THRESHC_THRESHC(ThreshC);
+    }
+
+    if (enableTA) {
+        ISC_REGS->ISC_DPC_THRESHA = ISC_DPC_THRESHA_THRESHA(ThreshA);
+    }
+}
+
 #endif
 
 /**

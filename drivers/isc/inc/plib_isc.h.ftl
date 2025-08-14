@@ -149,6 +149,10 @@ void ISC_CBC_Configure(uint8_t ccir656, uint8_t byte_order,
 #ifdef ISC_DPC_CTRL_Msk
 void ISC_Enable_Black_Level(uint8_t enable, uint16_t level);
 void ISC_Enable_Green_Correction(uint8_t enable, uint8_t clip);
+void ISC_Enable_Defective_Pixel_Correction(uint8_t enable);
+void ISC_DPC_Configure(uint8_t bayerPattern, uint8_t enableEITPOL, uint8_t enableTM,
+        uint8_t enableTA, uint8_t enableTC, uint8_t enableREMode, uint8_t enableNDMode,
+        uint16_t ThreshM, uint16_t ThreshA, uint16_t ThreshC);
 #endif
 
 #ifdef ISC_CBHS_HUE_Msk

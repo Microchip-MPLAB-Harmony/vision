@@ -119,6 +119,87 @@ def instantiateComponent(component):
         isc_bayer_pattern.setDefaultValue(3)
     isc_bayer_pattern.setVisible(True)
 
+    isc_dpc_menu = component.createMenuSymbol("ISCDPCMenu", isc_drv_menu)
+    isc_dpc_menu.setLabel("Defective pixel correction Settings")
+    isc_dpc_menu.setDescription("ISC Defective pixel correction Settings.")
+
+    isc_dpc = component.createBooleanSymbol("ISCEnableDPC", isc_dpc_menu)
+    isc_dpc.setLabel("Enable Defective Pixel Correction")
+    isc_dpc.setDefaultValue(True)
+
+    isc_blc = component.createBooleanSymbol("ISCEnableBLC", isc_dpc_menu)
+    isc_blc.setLabel("Enable Black level Correction")
+    isc_blc.setDefaultValue(True)
+
+    isc_gdc = component.createBooleanSymbol("ISCEnableGDC", isc_dpc_menu)
+    isc_gdc.setLabel("Enable Green Disparity Correction")
+    isc_gdc.setDefaultValue(True)
+
+    isc_dpc_eipol = component.createBooleanSymbol("ISCEnableEITPOL", isc_dpc_menu)
+    isc_dpc_eipol.setLabel("Enable Edge interpolation")
+    isc_dpc_eipol.setDefaultValue(True)
+
+    isc_dpc_mte= component.createBooleanSymbol("ISCEnableTM", isc_dpc_menu)
+    isc_dpc_mte.setLabel("Enable Median Threshold")
+    isc_dpc_mte.setDefaultValue(True)
+
+    isc_dpc_cte= component.createBooleanSymbol("ISCEnableTC", isc_dpc_menu)
+    isc_dpc_cte.setLabel("Enable Closest Pixels Threshold")
+    isc_dpc_cte.setDefaultValue(True)
+
+    isc_dpc_ate= component.createBooleanSymbol("ISCEnableTA", isc_dpc_menu)
+    isc_dpc_ate.setLabel("Enable Average Threshold Enable")
+    isc_dpc_ate.setDefaultValue(True)
+
+    isc_dpc_ndmode = component.createBooleanSymbol("ISCEnableNDMode", isc_dpc_menu)
+    isc_dpc_ndmode.setLabel("Enable Noise Detection Mode")
+    isc_dpc_ndmode.setDefaultValue(True)
+
+    isc_dpc_remode = component.createKeyValueSetSymbol("ISC_DPC_RE_Mode_VAL", isc_dpc_menu)
+    isc_dpc_remode.setLabel("Replacement Algorithm")
+    isc_dpc_remode.setDescription("Replacement Algorithm Median pixel or Average pixel is used. ")
+    isc_dpc_remode.addKey("MEDIAN_PIXEL", "ISC_DPC_CFG_RE_MODE_0_Val", "MEDIAN_PIXEL")
+    isc_dpc_remode.addKey("AVERAGE_PIXEL", "ISC_DPC_CFG_RE_MODE_1_Val", "AVERAGE_PIXEL")
+    isc_dpc_remode.setDefaultValue(1)
+    isc_dpc_remode.setOutputMode("Value")
+    isc_dpc_remode.setDisplayMode("Description")
+    isc_dpc_remode.setVisible(True)
+
+    isc_dpc_gdcclp = component.createIntegerSymbol("ISC_DPC_GDCCLP_VAL", isc_dpc_menu)
+    isc_dpc_gdcclp.setLabel("ISC Green Disparity Clipping Value")
+    isc_dpc_gdcclp.setDescription("ISC Green Disparity Clipping Value is performed between [-2GDCCLP+1, -2GDCCLP+1-1]")
+    isc_dpc_gdcclp.setDefaultValue(64)
+    isc_dpc_gdcclp.setMin(-127)
+    isc_dpc_gdcclp.setMax(127)
+
+    isc_dpc_blofst = component.createIntegerSymbol("ISC_DCP_BLOFST_VAL", isc_dpc_menu)
+    isc_dpc_blofst.setLabel("ISC Black Level Offset Value")
+    isc_dpc_blofst.setDescription("ISC Black Level Offset Value is unsigned 0:8:0 value")
+    isc_dpc_blofst.setDefaultValue(64)
+    isc_dpc_blofst.setMin(0)
+    isc_dpc_blofst.setMax(255)
+
+    isc_dpc_threshM = component.createIntegerSymbol("ISC_DCP_THRESHM_Val", isc_dpc_menu)
+    isc_dpc_threshM.setLabel("Defective Pixel Correction Median Threshold")
+    isc_dpc_threshM.setDescription("ISC Black Level Offset Value is unsigned 0:8:0 value")
+    isc_dpc_threshM.setDefaultValue(512)
+    isc_dpc_threshM.setMin(0)
+    isc_dpc_threshM.setMax(4095)
+
+    isc_dpc_threshC = component.createIntegerSymbol("ISC_DCP_THRESHC_Val", isc_dpc_menu)
+    isc_dpc_threshC.setLabel("Defective Pixel Correction Closest Threshold")
+    isc_dpc_threshC.setDescription("ISC Black Level Offset Value is unsigned 0:8:0 value")
+    isc_dpc_threshC.setDefaultValue(512)
+    isc_dpc_threshC.setMin(0)
+    isc_dpc_threshC.setMax(4095)
+
+    isc_dpc_threshA = component.createIntegerSymbol("ISC_DCP_THRESHA_Val", isc_dpc_menu)
+    isc_dpc_threshA.setLabel("Defective Pixel Correction Average Threshold")
+    isc_dpc_threshA.setDescription("ISC Black Level Offset Value is unsigned 0:8:0 value")
+    isc_dpc_threshA.setDefaultValue(512)
+    isc_dpc_threshA.setMin(0)
+    isc_dpc_threshA.setMax(4095)
+
     isc_gamma_menu = component.createMenuSymbol("ISCGammaMenu", isc_drv_menu)
     isc_gamma_menu.setLabel("Gamma Settings")
     isc_gamma_menu.setDescription("ISC Gamma Settings.")

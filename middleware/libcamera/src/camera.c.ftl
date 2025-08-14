@@ -138,8 +138,22 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject)
         return false;
     }
 
-    if (pDrvObject->iscObj->gamma.enableGamma)
-    {
+    if (pDrvObject->iscObj->dpc.enableDPC) {
+        pDrvObject->iscObj->dpc.bayerPattern = pDrvObject->iscObj->bayerPattern;
+        pDrvObject->iscObj->dpc.enableEITPOL = ISC_DPC_ENABLE_EITPOL;
+        pDrvObject->iscObj->dpc.enableTM = ISC_DPC_ENABLE_TM;
+        pDrvObject->iscObj->dpc.enableTA = ISC_DPC_ENABLE_TA;
+        pDrvObject->iscObj->dpc.enableTC = ISC_DPC_ENABLE_TC;
+        pDrvObject->iscObj->dpc.ndModeVal = ISC_DPC_ENABLE_ND_MODE;
+        pDrvObject->iscObj->dpc.reModeVal = ISC_DPC_RE_MODE;
+        pDrvObject->iscObj->dpc.gdcclpVal = ISC_DPC_GDCCLP;
+        pDrvObject->iscObj->dpc.blofstVal = ISC_DCP_BLOFST;
+        pDrvObject->iscObj->dpc.ThreshMVal = ISC_DCP_THRESHM;
+        pDrvObject->iscObj->dpc.ThreshAVal = ISC_DCP_THRESHA;
+        pDrvObject->iscObj->dpc.ThreshCVal = ISC_DCP_THRESHC;
+    }
+
+    if (pDrvObject->iscObj->gamma.enableGamma) {
         pDrvObject->iscObj->gamma.enableBiPart = true;
         pDrvObject->iscObj->gamma.enableRed = ISC_GAMMA_RED_ENTRIES;
         pDrvObject->iscObj->gamma.enableGreen = ISC_GAMMA_GREEN_ENTRIES;
@@ -576,6 +590,12 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT* const init)
     {
         pDrvInstance->iscObj->inputBits = DRV_IMAGE_SENSOR_10_BIT;
     }
+
+    pDrvInstance->iscObj->dpc.enableDPC = pInit->iscEnableDPC;
+
+    pDrvInstance->iscObj->dpc.enableGDC = pInit->iscEnableGDC;
+
+    pDrvInstance->iscObj->dpc.enableBLC = pInit->iscEnableBLC;
 
     pDrvInstance->iscObj->enableVideoMode = pInit->iscEnableVideoMode;
 

@@ -46,6 +46,52 @@
 #define ISC_OUTPUT_FORMAT_TYPE			${ISCOutputFormatType}
 #define ISC_OUTPUT_LAYOUT_TYPE			${ISCOutputLayoutType}
 #define ISC_BAYER_PATTERN_TYPE			${ISCBayerPatternType}
+<#if ISCEnableDPC == true>
+	<#lt>#define ISC_ENABLE_DPC			true
+<#else>
+	<#lt>#define ISC_ENABLE_DPC			false
+</#if>
+<#if ISCEnableBLC == true>
+	<#lt>#define ISC_ENABLE_BLC			true
+<#else>
+	<#lt>#define ISC_ENABLE_BLC			false
+</#if>
+<#if ISCEnableGDC == true>
+	<#lt>#define ISC_ENABLE_GDC			true
+<#else>
+	<#lt>#define ISC_ENABLE_GDC			false
+</#if>
+<#if ISCEnableEITPOL == true>
+	<#lt>#define ISC_DPC_ENABLE_EITPOL		true
+<#else>
+	<#lt>#define ISC_DPC_ENABLE_EITPOL		false
+</#if>
+<#if ISCEnableTM == true>
+	<#lt>#define ISC_DPC_ENABLE_TM			true
+<#else>
+	<#lt>#define ISC_DPC_ENABLE_TM			false
+</#if>
+<#if ISCEnableTC == true>
+	<#lt>#define ISC_DPC_ENABLE_TC			true
+<#else>
+	<#lt>#define ISC_DPC_ENABLE_TC			false
+</#if>
+<#if ISCEnableTA == true>
+	<#lt>#define ISC_DPC_ENABLE_TA			true
+<#else>
+	<#lt>#define ISC_DPC_ENABLE_TA			false
+</#if>
+<#if ISCEnableNDMode == true>
+	<#lt>#define ISC_DPC_ENABLE_ND_MODE		true
+<#else>
+	<#lt>#define ISC_DPC_ENABLE_ND_MODE		false
+</#if>
+#define ISC_DPC_RE_MODE					${ISC_DPC_RE_Mode_VAL}
+#define ISC_DPC_GDCCLP					${ISC_DPC_GDCCLP_VAL}
+#define ISC_DCP_BLOFST					${ISC_DCP_BLOFST_VAL}
+#define ISC_DCP_THRESHM					${ISC_DCP_THRESHM_Val}
+#define ISC_DCP_THRESHC					${ISC_DCP_THRESHC_Val}
+#define ISC_DCP_THRESHA					${ISC_DCP_THRESHA_Val}
 <#if ISCEnableGamma == true>
 	<#lt>#define ISC_ENABLE_GAMMA				true
 <#else>

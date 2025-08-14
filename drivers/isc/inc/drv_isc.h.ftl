@@ -37,8 +37,25 @@ typedef enum
     ISC_LAYOUT_YUY2
 } DRV_ISC_LAYOUT;
 
-typedef struct
-{
+typedef struct {
+    bool enableBLC;
+    bool enableGDC;
+    bool enableDPC;
+    uint16_t blofstVal;
+    uint8_t gdcclpVal;
+    uint8_t reModeVal;
+    uint8_t ndModeVal;
+    bool enableTA;
+    bool enableTC;
+    bool enableTM;
+    bool enableEITPOL;
+    uint8_t bayerPattern;
+    uint16_t ThreshMVal;
+    uint16_t ThreshAVal;
+    uint16_t ThreshCVal;
+} DRV_ISC_DPC;
+
+typedef struct {
     bool enableWB;
     uint32_t redOffset;
     uint32_t greenRedOffset;
@@ -118,6 +135,7 @@ typedef struct
     uint8_t bayerColorFilter;
     uint32_t bayerPattern;
     DRV_ISC_LAYOUT layout;
+    DRV_ISC_DPC dpc;
     PLIB_ISC_COLOR_SPACE* colorSpace;
     DRV_ISC_WB whiteBalance;
     DRV_ISC_GAMMA gamma;
