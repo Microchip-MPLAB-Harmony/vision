@@ -10,8 +10,7 @@
 #define OV2640_CHIPID_MASK      0xFFF0
 
 
-static const DRV_IMAGE_SENSOR_REG ov2640_yuv_qvga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov2640_yuv_qvga[] ={
     {0xff, 0x01},
     {0x12, 0x80},
     {0xff, 0x00},
@@ -241,8 +240,7 @@ static const DRV_IMAGE_SENSOR_REG ov2640_yuv_qvga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov2640_raw_qvga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov2640_raw_qvga[] ={
     {0xff, 0x01},
     {0x12, 0x80},
     {0xff, 0x00},
@@ -472,8 +470,7 @@ static const DRV_IMAGE_SENSOR_REG ov2640_raw_qvga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov2640_yuv_vga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov2640_yuv_vga[] ={
     {0xff, 0x01}, //dsp
     {0x12, 0x80}, //reset
     {0xff, 0x00}, //sensor
@@ -711,8 +708,7 @@ static const DRV_IMAGE_SENSOR_REG ov2640_yuv_vga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov2640_raw_vga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov2640_raw_vga[] ={
     {0xff, 0x01},
     {0x12, 0x80},
     {0xff, 0x00},
@@ -945,8 +941,7 @@ static const DRV_IMAGE_SENSOR_REG ov2640_raw_vga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov2640_raw_wvga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov2640_raw_wvga[] ={
     {0xff, 0x01},
     {0x12, 0x80},
     {0xff, 0x00},
@@ -1179,23 +1174,17 @@ static const DRV_IMAGE_SENSOR_REG ov2640_raw_wvga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_qvga =
-{ 0, DRV_IMAGE_SENSOR_QVGA, DRV_IMAGE_SENSOR_YUV_422, DRV_IMAGE_SENSOR_8_BIT, 1, 320, 240, ov2640_yuv_qvga };
+static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_qvga ={0, DRV_IMAGE_SENSOR_QVGA, DRV_IMAGE_SENSOR_YUV_422, DRV_IMAGE_SENSOR_8_BIT, 1, 320, 240, ov2640_yuv_qvga};
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_raw_qvga =
-{ 0, DRV_IMAGE_SENSOR_QVGA, DRV_IMAGE_SENSOR_RAW_BAYER, DRV_IMAGE_SENSOR_8_BIT, 1, 320, 240, ov2640_raw_qvga };
+static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_raw_qvga ={0, DRV_IMAGE_SENSOR_QVGA, DRV_IMAGE_SENSOR_RAW_BAYER, DRV_IMAGE_SENSOR_8_BIT, 1, 320, 240, ov2640_raw_qvga};
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_vga =
-{ 0, DRV_IMAGE_SENSOR_VGA, DRV_IMAGE_SENSOR_YUV_422, DRV_IMAGE_SENSOR_8_BIT, 1, 640, 480, ov2640_yuv_vga };
+static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_vga ={0, DRV_IMAGE_SENSOR_VGA, DRV_IMAGE_SENSOR_YUV_422, DRV_IMAGE_SENSOR_8_BIT, 1, 640, 480, ov2640_yuv_vga};
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_raw_vga =
-{ 0, DRV_IMAGE_SENSOR_VGA, DRV_IMAGE_SENSOR_RAW_BAYER, DRV_IMAGE_SENSOR_8_BIT, 1, 640, 480, ov2640_raw_vga };
+static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_raw_vga ={0, DRV_IMAGE_SENSOR_VGA, DRV_IMAGE_SENSOR_RAW_BAYER, DRV_IMAGE_SENSOR_8_BIT, 1, 640, 480, ov2640_raw_vga};
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_raw_wvga =
-{ 0, DRV_IMAGE_SENSOR_WVGA, DRV_IMAGE_SENSOR_RAW_BAYER, DRV_IMAGE_SENSOR_8_BIT, 1, 800, 480, ov2640_raw_wvga };
+static const DRV_IMAGE_SENSOR_CONFIGS ov2640_output_raw_wvga ={0, DRV_IMAGE_SENSOR_WVGA, DRV_IMAGE_SENSOR_RAW_BAYER, DRV_IMAGE_SENSOR_8_BIT, 1, 800, 480, ov2640_raw_wvga};
 
-const DRV_IMAGE_SENSOR_OBJ ov2640_device =
-{
+const DRV_IMAGE_SENSOR_OBJ ov2640_device ={
     "OV2640",
     OV2640_SLAVE_ADDRESS,
     DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_BYTE,
@@ -1214,6 +1203,5 @@ const DRV_IMAGE_SENSOR_OBJ ov2640_device =
         &ov2640_output_raw_wvga,
         &ov2640_output_vga,
     },
-    (DRV_HANDLE)NULL
+    (DRV_HANDLE) NULL
 };
-

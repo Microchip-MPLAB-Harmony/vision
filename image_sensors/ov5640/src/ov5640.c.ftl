@@ -10,8 +10,7 @@
 #define OV5640_CHIPID_MASK      0xFFFF
 
 
-static const DRV_IMAGE_SENSOR_REG ov5640_raw_qvga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov5640_raw_qvga[] ={
     {0x3103, 0x11},
     {0x3008, 0x82},
     {0xFFFF, 0x05},
@@ -141,8 +140,7 @@ static const DRV_IMAGE_SENSOR_REG ov5640_raw_qvga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov5640_raw_vga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov5640_raw_vga[] ={
     {0x3103, 0x11},
     {0x3008, 0x82},
     {0xFFFF, 0x05},
@@ -272,8 +270,7 @@ static const DRV_IMAGE_SENSOR_REG ov5640_raw_vga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov5640_raw_wvga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov5640_raw_wvga[] ={
     {0x3103, 0x11},
     {0x3008, 0x82},
     {0xFFFF, 0x05},
@@ -404,8 +401,7 @@ static const DRV_IMAGE_SENSOR_REG ov5640_raw_wvga[] =
 };
 
 
-static const DRV_IMAGE_SENSOR_REG ov5640_yuv_qvga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov5640_yuv_qvga[] ={
     {0x3103, 0x11},
     {0x3008, 0x82},
     {0xFFFF, 0x05},
@@ -708,8 +704,7 @@ static const DRV_IMAGE_SENSOR_REG ov5640_yuv_qvga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov5640_yuv_vga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov5640_yuv_vga[] ={
     {0x3103, 0x11},
     {0x3008, 0x82},
     {0xFFFF, 0x05},
@@ -1009,8 +1004,7 @@ static const DRV_IMAGE_SENSOR_REG ov5640_yuv_vga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov5640_yuv_wxga[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov5640_yuv_wxga[] ={
     {0x3103, 0x11},
     {0x3008, 0x82},
     {0xFFFF, 0x05},
@@ -1358,8 +1352,7 @@ static const DRV_IMAGE_SENSOR_REG ov5640_yuv_wxga[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_REG ov5640_afc[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov5640_afc[] ={
     {0x3000, 0x20},
     {0x8000, 0x02},
     {0x8001, 0x0f},
@@ -5463,8 +5456,7 @@ static const DRV_IMAGE_SENSOR_REG ov5640_afc[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_qvga_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_qvga_config ={
     0,
     DRV_IMAGE_SENSOR_QVGA,
     DRV_IMAGE_SENSOR_YUV_422,
@@ -5475,8 +5467,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_qvga_config =
     ov5640_yuv_qvga
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_qvga_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_qvga_config ={
     0,
     DRV_IMAGE_SENSOR_QVGA,
     DRV_IMAGE_SENSOR_RAW_BAYER,
@@ -5487,8 +5478,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_qvga_config =
     ov5640_raw_qvga
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_vga_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_vga_config ={
     0,
     DRV_IMAGE_SENSOR_VGA,
     DRV_IMAGE_SENSOR_RAW_BAYER,
@@ -5499,8 +5489,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_vga_config =
     ov5640_raw_vga
 };
 
-static const DRV_IMAGE_SENSOR_REG ov5640_jpeg_5mp[] =
-{
+static const DRV_IMAGE_SENSOR_REG ov5640_jpeg_5mp[] ={
     {0x3103, 0x11},
     {0x3008, 0x82},
     {0x3008, 0x42},
@@ -5920,8 +5909,7 @@ static const DRV_IMAGE_SENSOR_REG ov5640_jpeg_5mp[] =
     {0xFF, 0xFF}
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_wvga_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_wvga_config ={
     0,
     DRV_IMAGE_SENSOR_WVGA,
     DRV_IMAGE_SENSOR_RAW_BAYER,
@@ -5932,8 +5920,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_raw_wvga_config =
     ov5640_raw_wvga
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_vga_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_vga_config ={
     0,
     DRV_IMAGE_SENSOR_VGA,
     DRV_IMAGE_SENSOR_YUV_422,
@@ -5944,8 +5931,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_vga_config =
     ov5640_yuv_vga
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_wxga_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_wxga_config ={
     0,
     DRV_IMAGE_SENSOR_WXGA,
     DRV_IMAGE_SENSOR_YUV_422,
@@ -5956,8 +5942,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_yuv_wxga_config =
     ov5640_yuv_wxga
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov5640_af_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS ov5640_af_config ={
     1,
     0,
     0,
@@ -5968,8 +5953,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_af_config =
     ov5640_afc
 };
 
-static const DRV_IMAGE_SENSOR_CONFIGS ov5640_jpeg_5mp_config =
-{
+static const DRV_IMAGE_SENSOR_CONFIGS ov5640_jpeg_5mp_config ={
     0,
     DRV_IMAGE_SENSOR_5MP,
     DRV_IMAGE_SENSOR_JPEG,
@@ -5980,8 +5964,7 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_jpeg_5mp_config =
     ov5640_jpeg_5mp
 };
 
-const DRV_IMAGE_SENSOR_OBJ ov5640_device =
-{
+const DRV_IMAGE_SENSOR_OBJ ov5640_device ={
     "OV5640",
     OV5640_SLAVE_ADDRESS,
     DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,
@@ -6003,6 +5986,5 @@ const DRV_IMAGE_SENSOR_OBJ ov5640_device =
         &ov5640_jpeg_5mp_config,
         &ov5640_af_config,
     },
-    (DRV_HANDLE)NULL
+    (DRV_HANDLE) NULL
 };
-

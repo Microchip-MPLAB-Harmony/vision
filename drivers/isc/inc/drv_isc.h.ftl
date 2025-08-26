@@ -25,8 +25,7 @@
 
 typedef void (*iscd_callback_t)(uintptr_t context);
 
-typedef enum
-{
+typedef enum {
     ISC_LAYOUT_PACKED8 = 0,
     ISC_LAYOUT_PACKED16,
     ISC_LAYOUT_PACKED32,
@@ -67,8 +66,7 @@ typedef struct {
     uint32_t greenBlueGain;
 } DRV_ISC_WB;
 
-typedef struct
-{
+typedef struct {
     bool enableGamma;
     bool enableBlue;
     bool enableGreen;
@@ -79,8 +77,7 @@ typedef struct
     uint32_t* redEntries;
 } DRV_ISC_GAMMA;
 
-typedef struct
-{
+typedef struct {
     bool enableCBC;
     uint32_t bright;
     uint32_t contrast;
@@ -88,8 +85,7 @@ typedef struct
     uint32_t saturation;
 } DRV_ISC_CBC;
 
-typedef struct
-{
+typedef struct {
     uint32_t address0;
     uint32_t address1;
     uint32_t address2;
@@ -97,16 +93,14 @@ typedef struct
     iscd_callback_t callback;
 } DRV_ISC_DMA;
 
-typedef struct
-{
+typedef struct {
     uint32_t ctrl;
     uint32_t nextDesc;
     uint32_t addr;
     uint32_t stride;
 } DRV_ISC_DMA_VIEW0;
 
-typedef struct
-{
+typedef struct {
     uint32_t ctrl;
     uint32_t nextDesc;
     uint32_t addr0;
@@ -115,8 +109,7 @@ typedef struct
     uint32_t stride1;
 } DRV_ISC_DMA_VIEW1;
 
-typedef struct
-{
+typedef struct {
     uint32_t ctrl;
     uint32_t nextDesc;
     uint32_t addr0;
@@ -127,28 +120,27 @@ typedef struct
     uint32_t stride2;
 } DRV_ISC_DMA_VIEW2;
 
-
 typedef enum {
-	AWB_INIT = 0,
-	AWB_WAIT_HIS_READY,
-	AWB_WAIT_DMA_READY,
-	AWB_WAIT_ISC_PERFORMED,
+    AWB_INIT = 0,
+    AWB_WAIT_HIS_READY,
+    AWB_WAIT_DMA_READY,
+    AWB_WAIT_ISC_PERFORMED,
 } DRV_ISC_AWB_STATE;
 
 typedef struct {
-	uint32_t channel;
-	bool dma_histo_ready;
-	bool dma_histo_done;
+    uint32_t channel;
+    bool dma_histo_ready;
+    bool dma_histo_done;
 } DRV_ISC_XDMA;
 
 typedef struct {
     DRV_ISC_XDMA hist_dma;
-	uint32_t hist_min[ISC_BAYER_COUNT];
-	uint32_t hist_max[ISC_BAYER_COUNT];
-	uint32_t count[ISC_BAYER_COUNT];
-	uint32_t white_count[ISC_BAYER_COUNT];
-	uint32_t op_mode;
-	DRV_ISC_AWB_STATE state;
+    uint32_t hist_min[ISC_BAYER_COUNT];
+    uint32_t hist_max[ISC_BAYER_COUNT];
+    uint32_t count[ISC_BAYER_COUNT];
+    uint32_t white_count[ISC_BAYER_COUNT];
+    uint32_t op_mode;
+    DRV_ISC_AWB_STATE state;
 } DRV_ISC_AWB;
 
 typedef struct {
@@ -197,4 +189,4 @@ void DRV_ISC_Configure_Histogram(DRV_ISC_OBJ* iscObj);
 
 void DRV_ISC_AWB_Algo(void);
 
-#endif  //DRV_ISC_H 
+#endif  //DRV_ISC_H

@@ -1,42 +1,42 @@
 /*******************************************************************************
-	CSI2DC Driver
+    CSI2DC Driver
 
-	Company:
-		Microchip Technology Inc.
+    Company:
+        Microchip Technology Inc.
 
-	File Name:
-		drv_csi2dc.c
+    File Name:
+        drv_csi2dc.c
 
-	Summary:
-		CSI2DC Driver File
+    Summary:
+        CSI2DC Driver File
 
-	Description:
-	None
+    Description:
+    None
 
-*******************************************************************************/
+ *******************************************************************************/
 
 /*******************************************************************************
-* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
-*
-* Subject to your compliance with these terms, you may use Microchip software
-* and any derivatives exclusively with Microchip products. It is your
-* responsibility to comply with third party license terms applicable to your
-* use of third party software (including open source software) that may
-* accompany Microchip software.
-*
-* THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
-* EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
-* WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
-* PARTICULAR PURPOSE.
-*
-* IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
-* INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
-* WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
-* BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
-* FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
-* ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
-* THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*******************************************************************************/
+ * Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
+ *
+ * Subject to your compliance with these terms, you may use Microchip software
+ * and any derivatives exclusively with Microchip products. It is your
+ * responsibility to comply with third party license terms applicable to your
+ * use of third party software (including open source software) that may
+ * accompany Microchip software.
+ *
+ * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+ * EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+ * WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ *
+ * IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+ * INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+ * WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+ * BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+ * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+ * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+ * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+ *******************************************************************************/
 
 #include "configuration.h"
 #include "vision/drivers/csi/drv_csi2dc.h"
@@ -46,18 +46,15 @@
 
 static DRV_CSI2DC_OBJ csi2dcObj;
 
-void CSI2DC_Handler(void)
-{
+void CSI2DC_Handler(void) {
     CSI2DC_Interrupt_Status();
     //Todo handle register callbacks.
 }
 
-static void DRV_CSI2DC_GlobalConfig(DRV_CSI2DC_OBJ* devObj)
-{
+static void DRV_CSI2DC_GlobalConfig(DRV_CSI2DC_OBJ* devObj) {
     uint32_t reg = 0;
 
-    if (devObj == NULL)
-    {
+    if (devObj == NULL) {
         return;
     }
 
@@ -72,17 +69,15 @@ static void DRV_CSI2DC_GlobalConfig(DRV_CSI2DC_OBJ* devObj)
     CSI2DC_Global_Config(reg);
 }
 
-static void DRV_CSI2DC_Configure_VideoPipe(DRV_CSI2DC_OBJ* devObj)
-{
-    if (devObj == NULL)
-    {
+static void DRV_CSI2DC_Configure_VideoPipe(DRV_CSI2DC_OBJ* devObj) {
+    if (devObj == NULL) {
         return;
     }
 
     // Video Pipe configuration
     CSI2DC_Configure_VideoPipe(csi2dcObj.videoPipeDataType,
-                               csi2dcObj.videoPipeChannelId,
-                               csi2dcObj.videoPipeAlign);
+            csi2dcObj.videoPipeChannelId,
+            csi2dcObj.videoPipeAlign);
     // enable video Pipe
     CSI2DC_Enable_VideoPipe();
 
@@ -93,30 +88,25 @@ static void DRV_CSI2DC_Configure_VideoPipe(DRV_CSI2DC_OBJ* devObj)
     CSI2DC_VideoPipe_Interrupt_Status();
 }
 
-static void DRV_CSI2DC_Configure_DataPipe(DRV_CSI2DC_OBJ* devObj)
-{
-    if (devObj == NULL)
-    {
+static void DRV_CSI2DC_Configure_DataPipe(DRV_CSI2DC_OBJ* devObj) {
+    if (devObj == NULL) {
         return;
     }
 
-    if (devObj->enableDataPipe)
-    {
+    if (devObj->enableDataPipe) {
         CSI2DC_Configure_DataPipe(csi2dcObj.dataPipeDataType,
-                                  csi2dcObj.dataPipeChannelId,
-                                  0x400);
+                csi2dcObj.dataPipeChannelId,
+                0x400);
         CSI2DC_Enable_DataPipe();
 
         CSI2DC_Configure_DataPipe_DMA(csi2dcObj.csi2dcDma.count,
-                                      csi2dcObj.csi2dcDma.chuckSize,
-                                      csi2dcObj.csi2dcDma.enableDMA);
+                csi2dcObj.csi2dcDma.chuckSize,
+                csi2dcObj.csi2dcDma.enableDMA);
     }
 }
 
-bool DRV_CSI2DC_Configure(DRV_CSI2DC_OBJ* devObj)
-{
-    if (devObj == NULL)
-    {
+bool DRV_CSI2DC_Configure(DRV_CSI2DC_OBJ* devObj) {
+    if (devObj == NULL) {
         return false;
     }
 
@@ -132,12 +122,9 @@ bool DRV_CSI2DC_Configure(DRV_CSI2DC_OBJ* devObj)
 
     DRV_CSI2DC_Configure_DataPipe(devObj);
 
-    if (devObj->enableDataPipe)
-    {
+    if (devObj->enableDataPipe) {
         CSI2DC_Update_Pipe(CSI2DC_PUR_VP_1 | CSI2DC_PUR_DP_1);
-    }
-    else
-    {
+    } else {
         CSI2DC_Update_Pipe(CSI2DC_PUR_VP_1);
     }
 
@@ -146,8 +133,7 @@ bool DRV_CSI2DC_Configure(DRV_CSI2DC_OBJ* devObj)
     return true;
 }
 
-DRV_CSI2DC_OBJ* DRV_CSI2DC_Initalize(void)
-{
+DRV_CSI2DC_OBJ* DRV_CSI2DC_Initalize(void) {
     //ToDo Fill this using MCC configuration variables.
     csi2dcObj.busMode = CSI2DC_BUS_TYPE;
     csi2dcObj.enableMIPIFreeRun = CSI2DC_ENABLE_MIPI_CLOCK_FREE_RUN;

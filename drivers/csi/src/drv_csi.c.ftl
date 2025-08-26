@@ -1,42 +1,42 @@
 /*******************************************************************************
-	MIPI CSI2 BUS Driver
+    MIPI CSI2 BUS Driver
 
-	Company:
-		Microchip Technology Inc.
+    Company:
+        Microchip Technology Inc.
 
-	File Name:
-		drv_csi.c
+    File Name:
+        drv_csi.c
 
-	Summary:
-		MIPI CSI Driver File
+    Summary:
+        MIPI CSI Driver File
 
-	Description:
-		None
+    Description:
+        None
 
-*******************************************************************************/
+ *******************************************************************************/
 
 /*******************************************************************************
-* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
-*
-* Subject to your compliance with these terms, you may use Microchip software
-* and any derivatives exclusively with Microchip products. It is your
-* responsibility to comply with third party license terms applicable to your
-* use of third party software (including open source software) that may
-* accompany Microchip software.
-*
-* THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
-* EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
-* WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
-* PARTICULAR PURPOSE.
-*
-* IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
-* INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
-* WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
-* BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
-* FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
-* ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
-* THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*******************************************************************************/
+ * Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
+ *
+ * Subject to your compliance with these terms, you may use Microchip software
+ * and any derivatives exclusively with Microchip products. It is your
+ * responsibility to comply with third party license terms applicable to your
+ * use of third party software (including open source software) that may
+ * accompany Microchip software.
+ *
+ * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+ * EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+ * WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ *
+ * IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+ * INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+ * WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+ * BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+ * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+ * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+ * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+ *******************************************************************************/
 
 #include "configuration.h"
 #include "vision/drivers/csi/drv_csi.h"
@@ -47,17 +47,16 @@
 static DRV_CSI_OBJ csiObj;
 
 #if 0
-typedef struct
-{
+
+typedef struct {
     uint16_t MinValue;
     uint16_t MaxValue;
     uint16_t BitRateValue;
 } CSI_BitRate;
 
-static const CSI_BitRate CSI_BitRateLookUp[] =
-{
-    {80, 89,   0x00},
-    {90, 99,   0x10},
+static const CSI_BitRate CSI_BitRateLookUp[] ={
+    {80, 89, 0x00},
+    {90, 99, 0x10},
     {100, 109, 0x20}, //100000
     {110, 129, 0x01}, //000001
     {130, 139, 0x11}, //010001
@@ -84,9 +83,9 @@ static const CSI_BitRate CSI_BitRateLookUp[] =
     {800, 849, 0x29}, //101001
     {850, 899, 0x39}, //111001
     {900, 949, 0x0A}, //001010
-    {950, 999, 0x1A},  //011010
-    {1000, 1049, 0x2A},  //101010
-    {1050, 1099, 0x3A},  //111010
+    {950, 999, 0x1A}, //011010
+    {1000, 1049, 0x2A}, //101010
+    {1050, 1099, 0x3A}, //111010
     {1100, 1149, 0x0B}, //001011
     {1150, 1199, 0x01}, //011011
     {1200, 1249, 0x2B}, //101011
@@ -97,15 +96,13 @@ static const CSI_BitRate CSI_BitRateLookUp[] =
     {1450, 1500, 0x3C}, //111100
 };
 
-static uint32_t DRV_CSI_GetBitRate(DRV_CSI_OBJ* devObj)
-{
+static uint32_t DRV_CSI_GetBitRate(DRV_CSI_OBJ* devObj) {
     uint8_t bpp = 0;
     uint32_t bitrate = 0;
-    uint32_t size = sizeof(CSI_BitRateLookUp) / sizeof(CSI_BitRateLookUp[0]);
+    uint32_t size = sizeof (CSI_BitRateLookUp) / sizeof (CSI_BitRateLookUp[0]);
     uint32_t i = 0;
 
-    if (devObj == NULL)
-    {
+    if (devObj == NULL) {
         return 0;
     }
 
@@ -114,22 +111,17 @@ static uint32_t DRV_CSI_GetBitRate(DRV_CSI_OBJ* devObj)
     else if (devObj->csiDataType == CSI2_DATA_FORMAT_RAW8)
         bpp = 8;
 
-    bitrate = 	csiObj.csiFrameWidth * csiObj.csiFrameHeight  * csiObj.csiFps * bpp;
+    bitrate = csiObj.csiFrameWidth * csiObj.csiFrameHeight * csiObj.csiFps * bpp;
     bitrate /= 1000000;
 
     debug_print("\r\n size = %ld bitrate = %ld \r\n", size, bitrate);
 
-    if (bitrate < 90)
-    {
+    if (bitrate < 90) {
         return 0;
-    }
-    else
-    {
-        for (i = 0; i < size; i++)
-        {
+    } else {
+        for (i = 0; i < size; i++) {
             if ((bitrate >= CSI_BitRateLookUp[i].MinValue) &&
-                (bitrate <= CSI_BitRateLookUp[i].MaxValue))
-            {
+                    (bitrate <= CSI_BitRateLookUp[i].MaxValue)) {
                 return CSI_BitRateLookUp[i].BitRateValue;
             }
         }
@@ -138,13 +130,11 @@ static uint32_t DRV_CSI_GetBitRate(DRV_CSI_OBJ* devObj)
 }
 #endif
 
-bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj)
-{
-    if (devObj == NULL)
-    {
+bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj) {
+    if (devObj == NULL) {
         return false;
     }
-    
+
     debug_print("\r\n\t csiBitRate = 0x%x \r\n", devObj->csiBitRate);
 
     // release CSI2 reset
@@ -169,8 +159,7 @@ bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj)
     return true;
 }
 
-DRV_CSI_OBJ* DRV_CSI_Initalize(void)
-{
+DRV_CSI_OBJ* DRV_CSI_Initalize(void) {
     csiObj.numLanes = CSI_NUM_LANES;
     csiObj.csiDataType = CSI_DATA_FORMAT_TYPE;
     csiObj.csiBitRate = 0x16;
