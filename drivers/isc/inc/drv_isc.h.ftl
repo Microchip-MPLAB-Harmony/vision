@@ -127,8 +127,31 @@ typedef struct
     uint32_t stride2;
 } DRV_ISC_DMA_VIEW2;
 
-typedef struct
-{
+
+typedef enum {
+	AWB_INIT = 0,
+	AWB_WAIT_HIS_READY,
+	AWB_WAIT_DMA_READY,
+	AWB_WAIT_ISC_PERFORMED,
+} DRV_ISC_AWB_STATE;
+
+typedef struct {
+	uint32_t channel;
+	bool dma_histo_ready;
+	bool dma_histo_done;
+} DRV_ISC_XDMA;
+
+typedef struct {
+    DRV_ISC_XDMA hist_dma;
+	uint32_t hist_min[ISC_BAYER_COUNT];
+	uint32_t hist_max[ISC_BAYER_COUNT];
+	uint32_t count[ISC_BAYER_COUNT];
+	uint32_t white_count[ISC_BAYER_COUNT];
+	uint32_t op_mode;
+	DRV_ISC_AWB_STATE state;
+} DRV_ISC_AWB;
+
+typedef struct {
     uint8_t inputFormat;
     uint8_t inputBits;
     uint8_t dmaDescSize;
@@ -155,6 +178,7 @@ typedef struct
     uint16_t outputHeight;
     volatile uint32_t frameCount;
     DRV_ISC_DMA dma;
+    DRV_ISC_AWB awb;
 } DRV_ISC_OBJ;
 
 DRV_ISC_OBJ* DRV_ISC_Initialize(void);
@@ -169,5 +193,8 @@ bool DRV_ISC_Start_Capture(DRV_ISC_OBJ* iscObj);
 
 void DRV_ISC_Stop_Capture(void);
 
+void DRV_ISC_Configure_Histogram(DRV_ISC_OBJ* iscObj);
+
+void DRV_ISC_AWB_Algo(void);
 
 #endif  //DRV_ISC_H 

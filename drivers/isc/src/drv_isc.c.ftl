@@ -6,6 +6,7 @@
 
 #include "configuration.h"
 #include "device.h"
+#include "peripheral/xdmac/plib_xdmac.h"
 #include "system/cache/sys_cache.h"
 #include "system/debug/sys_debug.h"
 #include "system/int/sys_int.h"
@@ -38,6 +39,12 @@ static void DelayUS(uint32_t us)
 void ISC_Handler(void)
 {
     volatile const uint32_t status = ISC_Interrupt_Status();
+    if ((status & ISC_INTSR_HISDONE_Msk) == ISC_INTSR_HISDONE_Msk) {
+        ISC_Disable_Interrupt(ISC_INTSR_HISDONE_Msk);
+        DrvISCObj.awb.hist_dma.dma_histo_ready = true;
+        ISC_Enable_Interrupt(ISC_INTSR_HISDONE_Msk);
+    }
+
     if ((status & ISC_INTSR_DDONE_Msk) == ISC_INTSR_DDONE_Msk)
     {
         ISC_Disable_Interrupt(ISC_INTEN_DDONE_Msk);
@@ -194,6 +201,29 @@ void DRV_ISC_Configure_Scaler(DRV_ISC_OBJ* iscObj)
         ISC_Scaler_Horizontal_Scaling_Factor(hfactor);
         ISC_Scaler_Configure_Vertical_Scaling();
         ISC_Scaler_Configure_Horizontal_Scaling();        
+    }
+}
+
+void hist_dma_callback(XDMAC_TRANSFER_EVENT status, uintptr_t context) {
+    if (status == XDMAC_TRANSFER_COMPLETE) {
+        DRV_ISC_OBJ* iscobj = (DRV_ISC_OBJ*) context;
+        XDMAC_ChannelDisable(iscobj->awb.hist_dma.channel);
+        SYS_CACHE_InvalidateDCache_by_Addr((uint32_t*) iscobj->histogramBuffer,
+                ISC_HIST_ENTRIES * sizeof (uint32_t));
+        iscobj->awb.hist_dma.dma_histo_done = true;
+    } else {
+        printf("\t\r dma error\n\r");
+    }
+}
+
+void DRV_ISC_Configure_Histogram(DRV_ISC_OBJ* iscObj) {
+    if (iscObj->enableHistogram) {
+        iscObj->awb.hist_dma.channel = XDMAC_CHANNEL_0;
+        XDMAC_ChannelCallbackRegister(iscObj->awb.hist_dma.channel, hist_dma_callback, (uintptr_t)iscObj);
+        ISC_Histogram_Enable(1);
+        ISC_Clear_Histogram_Table();
+        iscObj->awb.state = AWB_INIT;
+        iscObj->awb.op_mode = 0;
     }
 }
 
@@ -376,16 +406,136 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj)
     ISC_RLP_Configure(iscObj->rlpMode, 0);
 
     DRV_ISC_Configure_DMA(iscObj);
+    
+    DRV_ISC_Configure_Histogram(iscObj);
 
     iscObj->frameIndex = 0;
 
     ISC_Update_Profile();
 
-    ISC_Enable_Interrupt(ISC_INTEN_Msk);
+    if (iscObj->enableHistogram) {
+        ISC_Enable_Interrupt(ISC_INTEN_VD(1) | ISC_INTEN_DDONE(1) | ISC_INTEN_HISDONE(1));
+    } else {
+        ISC_Enable_Interrupt(ISC_INTEN_VD(1) | ISC_INTEN_DDONE(1));
+    }
 
     ISC_Interrupt_Status();
 
     return ISC_SUCCESS;
+}
+
+static void DRV_ISC_AWB_CountUp(void) {
+    uint32_t i;
+    uint32_t hist_min = 0, hist_max = 0;
+    uint32_t* buf = (uint32_t*)DrvISCObj.histogramBuffer;
+
+    if(buf) {
+        DrvISCObj.awb.count[DrvISCObj.awb.op_mode] = 0;
+        for (i = 0; i < ISC_HIST_ENTRIES; i++) {
+            if (*buf) {
+                if (!hist_min)
+                    hist_min = i;
+                DrvISCObj.awb.white_count[DrvISCObj.awb.op_mode] = 0;
+                hist_max = i;
+            }
+            DrvISCObj.awb.count[DrvISCObj.awb.op_mode] += (*buf) * i;
+            DrvISCObj.awb.white_count[DrvISCObj.awb.op_mode] += (*buf++) * i;
+        }
+        if (!hist_min)
+            hist_min = 1;
+
+        DrvISCObj.awb.hist_min[DrvISCObj.awb.op_mode] = hist_min;
+        DrvISCObj.awb.hist_max[DrvISCObj.awb.op_mode] = hist_max;
+    }
+}
+
+static void DRV_ISC_AWB_Update(void) {
+    int32_t wb_offset[ISC_BAYER_COUNT] = {0};
+    uint32_t gain[ISC_BAYER_COUNT] = {0};
+    uint32_t a_max = 0;
+    uint64_t hist_avg = 0;
+    uint32_t k[ISC_BAYER_COUNT] = {0};
+    uint32_t x[ISC_BAYER_COUNT] = {0};
+
+    a_max = DrvISCObj.awb.hist_max[0];
+    for (uint8_t b = 1; b < ISC_BAYER_COUNT; b++) {
+        if (DrvISCObj.awb.hist_max[b] > a_max)
+            a_max = DrvISCObj.awb.hist_max[b];
+    }
+    hist_avg = (uint64_t) DrvISCObj.awb.count[ISC_HISTOGRAM_GR] + (uint64_t) DrvISCObj.awb.count[ISC_HISTOGRAM_GB];
+    hist_avg >>= 1;
+    for (uint8_t b = 0; b < ISC_BAYER_COUNT; b++) {
+        if (DrvISCObj.awb.hist_min[b] != 0) {
+            /* Convert 12 bits pipline to 9 bits. */
+            wb_offset[b] = -((DrvISCObj.awb.hist_min[b] - 1) << 3);
+        }
+        k[b] = (hist_avg << 9) / DrvISCObj.awb.count[b];
+
+        /* the a_max is the maximum value of Rhigh,Ghigh,Bhigh. We set the maximum values of the original image to be the thresholds, avoiding the over stretching. */
+        x[b] = (a_max << 9) / (DrvISCObj.awb.hist_max[b] - DrvISCObj.awb.hist_min[b] + 1);
+        x[b] = (x[b] > (3 << 9)) ? (3 << 9) : x[b];
+        gain[b] = x[b] * k[b];
+        gain[b] >>= 9;
+    }
+
+    ISC_WB_Set_Bayer_Color(wb_offset[ISC_HISTOGRAM_R],
+            wb_offset[ISC_HISTOGRAM_GR],
+            wb_offset[ISC_HISTOGRAM_B],
+            wb_offset[ISC_HISTOGRAM_GB],
+            gain[ISC_HISTOGRAM_R],
+            gain[ISC_HISTOGRAM_GR],
+            gain[ISC_HISTOGRAM_B],
+            gain[ISC_HISTOGRAM_GB]);
+
+    ISC_Update_Profile();
+}
+
+static void DRV_ISC_XDMA_Read_Histogram(void) {
+
+    if (DrvISCObj.histogramBuffer)
+        XDMAC_ChannelTransfer(DrvISCObj.awb.hist_dma.channel,
+            (void *) &ISC_REGS->ISC_HIS_ENTRY[0], (void *)
+            DrvISCObj.histogramBuffer, ISC_HIST_ENTRIES * 4);
+}
+
+void DRV_ISC_AWB_Algo(void) {
+    switch (DrvISCObj.awb.state) {
+        case AWB_INIT:
+            ISC_Histogram_Configure(DrvISCObj.awb.op_mode, ISC_WB_Get_Bayer_Pattern(), 0);
+            ISC_Update_Profile();
+            if (DrvISCObj.awb.op_mode != (ISC_REGS->ISC_HIS_CFG & ISC_HIS_CFG_MODE_Msk))
+                break;
+
+            ISC_Clear_Histogram_Table();
+            DrvISCObj.awb.hist_dma.dma_histo_done = false;
+            ISC_Update_Histogram_Table();
+            DrvISCObj.awb.state = AWB_WAIT_HIS_READY;
+            break;
+        case AWB_WAIT_HIS_READY:
+            if (!DrvISCObj.awb.hist_dma.dma_histo_ready)
+                break;
+            DrvISCObj.awb.hist_dma.dma_histo_ready = false;
+            DRV_ISC_XDMA_Read_Histogram();
+            DrvISCObj.awb.state = AWB_WAIT_DMA_READY;
+            break;
+        case AWB_WAIT_DMA_READY:
+            if (!DrvISCObj.awb.hist_dma.dma_histo_done)
+                break;
+            DrvISCObj.awb.hist_dma.dma_histo_done = false;
+            DRV_ISC_AWB_CountUp();
+            DrvISCObj.awb.op_mode++;
+            if (DrvISCObj.awb.op_mode < ISC_BAYER_COUNT) {
+                DrvISCObj.awb.state = AWB_INIT;
+            } else {
+                DrvISCObj.awb.state = AWB_WAIT_ISC_PERFORMED;
+            }
+            break;
+        case AWB_WAIT_ISC_PERFORMED:
+            DRV_ISC_AWB_Update();
+            DrvISCObj.awb.op_mode = 0;
+            DrvISCObj.awb.state = AWB_INIT;
+            break;
+    }
 }
 
 DRV_ISC_OBJ* DRV_ISC_Initialize(void)

@@ -52,6 +52,7 @@ const CAMERA_INIT drvCAMERAInitData =
     .csiDataFormat                 = CSI_DATA_FORMAT_TYPE,
 #endif	
     .drvI2CIndex                   = DRV_IMAGE_SENSOR_I2C_MODULE_INDEX,
+	.cameraEnableAWBAlgo		= CAMERA_ENABLE_AWB_ALGO,
 };
 
 // </editor-fold>
