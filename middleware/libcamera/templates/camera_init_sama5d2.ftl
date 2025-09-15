@@ -1,22 +1,6 @@
 <#--
 /*******************************************************************************
-  ISC PLib Freemarker Template File
-
-  Company:
-    Microchip Technology Inc.
-
-  File Name:
-    plib_isc.c.ftl
-
-  Summary:
-    ISC PLib Freemarker Template File
-
-  Description:
-
-*******************************************************************************/
-
-/*******************************************************************************
-* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -38,16 +22,31 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
--->
 
-/*** ISC PLib Configuration ***/
-#define PLIB_ISC_MCK_SEL_VAL		${PLIB_ISC_MCK_SEL}
-#define PLIB_ISC_MCK_DIV_VAL		${PLIB_ISC_MCK_DIV}
-#define ISC_HSYNC_POLARITY_VAL		${PLIB_ISC_HSYNC_POLARITY}
-#define ISC_VSYNC_POLARITY_VAL		${PLIB_ISC_VSYNC_POLARITY}
+ -->
+const CAMERA_INIT drvCAMERAInitData =
+{
+    .imageSensorName               = IMAGE_SENSOR_NAME,
+    .imageSensorResolution         = IMAGE_SENSOR_OUTPUT_RESOLUTION,
+    .imageSensorOutputFormat       = IMAGE_SENSOR_OUTPUT_FORMAT,
+    .imageSensorOutputBitWidth     = IMAGE_SENSOR_OUTPUT_BUS_WIDTH,
+    .iscInputFormat                = ISC_INPUT_FORMAT_TYPE,
+    .iscInputBits                  = ISC_INPUT_BIT_WIDTH,
+    .iscOutputFormat               = ISC_OUTPUT_FORMAT_TYPE,
+    .iscOutputLayout               = ISC_OUTPUT_LAYOUT_TYPE,
+    .iscBayerPattern               = ISC_BAYER_PATTERN_TYPE,
+    .iscEnableGamma                = ISC_ENABLE_GAMMA,
+    .iscEnableWhiteBalance         = ISC_ENABLE_WHITE_BALANCE,
+    .iscEnableHistogram            = ISC_ENABLE_HISTOGRAM,
+    .iscEnableVideoMode            = ISC_ENABLE_VIDEO_MODE,
+    .iscEnableBightnessAndContrast = ISC_ENABLE_BRIGHTNESS_CONTRAST,
+    .iscEnableProgressiveMode      = ISC_ENABLE_PROGRESSIVE_MODE,
+    .drvI2CIndex                   = DRV_IMAGE_SENSOR_I2C_MODULE_INDEX,
+};
+
+// </editor-fold>
 <#--
 /*******************************************************************************
-End of File
+ End of File
 */
 -->
-

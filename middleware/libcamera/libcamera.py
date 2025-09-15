@@ -42,7 +42,10 @@ def instantiateComponent(component):
     LIBCAMERA_INIT_DATA = component.createFileSymbol("LIBCAMERA_INIT_DATA", None)
     LIBCAMERA_INIT_DATA.setType("STRING")
     LIBCAMERA_INIT_DATA.setOutputName("core.LIST_SYSTEM_INIT_C_DRIVER_INITIALIZATION_DATA")
-    LIBCAMERA_INIT_DATA.setSourcePath("templates/camera_init.ftl")
+    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
+        LIBCAMERA_INIT_DATA.setSourcePath("templates/camera_init.ftl")
+    else:
+        LIBCAMERA_INIT_DATA.setSourcePath("templates/camera_init_sama5d2.ftl")
     LIBCAMERA_INIT_DATA.setMarkup(True)
 
     LIBCAMERA_OBJ_DATA = component.createFileSymbol("LIBCAMERA_OBJ_DATA", None)

@@ -135,7 +135,8 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject) {
     if (pDrvObject == NULL) {
         return false;
     }
-
+    
+#if !defined(_SAMA5D27_H_)
     if (pDrvObject->iscObj->dpc.enableDPC) {
         pDrvObject->iscObj->dpc.bayerPattern = pDrvObject->iscObj->bayerPattern;
         pDrvObject->iscObj->dpc.enableEITPOL = ISC_DPC_ENABLE_EITPOL;
@@ -150,7 +151,8 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject) {
         pDrvObject->iscObj->dpc.ThreshAVal = ISC_DCP_THRESHA;
         pDrvObject->iscObj->dpc.ThreshCVal = ISC_DCP_THRESHC;
     }
-
+#endif
+    
     if (pDrvObject->iscObj->gamma.enableGamma) {
         pDrvObject->iscObj->gamma.enableBiPart = true;
         pDrvObject->iscObj->gamma.enableRed = ISC_GAMMA_RED_ENTRIES;
@@ -178,8 +180,10 @@ static bool CAMERA_configure(DEVICE_OBJECT* pDrvObject) {
     if (pDrvObject->iscObj->cbc.enableCBC) {
         pDrvObject->iscObj->cbc.bright = ISC_CBC_BRIGHTNESS_VAL;
         pDrvObject->iscObj->cbc.contrast = ISC_CBC_CONTRAST_VAL;
+#if !defined(_SAMA5D27_H_)         
         pDrvObject->iscObj->cbc.hue = ISC_CBHS_HUE_VAL;
         pDrvObject->iscObj->cbc.saturation = ISC_CBHS_SATURATION_VAL;
+#endif
     }
 
     if (pDrvObject->iscObj->enableHistogram) {

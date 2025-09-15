@@ -6,7 +6,7 @@
 
 #include "configuration.h"
 #include "device.h"
-#include "peripheral/xdmac/plib_xdmac.h"
+#include "peripheral/xdmac/plib_xdmac0.h"
 #include "system/cache/sys_cache.h"
 #include "system/debug/sys_debug.h"
 #include "system/int/sys_int.h"
@@ -177,24 +177,10 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj) {
     return ISC_SUCCESS;
 }
 
-void DRV_ISC_Configure_Scaler(DRV_ISC_OBJ* iscObj) {
-    if (iscObj->enableScaling) {
-        ISC_Scaler_Enable(1, 1);
-        ISC_Scaler_Source_Size(iscObj->imageWidth - 1, iscObj->imageHeight - 1);
-        ISC_Scaler_Destination_Size(iscObj->outputWidth - 1, iscObj->outputHeight - 1);
-        uint32_t vfactor = (uint32_t) ((uint64_t) (iscObj->imageHeight << 20) / iscObj->outputHeight);
-        ISC_Scaler_Vertical_Scaling_Factor(vfactor);
-        uint32_t hfactor = (uint32_t) ((uint64_t) (iscObj->imageWidth << 20) / iscObj->outputWidth);
-        ISC_Scaler_Horizontal_Scaling_Factor(hfactor);
-        ISC_Scaler_Configure_Vertical_Scaling();
-        ISC_Scaler_Configure_Horizontal_Scaling();
-    }
-}
-
 void hist_dma_callback(XDMAC_TRANSFER_EVENT status, uintptr_t context) {
     if (status == XDMAC_TRANSFER_COMPLETE) {
         DRV_ISC_OBJ* iscobj = (DRV_ISC_OBJ*) context;
-        XDMAC_ChannelDisable(iscobj->awb.hist_dma.channel);
+        XDMAC0_ChannelDisable(iscobj->awb.hist_dma.channel);
         SYS_CACHE_InvalidateDCache_by_Addr((uint32_t*) iscobj->histogramBuffer,
                 ISC_HIST_ENTRIES * sizeof (uint32_t));
         iscobj->awb.hist_dma.dma_histo_done = true;
@@ -206,7 +192,7 @@ void hist_dma_callback(XDMAC_TRANSFER_EVENT status, uintptr_t context) {
 void DRV_ISC_Configure_Histogram(DRV_ISC_OBJ* iscObj) {
     if (iscObj->enableHistogram) {
         iscObj->awb.hist_dma.channel = XDMAC_CHANNEL_0;
-        XDMAC_ChannelCallbackRegister(iscObj->awb.hist_dma.channel, hist_dma_callback, (uintptr_t) iscObj);
+        XDMAC0_ChannelCallbackRegister(iscObj->awb.hist_dma.channel, hist_dma_callback, (uintptr_t) iscObj);
         ISC_Histogram_Enable(1);
         ISC_Clear_Histogram_Table();
         iscObj->awb.state = AWB_INIT;
@@ -255,22 +241,6 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj) {
 
     switch (iscObj->inputFormat) {
         case DRV_IMAGE_SENSOR_RAW_BAYER:
-
-            if (iscObj->dpc.enableBLC) {
-                ISC_Enable_Black_Level(iscObj->dpc.enableBLC, iscObj->dpc.blofstVal);
-            }
-
-            if (iscObj->dpc.enableGDC) {
-                ISC_Enable_Green_Correction(iscObj->dpc.enableGDC, iscObj->dpc.gdcclpVal);
-            }
-
-            if (iscObj->dpc.enableDPC) {
-                ISC_Enable_Defective_Pixel_Correction(iscObj->dpc.enableDPC);
-                ISC_DPC_Configure(iscObj->dpc.bayerPattern, iscObj->dpc.enableEITPOL,
-                        iscObj->dpc.enableTM, iscObj->dpc.enableTA, iscObj->dpc.enableTC,
-                        iscObj->dpc.reModeVal, iscObj->dpc.ndModeVal, iscObj->dpc.ThreshMVal,
-                        iscObj->dpc.ThreshAVal, iscObj->dpc.ThreshCVal);
-            }
 
             if (iscObj->gamma.enableGamma) {
                 if ((!iscObj->gamma.greenEntries) ||
@@ -322,8 +292,6 @@ uint8_t DRV_ISC_Configure(DRV_ISC_OBJ* iscObj) {
                                    iscObj->whiteBalance.blueGain, \
                                    iscObj->whiteBalance.greenBlueGain);
             }
-
-            DRV_ISC_Configure_Scaler(iscObj);
 
             if (iscObj->colorCorrection) {
                 ISC_CC_Enable(1);
@@ -466,7 +434,7 @@ static void DRV_ISC_AWB_Update(void) {
 static void DRV_ISC_XDMA_Read_Histogram(void) {
 
     if (DrvISCObj.histogramBuffer)
-        XDMAC_ChannelTransfer(DrvISCObj.awb.hist_dma.channel,
+        XDMAC0_ChannelTransfer(DrvISCObj.awb.hist_dma.channel,
             (void *) &ISC_REGS->ISC_HIS_ENTRY[0], (void *)
             DrvISCObj.histogramBuffer, ISC_HIST_ENTRIES * 4);
 }

@@ -52,7 +52,10 @@ def instantiateComponent(component):
     isc_input_bits.addKey("BIT_40", "DRV_IMAGE_SENSOR_40_BIT", "BIT_40")
     isc_input_bits.setOutputMode("Value")
     isc_input_bits.setDisplayMode("Description")
-    isc_input_bits.setDefaultValue(2)
+    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
+        isc_input_bits.setDefaultValue(2)
+    else:
+        isc_input_bits.setDefaultValue(0)
     isc_input_bits.setVisible(True)
 
     isc_output_format = component.createKeyValueSetSymbol("ISCOutputFormatType", isc_drv_menu)
@@ -76,10 +79,7 @@ def instantiateComponent(component):
     isc_output_format.addKey("RLP_MODE_BYPASS", "ISC_RLP_CFG_MODE_BYPASS", "RLP_MODE_BYPASS")
     isc_output_format.setOutputMode("Value")
     isc_output_format.setDisplayMode("Description")
-    if any(x in Variables.get("__PROCESSOR") for x in [ "SAM9X7", "SAMA7"]):
-        isc_output_format.setDefaultValue(10)
-    else:
-        isc_output_format.setDefaultValue(9)
+    isc_output_format.setDefaultValue(9)
     isc_output_format.setVisible(True)
 
     isc_output_layout = component.createKeyValueSetSymbol("ISCOutputLayoutType", isc_drv_menu)
@@ -95,7 +95,8 @@ def instantiateComponent(component):
     isc_output_layout.addKey("LAYOUT_YUY2", "ISC_LAYOUT_YUY2", "LAYOUT_YUY2")
     isc_output_layout.setOutputMode("Value")
     isc_output_layout.setDisplayMode("Description")
-    isc_output_layout.setDefaultValue(2)
+    isc_output_layout.setDefaultValue(1)
+    isc_output_layout.setVisible(True)
 
     isc_bayer_pattern = component.createKeyValueSetSymbol("ISCBayerPatternType", isc_drv_menu)
     isc_bayer_pattern.setLabel("Bayer Pattern Type")
@@ -106,89 +107,8 @@ def instantiateComponent(component):
     isc_bayer_pattern.addKey("BayerPattern_BGBG", "ISC_CFA_CFG_BAYCFG_BGBG_Val", "BayerPattern_BGBG")
     isc_bayer_pattern.setOutputMode("Value")
     isc_bayer_pattern.setDisplayMode("Description")
-    isc_bayer_pattern.setDefaultValue(1)
+    isc_bayer_pattern.setDefaultValue(3)
     isc_bayer_pattern.setVisible(True)
-
-    isc_dpc_menu = component.createMenuSymbol("ISCDPCMenu", isc_drv_menu)
-    isc_dpc_menu.setLabel("Defective pixel correction Settings")
-    isc_dpc_menu.setDescription("ISC Defective pixel correction Settings.")
-
-    isc_dpc = component.createBooleanSymbol("ISCEnableDPC", isc_dpc_menu)
-    isc_dpc.setLabel("Enable Defective Pixel Correction")
-    isc_dpc.setDefaultValue(True)
-
-    isc_blc = component.createBooleanSymbol("ISCEnableBLC", isc_dpc_menu)
-    isc_blc.setLabel("Enable Black level Correction")
-    isc_blc.setDefaultValue(True)
-
-    isc_gdc = component.createBooleanSymbol("ISCEnableGDC", isc_dpc_menu)
-    isc_gdc.setLabel("Enable Green Disparity Correction")
-    isc_gdc.setDefaultValue(True)
-
-    isc_dpc_eipol = component.createBooleanSymbol("ISCEnableEITPOL", isc_dpc_menu)
-    isc_dpc_eipol.setLabel("Enable Edge interpolation")
-    isc_dpc_eipol.setDefaultValue(True)
-
-    isc_dpc_mte= component.createBooleanSymbol("ISCEnableTM", isc_dpc_menu)
-    isc_dpc_mte.setLabel("Enable Median Threshold")
-    isc_dpc_mte.setDefaultValue(True)
-
-    isc_dpc_cte= component.createBooleanSymbol("ISCEnableTC", isc_dpc_menu)
-    isc_dpc_cte.setLabel("Enable Closest Pixels Threshold")
-    isc_dpc_cte.setDefaultValue(True)
-
-    isc_dpc_ate= component.createBooleanSymbol("ISCEnableTA", isc_dpc_menu)
-    isc_dpc_ate.setLabel("Enable Average Threshold Enable")
-    isc_dpc_ate.setDefaultValue(True)
-
-    isc_dpc_ndmode = component.createBooleanSymbol("ISCEnableNDMode", isc_dpc_menu)
-    isc_dpc_ndmode.setLabel("Enable Noise Detection Mode")
-    isc_dpc_ndmode.setDefaultValue(True)
-
-    isc_dpc_remode = component.createKeyValueSetSymbol("ISC_DPC_RE_Mode_VAL", isc_dpc_menu)
-    isc_dpc_remode.setLabel("Replacement Algorithm")
-    isc_dpc_remode.setDescription("Replacement Algorithm Median pixel or Average pixel is used. ")
-    isc_dpc_remode.addKey("MEDIAN_PIXEL", "ISC_DPC_CFG_RE_MODE_0_Val", "MEDIAN_PIXEL")
-    isc_dpc_remode.addKey("AVERAGE_PIXEL", "ISC_DPC_CFG_RE_MODE_1_Val", "AVERAGE_PIXEL")
-    isc_dpc_remode.setDefaultValue(1)
-    isc_dpc_remode.setOutputMode("Value")
-    isc_dpc_remode.setDisplayMode("Description")
-    isc_dpc_remode.setVisible(True)
-
-    isc_dpc_gdcclp = component.createIntegerSymbol("ISC_DPC_GDCCLP_VAL", isc_dpc_menu)
-    isc_dpc_gdcclp.setLabel("ISC Green Disparity Clipping Value")
-    isc_dpc_gdcclp.setDescription("ISC Green Disparity Clipping Value is performed between [-2GDCCLP+1, -2GDCCLP+1-1]")
-    isc_dpc_gdcclp.setDefaultValue(64)
-    isc_dpc_gdcclp.setMin(-127)
-    isc_dpc_gdcclp.setMax(127)
-
-    isc_dpc_blofst = component.createIntegerSymbol("ISC_DCP_BLOFST_VAL", isc_dpc_menu)
-    isc_dpc_blofst.setLabel("ISC Black Level Offset Value")
-    isc_dpc_blofst.setDescription("ISC Black Level Offset Value is unsigned 0:8:0 value")
-    isc_dpc_blofst.setDefaultValue(64)
-    isc_dpc_blofst.setMin(0)
-    isc_dpc_blofst.setMax(255)
-
-    isc_dpc_threshM = component.createIntegerSymbol("ISC_DCP_THRESHM_Val", isc_dpc_menu)
-    isc_dpc_threshM.setLabel("Defective Pixel Correction Median Threshold")
-    isc_dpc_threshM.setDescription("ISC Black Level Offset Value is unsigned 0:8:0 value")
-    isc_dpc_threshM.setDefaultValue(512)
-    isc_dpc_threshM.setMin(0)
-    isc_dpc_threshM.setMax(4095)
-
-    isc_dpc_threshC = component.createIntegerSymbol("ISC_DCP_THRESHC_Val", isc_dpc_menu)
-    isc_dpc_threshC.setLabel("Defective Pixel Correction Closest Threshold")
-    isc_dpc_threshC.setDescription("ISC Black Level Offset Value is unsigned 0:8:0 value")
-    isc_dpc_threshC.setDefaultValue(512)
-    isc_dpc_threshC.setMin(0)
-    isc_dpc_threshC.setMax(4095)
-
-    isc_dpc_threshA = component.createIntegerSymbol("ISC_DCP_THRESHA_Val", isc_dpc_menu)
-    isc_dpc_threshA.setLabel("Defective Pixel Correction Average Threshold")
-    isc_dpc_threshA.setDescription("ISC Black Level Offset Value is unsigned 0:8:0 value")
-    isc_dpc_threshA.setDefaultValue(512)
-    isc_dpc_threshA.setMin(0)
-    isc_dpc_threshA.setMax(4095)
 
     isc_gamma_menu = component.createMenuSymbol("ISCGammaMenu", isc_drv_menu)
     isc_gamma_menu.setLabel("Gamma Settings")
@@ -200,15 +120,15 @@ def instantiateComponent(component):
 
     isc_gamma_red = component.createBooleanSymbol("ISCGammaRedEntries", isc_gamma_menu)
     isc_gamma_red.setLabel("Enable Gamma Correction for R Channel")
-    isc_gamma_red.setDefaultValue(True)
+    isc_gamma_red.setDefaultValue(False)
 
     isc_gamma_green = component.createBooleanSymbol("ISCGammaGreenEntries", isc_gamma_menu)
     isc_gamma_green.setLabel("Enable Gamma Correction for G Channel")
-    isc_gamma_green.setDefaultValue(True)
+    isc_gamma_green.setDefaultValue(False)
 
     isc_gamma_blue = component.createBooleanSymbol("ISCGammaBlueEntries", isc_gamma_menu)
     isc_gamma_blue.setLabel("Enable Gamma Correction for B Channel")
-    isc_gamma_blue.setDefaultValue(True)
+    isc_gamma_blue.setDefaultValue(False)
 
     isc_wb_menu = component.createMenuSymbol("ISCWhiteBalanceMenu", isc_drv_menu)
     isc_wb_menu.setLabel("WhiteBalance Settings")
@@ -221,58 +141,54 @@ def instantiateComponent(component):
     isc_wb_R_Offset = component.createIntegerSymbol("ISCWhiteBalance_R_Offset", isc_wb_menu)
     isc_wb_R_Offset.setLabel("ISC White Balance Offset for R")
     isc_wb_R_Offset.setDescription("ISC White Balance R Offset value ")
-    isc_wb_R_Offset.setDefaultValue(7928)
+    isc_wb_R_Offset.setDefaultValue(0)
     isc_wb_R_Offset.setMin(0)
 
     isc_wb_GR_Offset = component.createIntegerSymbol("ISCWhiteBalance_GR_Offset", isc_wb_menu)
     isc_wb_GR_Offset.setLabel("ISC White Balance Offset for GR")
     isc_wb_GR_Offset.setDescription("ISC White Balance GR Offset value ")
-    isc_wb_GR_Offset.setDefaultValue(7928)
+    isc_wb_GR_Offset.setDefaultValue(0)
     isc_wb_GR_Offset.setMin(0)
 
     isc_wb_B_Offset = component.createIntegerSymbol("ISCWhiteBalance_B_Offset", isc_wb_menu)
     isc_wb_B_Offset.setLabel("ISC White Balance Offset for B")
     isc_wb_B_Offset.setDescription("ISC White Balance B Offset value ")
-    isc_wb_B_Offset.setDefaultValue(7936)
+    isc_wb_B_Offset.setDefaultValue(0)
     isc_wb_B_Offset.setMin(0)
 
     isc_wb_GB_Offset = component.createIntegerSymbol("ISCWhiteBalance_GB_Offset", isc_wb_menu)
     isc_wb_GB_Offset.setLabel("ISC White Balance Offset for GB")
     isc_wb_GB_Offset.setDescription("ISC White Balance GB Offset value ")
-    isc_wb_GB_Offset.setDefaultValue(7928)
+    isc_wb_GB_Offset.setDefaultValue(0)
     isc_wb_GB_Offset.setMin(0)
 
     isc_wb_R_Gain = component.createIntegerSymbol("ISCWhiteBalance_R_Gain", isc_wb_menu)
     isc_wb_R_Gain.setLabel("ISC White Balance R Gain")
     isc_wb_R_Gain.setDescription("ISC White Balance R Gain value ")
-    isc_wb_R_Gain.setDefaultValue(1944)
+    isc_wb_R_Gain.setDefaultValue(512)
     isc_wb_R_Gain.setMin(0)
 
     isc_wb_GR_Gain = component.createIntegerSymbol("ISCWhiteBalance_GR_Gain", isc_wb_menu)
     isc_wb_GR_Gain.setLabel("ISC White Balance GR Gain")
     isc_wb_GR_Gain.setDescription("ISC White Balance GR Gain value ")
-    isc_wb_GR_Gain.setDefaultValue(1103)
+    isc_wb_GR_Gain.setDefaultValue(512)
     isc_wb_GR_Gain.setMin(0)
 
     isc_wb_B_Gain = component.createIntegerSymbol("ISCWhiteBalance_B_Gain", isc_wb_menu)
     isc_wb_B_Gain.setLabel("ISC White Balance Offset for B")
     isc_wb_B_Gain.setDescription("ISC White Balance B Offset value ")
-    isc_wb_B_Gain.setDefaultValue(3403)
+    isc_wb_B_Gain.setDefaultValue(512)
     isc_wb_B_Gain.setMin(0)
 
     isc_wb_GB_Gain = component.createIntegerSymbol("ISCWhiteBalance_GB_Gain", isc_wb_menu)
     isc_wb_GB_Gain.setLabel("ISC White Balance GB Gain")
     isc_wb_GB_Gain.setDescription("ISC White Balance GB Gain value ")
-    isc_wb_GB_Gain.setDefaultValue(1619)
+    isc_wb_GB_Gain.setDefaultValue(512)
     isc_wb_GB_Gain.setMin(0)
 
     isc_hg = component.createBooleanSymbol("ISCEnableHistogram", isc_drv_menu)
     isc_hg.setLabel("Enable Histogram")
     isc_hg.setDefaultValue(False)
-
-    isc_mipi = component.createBooleanSymbol("ISCEnableMIPI", isc_drv_menu)
-    isc_mipi.setLabel("Enable MIPI Interface")
-    isc_mipi.setDefaultValue(True)
 
     isc_vm = component.createBooleanSymbol("ISCEnableVideoMode", isc_drv_menu)
     isc_vm.setLabel("Continuous Video Mode")
@@ -300,45 +216,9 @@ def instantiateComponent(component):
     isc_contrast.setDefaultValue(18)
     isc_contrast.setVisible(True)
 
-    isc_hue = component.createIntegerSymbol("ISCHue", isc_cbhs_menu)
-    isc_hue.setLabel("Hue value")
-    isc_hue.setHelp("Image Hue value (unsigned 9 bits 0:9:0)")
-    # isc_hue.setMax(359.0)
-    # isc_hue.setMin(0.0)
-    isc_hue.setDefaultValue(0)
-    isc_hue.setVisible(True)
-
-    isc_saturation = component.createIntegerSymbol("ISCSaturation", isc_cbhs_menu)
-    isc_saturation.setLabel("Saturation value")
-    isc_saturation.setHelp("Image Saturation value (unsigned 12 bits 0:8:4)")
-    # isc_saturation.setMax(180.0)
-    # isc_saturation.setMin(0.0)
-    isc_saturation.setDefaultValue(32)
-    isc_saturation.setVisible(True)
-
     isc_pm = component.createBooleanSymbol("ISCEnableProgressiveMode", isc_drv_menu)
     isc_pm.setLabel("Enable Progressive Mode")
     isc_pm.setDefaultValue(True)
-    
-    isc_scale_menu = component.createMenuSymbol("ISCScalingMenu", isc_drv_menu)
-    isc_scale_menu.setLabel("Scaling Settings")
-    isc_scale_menu.setDescription("Contains the ISC Scaling Settings.")
-    
-    isc_scaler = component.createBooleanSymbol("ISCEnableScaling", isc_scale_menu)
-    isc_scaler.setLabel("Enable Scaling")
-    isc_scaler.setDefaultValue(False)
-
-    isc_scaler_output_width = component.createIntegerSymbol("ISCScaleOutputWidth", isc_scale_menu)
-    isc_scaler_output_width.setLabel("Output Width size")
-    isc_scaler_output_width.setDescription("ISC Output Width Size value ")
-    isc_scaler_output_width.setDefaultValue(0)
-    isc_scaler_output_width.setMin(0)
-
-    isc_scaler_output_height = component.createIntegerSymbol("ISCScaleOutputHeight", isc_scale_menu)
-    isc_scaler_output_height.setLabel("Output Height size")
-    isc_scaler_output_height.setDescription("ISC Output Height Size value ")
-    isc_scaler_output_height.setDefaultValue(0)
-    isc_scaler_output_height.setMin(0)
     
     isc_plib_menu = component.createMenuSymbol("ISCPeripheralLibrary", None)
     isc_plib_menu.setLabel("ISC Peripheral Library Settings")
@@ -347,11 +227,6 @@ def instantiateComponent(component):
     isc_clk_menu = component.createMenuSymbol("PLIB_ISC_ClockMenu", isc_plib_menu)
     isc_clk_menu.setLabel("ISC Clock Configuration")
     isc_clk_menu.setDescription("Contains ISC Clock Configuration Settings.")
-
-    isc_mck_div = component.createIntegerSymbol("PLIB_ISC_MCK_DIV", isc_clk_menu)
-    isc_mck_div.setLabel("MCK clock divider")
-    isc_mck_div.setDescription("ISC MClock divider value")
-    isc_mck_div.setDefaultValue(0)
 
     isc_mck_sel = component.createKeyValueSetSymbol("PLIB_ISC_MCK_SEL", isc_clk_menu)
     isc_mck_sel.setLabel("MCK Source Selection")
@@ -362,7 +237,30 @@ def instantiateComponent(component):
     isc_mck_sel.setOutputMode("Value")
     isc_mck_sel.setDisplayMode("Description")
     isc_mck_sel.setDefaultValue(0)
-    isc_mck_sel.setVisible(False)
+    isc_mck_sel.setVisible(True)
+
+    isc_mck_div = component.createIntegerSymbol("PLIB_ISC_MCK_DIV", isc_clk_menu)
+    isc_mck_div.setLabel("MCK clock divider")
+    isc_mck_div.setDescription("ISC MClock divider value")
+    isc_mck_div.setDefaultValue(7)
+
+    isc_isp_clk_sel = component.createKeyValueSetSymbol("PLIB_ISC_ISP_CLK_SEL", isc_clk_menu)
+    isc_isp_clk_sel.setLabel("ISP Clock Source Selection")
+    isc_isp_clk_sel.setDescription("ISP Clock selectable clock sources")
+    isc_isp_clk_sel.addKey("hclock", "0", "hclock")
+    isc_isp_clk_sel.addKey("iscclk", "1", "iscclk")
+    isc_isp_clk_sel.addKey("gclk", "2", "gclk")
+    isc_isp_clk_sel.setOutputMode("Value")
+    isc_isp_clk_sel.setDisplayMode("Description")
+    isc_isp_clk_sel.setDefaultValue(0)
+    isc_isp_clk_sel.setVisible(True)
+
+    isc_isp_clk_div = component.createIntegerSymbol("PLIB_ISC_ISP_CLK_DIV", isc_clk_menu)
+    isc_isp_clk_div.setLabel("ISP Clock divider")
+    isc_isp_clk_div.setDescription("ISP Clock divider value")
+    isc_isp_clk_div.setDefaultValue(2)
+    isc_isp_clk_div.setMin(0)
+    isc_isp_clk_div.setVisible(True)
 
     isc_polarity_menu = component.createMenuSymbol("PLIB_ISC_PolarityMenu", isc_plib_menu)
     isc_polarity_menu.setLabel("Polarity Settings")
@@ -392,7 +290,7 @@ def instantiateComponent(component):
     DRV_ISC_C.setProjectPath("config/" + Variables.get("__CONFIGURATION_NAME") + "/vision/drivers/isc")
     DRV_ISC_C.setType("SOURCE")
     DRV_ISC_C.setMarkup(True)
-    DRV_ISC_C.setSourcePath("src/drv_isc.c.ftl")
+    DRV_ISC_C.setSourcePath("src/drv_isc_sama5d2.c.ftl")
 
     DRV_ISC_H = component.createFileSymbol("DRV_ISC_H", None)
     DRV_ISC_H.setDestPath("vision/drivers/isc/")
@@ -400,8 +298,8 @@ def instantiateComponent(component):
     DRV_ISC_H.setProjectPath("config/" + Variables.get("__CONFIGURATION_NAME") + "/vision/drivers/isc")
     DRV_ISC_H.setType("HEADER")
     DRV_ISC_H.setMarkup(True)
-    DRV_ISC_H.setSourcePath("inc/drv_isc.h.ftl")
-    
+    DRV_ISC_H.setSourcePath("inc/drv_isc_sama5d2.h.ftl")
+
     PLIB_ISC_C = component.createFileSymbol("PLIB_ISC_C", None)
     PLIB_ISC_C.setDestPath("vision/drivers/isc/")
     PLIB_ISC_C.setOutputName("plib_isc.c")
@@ -409,7 +307,7 @@ def instantiateComponent(component):
     PLIB_ISC_C.setType("SOURCE")
     PLIB_ISC_C.setMarkup(True)
     PLIB_ISC_C.setSourcePath("src/plib_isc.c.ftl")
-    
+
     PLIB_ISC_H = component.createFileSymbol("PLIB_ISC_H", None)
     PLIB_ISC_H.setDestPath("vision/drivers/isc/")
     PLIB_ISC_H.setOutputName("plib_isc.h")
@@ -421,11 +319,11 @@ def instantiateComponent(component):
     DRV_ISC_CONFIG = component.createFileSymbol("DRV_ISC_CONFIG_H", None)
     DRV_ISC_CONFIG.setType("STRING")
     DRV_ISC_CONFIG.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
-    DRV_ISC_CONFIG.setSourcePath("templates/isc_defines.ftl")
+    DRV_ISC_CONFIG.setSourcePath("templates/isc_defines_sama5d2.ftl")
     DRV_ISC_CONFIG.setMarkup(True)
     
     PLIB_ISC_CONFIG_H = component.createFileSymbol("PLIB_ISC_CONFIG_H", None)
     PLIB_ISC_CONFIG_H.setType("STRING")
     PLIB_ISC_CONFIG_H.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
-    PLIB_ISC_CONFIG_H.setSourcePath("templates/plib_isc_defines.ftl")
+    PLIB_ISC_CONFIG_H.setSourcePath("templates/plib_isc_defines_sama5d2.ftl")
     PLIB_ISC_CONFIG_H.setMarkup(True)
