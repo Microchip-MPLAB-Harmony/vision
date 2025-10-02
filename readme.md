@@ -50,15 +50,6 @@ The key features of the MPLAB® Harmony Vision are the following:
 |      | OV2640 | OminiVision OV2640 Parallel interface Image Sensor |![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 | apps | examples | Vision Example applications | ![app-beta](https://img.shields.io/badge/tool-beta-orange?style=plastic) |
 
-***
-## Vision application examples (libcamera)
-***
-
-| Category | Item | Description | Release Type |
-| --- | --- | ---- |---- |
-|  apps | [SAM9x75_Curiosity](./apps/readme.md) | This application captures real-time frames from an image sensor and displays them on an LCD screen.| ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
-|     | [sama7g54_ek](./apps/readme.md) | This application is designed to capture a frame from an image sensor, subsequently saving the captured frame as a BMP file. Once saved, the file is then transferred to a USB drive.| ![app-beta](https://img.shields.io/badge/application-beta-orange?style=plastic) |
-
 ____
 
 [![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/gfx/blob/master/mplab_harmony_license.md)

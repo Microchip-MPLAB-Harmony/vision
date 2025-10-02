@@ -3,6 +3,32 @@
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Vision Release v3.2.1
+
+### New Features
+
+* Added Defective Pixel Correction.
+* Enable Histogram and implement Auto White Balance Algorithm.
+* Moved Vision Apllications to new vision_apps repository.
+* Add RGB parallel inferace support for SAM9x75
+
+### Fixed Known Issues
+
+* Fix image freeze issue.
+
+### Development Tools
+
+* [MPLAB® X IDE v6.25](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v4.60](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * [MPLAB® Code Configurator Plug-In v5.5.2](https://github.com/Microchip-MPLAB-Harmony/mplabx-plugin)
+    * [MPLAB® Code Configurator Core v5.7.1](https://github.com/Microchip-MPLAB-Harmony/mplabx-plugin)
+
+### Dependent Components
+
+* [csp v3.23.0](https://github.com/Microchip-MPLAB-Harmony/csp/releases/tag/v3.23.0)
+* [core v3.15.5](https://github.com/Microchip-MPLAB-Harmony/core/tree/v3.15.5)
+
 ## Vision Release v3.2.0
 
 ### New Features

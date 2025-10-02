@@ -1,9 +1,11 @@
 # Vision Example Applications
 
-The following applications are provided to demonstrate basic camera capabilities for 32-bit Microchip Microprocessor  & Microcontroller devices and this application capture video frames from camera module interface and display the captured frames on the display using Microchip development board.
+The Vision applications are designed to demonstrate basic camera capabilities for 32-bit Microchip microprocessor and microcontroller devices. These applications capture video frames from the camera module interface and either display the captured frames on a display or save them to a USB drive using Microchip development boards.
 
-* [sam9x75_curiosity](./sam9x75_curiosity/readme.md)
-* [sama7g54_ek](./sama7g54_ek/readme.md)
+Please find the repository links for download below.
+
+Bitbucket: https://bitbucket.microchip.com/scm/mg/vision_apps.git
+
 
 
 
