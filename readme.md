@@ -15,14 +15,10 @@ and microprocessor devices.  Refer to the following links for more information:
 
 This repository contains MPLAB® Harmony 3 Vision package. The package supports a free fast to market,
 camera software development environment for Microchip MPLAB® 32-bit SAM microprocessor devices. Refer 
-following links for release notes, home page, training materials, framework and application help.
-Vision application examples are in apps folder of this repository
- - [Release Notes](https://microchip-mplab-harmony.github.io/vision/release_notes.html)
- - [MPLAB® Harmony License](https://microchip-mplab-harmony.github.io/vision/mplab_harmony_license.html)
- - [MPLAB® Harmony 3 Vision User Guides Wiki]()
- - [MPLAB® Harmony 3 Vision API Help]()
+following links for release notes, License and vision application examples.
+ - [Release Notes](./release_notes.md)
+ - [MPLAB® Harmony License](./mplab_harmony_license.md)
  - [MPLAB® Harmony 3 Vision Applications]()
- - [MPLAB® Harmony 3 Vision Videos]()
  
 # Features
 

@@ -4,6 +4,7 @@ The Vision applications are designed to demonstrate basic camera capabilities fo
 
 Please find the repository links for download below.
 
+github: https://github.com/mchpgfx/vision_apps.git
 Bitbucket: https://bitbucket.microchip.com/scm/mg/vision_apps.git
 
 
