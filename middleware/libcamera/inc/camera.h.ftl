@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "device.h"
+
 #include "configuration.h"
 #include "system/system_module.h"
 #include "vision/drivers/image_sensor/drv_image_sensor.h"
@@ -14,9 +16,13 @@
 
 #if ISC_ENABLE_MIPI_INTERFACE
 #include "vision/drivers/csi/drv_csi.h"
-#include "vision/drivers/csi/drv_csi2dc.h"
 #include "vision/drivers/csi/plib_csi.h"
-#include "vision/drivers/csi/plib_csi2dc.h"
+#endif
+
+
+#if defined(_SAM9X7_CSI2DC_INSTANCE_)
+#include "vision/drivers/csi2dc/drv_csi2dc.h"
+#include "vision/drivers/csi2dc/plib_csi2dc.h"
 #endif
 
 #define DMA_MAX_BUFFERS		(2)

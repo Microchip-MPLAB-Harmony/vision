@@ -39,7 +39,6 @@
  *******************************************************************************/
 #include <stdio.h>
 #include "camera.h"
-#include "device.h"
 #include "system/debug/sys_debug.h"
 #include "system/int/sys_int.h"
 #include "system/time/sys_time.h"
@@ -97,8 +96,10 @@ typedef struct {
     DRV_ISC_OBJ* iscObj;
     DRV_IMAGE_SENSOR_OBJ* sensor;
 #if ISC_ENABLE_MIPI_INTERFACE
-    DRV_CSI2DC_OBJ* csi2dcObj;
     DRV_CSI_OBJ* csiObj;
+#endif
+#if defined(_SAM9X7_CSI2DC_INSTANCE_)
+    DRV_CSI2DC_OBJ* csi2dcObj;
 #endif
 } DEVICE_OBJECT;
 
@@ -365,12 +366,13 @@ bool CAMERA_Open(SYS_MODULE_OBJ object) {
         pDrvObject->imageHeight = DEFAULT_FRAME_HEIGHT;
     }
 
-#if ISC_ENABLE_MIPI_INTERFACE
-
+#if defined(_SAM9X7_CSI2DC_INSTANCE_)
     if (pDrvObject->csi2dcObj) {
         DRV_CSI2DC_Configure(pDrvObject->csi2dcObj);
     }
+#endif
 
+#if ISC_ENABLE_MIPI_INTERFACE
     if (pDrvObject->csiObj) {
         pDrvObject->csiObj->csiFrameWidth = pDrvObject->imageWidth;
         pDrvObject->csiObj->csiFrameHeight = pDrvObject->imageHeight;
@@ -496,27 +498,33 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT * const init) {
     else
         pDrvInstance->imageSensorOutputBitWidth = DRV_IMAGE_SENSOR_10_BIT;
 
-#if ISC_ENABLE_MIPI_INTERFACE
 
+#if defined(_SAM9X7_CSI2DC_INSTANCE_)
     pDrvInstance->csi2dcObj = DRV_CSI2DC_Initalize();
     if (pDrvInstance->csi2dcObj == NULL) {
         debug_print("\r\nCamera: DRV_CSI2DC_Initalize Failed \r\n");
         return SYS_MODULE_OBJ_INVALID;
     }
 
+    if (pInit->csiDataFormat >= 0) {
+        pDrvInstance->csi2dcObj->videoPipeDataType = pInit->csiDataFormat;
+        pDrvInstance->csi2dcObj->dataPipeDataType = pInit->csiDataFormat;
+    } else {
+        pDrvInstance->csi2dcObj->videoPipeDataType = CSI2DC_DATA_FORMAT_RAW8;
+        pDrvInstance->csi2dcObj->dataPipeDataType = CSI2DC_DATA_FORMAT_RAW8;
+    }
+#endif
+    
+#if ISC_ENABLE_MIPI_INTERFACE
     pDrvInstance->csiObj = DRV_CSI_Initalize();
     if (pDrvInstance->csiObj == NULL) {
         debug_print("\r\nCamera: DRV_CSI_Initalize Failed \r\n");
         return SYS_MODULE_OBJ_INVALID;
     }
-
+    
     if (pInit->csiDataFormat >= 0) {
-        pDrvInstance->csi2dcObj->videoPipeDataType = pInit->csiDataFormat;
-        pDrvInstance->csi2dcObj->dataPipeDataType = pInit->csiDataFormat;
         pDrvInstance->csiObj->csiDataType = pInit->csiDataFormat;
     } else {
-        pDrvInstance->csi2dcObj->videoPipeDataType = CSI2_DATA_FORMAT_RAW10;
-        pDrvInstance->csi2dcObj->dataPipeDataType = CSI2_DATA_FORMAT_RAW10;
         pDrvInstance->csiObj->csiDataType = CSI2_DATA_FORMAT_RAW10;
     }
 

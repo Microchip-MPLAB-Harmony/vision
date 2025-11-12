@@ -24,10 +24,10 @@
 
 def loadModule():
     if any(x in Variables.get("__PROCESSOR") for x in ["SAMA5D2", "SAM9X7", "SAMA7"]):
-        component = Module.CreateComponent("vision_sensor_driver", "Image Sensor Driver", "/Vision/Drivers", "image_sensor_drv.py")
-        component.setDisplayType("Driver")
-        component.addCapability("vision_image_sensor_driver", "DRV_IMAGE_SENSOR", False)
-        component.addDependency("vision_image_sensor_control_bus", "ImageSensor Control Bus", False, True)
+        component = Module.CreateComponent("vision_ImageSensor", "ImageSensor", "/Vision/Drivers", "image_sensor_drv.py")
+        component.setDisplayType("ImageSensor Driver")
+        component.addCapability("vision_imagesensor_driver", "DRV_IMAGE_SENSOR", False)
+        component.addDependency("I2c_Interface", "I2c_Interface", False, True)
         component.addDependency("i2c", "DRV_I2C", False, True)
     else:
         print("IMX219 Image Sensor module not loaded" + str(Variables.get("__PROCESSOR")))

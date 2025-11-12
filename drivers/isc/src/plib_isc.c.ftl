@@ -313,10 +313,10 @@ void ISC_Configure_Master_Clock(uint32_t masterClockDiv, uint32_t masterClockSel
             ISC_CLKCFG_MCDIV(masterClockDiv) |
             ISC_CLKCFG_MCSEL(masterClockSelection);
 
-    while (ISC_Sync_InProgress());
 #else
     ISC_REGS->ISC_CLKCFG = ISC_CLKCFG_MCDIV(masterClockDiv);
 #endif
+    while (ISC_Sync_InProgress());
 }
 
 /**

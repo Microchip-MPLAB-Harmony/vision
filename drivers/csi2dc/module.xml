@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Module name="csi2dc" id="fa38c426-1914-4369-ac30-9fc12ba73a15" version="1.0.0">
+    <ConfigRoot path="module.py"/>
+</Module>
+ 

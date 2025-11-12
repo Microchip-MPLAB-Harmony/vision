@@ -25,9 +25,9 @@
 def loadModule():
     if any(x in Variables.get("__PROCESSOR") for x in ["SAM9X7", "SAMA7"]):
         print("CSI module loaded to support " + str(Variables.get("__PROCESSOR")))
-        component = Module.CreateComponent("vision_driver_csi", "Camera Serial Interface(CSI)", "/Vision/Drivers", "csi.py")
-        component.setDisplayType("Driver")
+        component = Module.CreateComponent("vision_csi", "Camera Serial Interface(CSI)", "/Vision/Drivers", "csi.py")
+        component.setDisplayType("CSI Driver")
         component.addCapability("vision_driver_csi", "DRV_CSI", False)
-        component.addDependency("vision_image_sensor_data_bus", "ImageSensor Data Bus", False)
+        component.addDependency("Data_Interface", "Data_Interface", False)
     else:
         print("CSI module not loaded.  No support for " + str(Variables.get("__PROCESSOR")))
