@@ -24,11 +24,16 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] ={
     {0x012A, 0x18}, //EXCLK_FREQ[15:8]
     {0x012B, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
-    {0x015a, 0x07},
-    {0x015b, 0x00},
+    {0x0157, 0xAF},
+    
+    {0x0158, 0x01},
+    {0x0159, 0x00},
 
-    {0x0160, 0x06}, //FRAME_LENGHT_A[15:8]
-    {0x0161, 0xE3}, //FRAME_LENGHT_B[7:0]
+    {0x015a, 0x03},
+    {0x015b, 0xE8},
+
+    {0x0160, 0x02}, //FRAME_LENGHT_A[15:8]
+    {0x0161, 0xE4}, //FRAME_LENGHT_B[7:0]
 
     {0x0162, 0x0D}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
@@ -53,8 +58,11 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] ={
 
     {0x0172, 0x00}, //image_orientation
 
-    {0x0174, 0x02}, //BINNING_MODE_H_A
-    {0x0175, 0x02}, //BINNING_MODE_V_A
+    {0x0174, 0x01}, //BINNING_MODE_H_A
+    {0x0175, 0x01}, //BINNING_MODE_V_A
+    
+    {0x018A, 0x01}, //Coarse integ time (short exposure) [15:8]
+    {0x018B, 0xF4}, //Coarse integ time (short exposure) [7:0]
 
     {0x018C, 0x0A}, //CSI_DATA_FORMAT_A [15:8]
     {0x018D, 0x0A}, //CSI_DATA_FORMAT_A [7:0] = RAW10
@@ -100,8 +108,13 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] ={
     {0x012A, 0x18}, //EXCLK_FREQ[15:8]
     {0x012B, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
-    {0x015a, 0x07},
-    {0x015b, 0x00},
+    {0x0157, 0xAF},
+    
+    {0x0158, 0x01},
+    {0x0159, 0x00},
+
+    {0x015a, 0x03},
+    {0x015b, 0xE8},
 
     {0x0160, 0x02}, //FRAME_LENGHT_A[15:8]
     {0x0161, 0xE4}, //FRAME_LENGHT_B[7:0]
@@ -129,8 +142,11 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] ={
 
     {0x0172, 0x00}, //image_orientation
 
-    {0x0174, 0x03}, //BINNING_MODE_H_A
-    {0x0175, 0x03}, //BINNING_MODE_V_A
+    {0x0174, 0x01}, //BINNING_MODE_H_A
+    {0x0175, 0x01}, //BINNING_MODE_V_A
+    
+    {0x018A, 0x01}, //Coarse integ time (short exposure) [15:8]
+    {0x018B, 0xF4}, //Coarse integ time (short exposure) [7:0]
 
     {0x018C, 0x0A}, //CSI_DATA_FORMAT_A [15:8]
     {0x018D, 0x0A}, //CSI_DATA_FORMAT_A [7:0] = RAW10
@@ -179,30 +195,45 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_1080p[] ={
     {0x012a, 0x18}, //EXCLK_FREQ[15:8]
     {0x012b, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
-    {0x015a, 0x07},
-    {0x015b, 0x00},
+    {0x0157, 0xAF},
+    
+    {0x0158, 0x01},
+    {0x0159, 0x00},
 
-    {0x0160, 0x04}, // frame length lines = 1113
-    {0x0161, 0x42},
+    {0x015a, 0x03},
+    {0x015b, 0xE8},
+
+    {0x0160, 0x04}, //FRAME_LENGHT_A[15:8]
+    {0x0161, 0xE4}, //FRAME_LENGHT_B[7:0]
 
     {0x0162, 0x0d}, //LINE_LENGTH_A[15:8]
     {0x0163, 0x78}, //LINE_LENGTH_A[7:0] = 3448 pixels - "line_length_pck" Units: Pixels
+    
     {0x0164, 0x02}, //XADD_STA_A[11:8]
     {0x0165, 0xa8}, //XADD_STA_A[7:0] = X top left = 680 pixels - "X-address of the top left corner of the visible pixel data" Units: Pixels
     {0x0166, 0x0a}, //XADD_END_A[11:8]
     {0x0167, 0x27}, //XADD_END_A[7:0] = X bottom right = 2599 pixels - "X-address of the bottom right corner of the visible pixel data" Units: Pixels
+    
     {0x0168, 0x02}, //YADD_STA_A[11:8]
     {0x0169, 0xb4}, //YADD_STA_A[7:0] = Y top left = 692 lines - "Y-address of the top left corner of the visible pixel data" Units: Lines     //20
     {0x016a, 0x06}, //YADD_END_A[11:8]
     {0x016b, 0xeb}, //YADD_END_A[7:0] = Y bottom right = 1771 pixels - "X-address of the bottom right corner of the visible pixel data" Units: Pixels
+    
     {0x016c, 0x07}, //x_output_size[11:8]
     {0x016d, 0x80}, //x_output_size[7:0] = 1920 pixels (Active Area H) - "Width of image data output from the sensor module" Units: Pixels
     {0x016e, 0x04}, //y_output_size[11:8]
     {0x016f, 0x38}, //y_output_size[7:0] = 1080 lines (Active Area V) - "Height of image data output from the sensor module" Units: Lines
+    
     {0x0170, 0x01}, //X_ODD_INC_A
     {0x0171, 0x01}, //Y_ODD_INC_A
+    
     {0x0174, 0x00}, //BINNING_MODE_H_A = no binning
-    {0x0175, 0x00}, //BINNING_MODE_V_A = no binning             //30
+    {0x0175, 0x00}, //BINNING_MODE_V_A = no binning             
+
+    {0x0172, 0x00}, //image_orientation
+    
+    {0x018A, 0x01}, //Coarse integ time (short exposure) [15:8]
+    {0x018B, 0xF4}, //Coarse integ time (short exposure) [7:0]
 
     {0x018C, 0x0A}, //CSI_DATA_FORMAT_A [15:8]
     {0x018D, 0x0A}, //CSI_DATA_FORMAT_A [7:0] = RAW10
