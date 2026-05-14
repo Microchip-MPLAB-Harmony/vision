@@ -3,6 +3,30 @@
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Vision Release v3.2.2
+
+### New Features
+
+* add support for parallel interface camera modules.
+* add WVGA resolution support in the IMX219 Image Sensor.
+
+### Fixed Known Issues
+
+* fix Jira issues
+
+### Development Tools
+
+* [MPLAB® X IDE v6.25](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v4.60](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * [MPLAB® Code Configurator Plug-In v5.6.4](https://github.com/Microchip-MPLAB-Harmony/mplabx-plugin)
+    * [MPLAB® Code Configurator Core v5.8.4](https://github.com/Microchip-MPLAB-Harmony/mplabx-plugin)
+
+### Dependent Components
+
+* [csp v3.25.1](https://github.com/Microchip-MPLAB-Harmony/csp/releases/tag/v3.23.0)
+* [core v3.16.2](https://github.com/Microchip-MPLAB-Harmony/core/tree/v3.15.5)
+
 ## Vision Release v3.2.1
 
 ### New Features
