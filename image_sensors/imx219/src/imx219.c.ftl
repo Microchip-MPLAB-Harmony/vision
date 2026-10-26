@@ -193,12 +193,12 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] ={
     {0x012A, 0x18}, //EXCLK_FREQ[15:8]
     {0x012B, 0x00}, //EXCLK_FREQ[7:0] = 24 MHz
 
-    {0x0157, 0xAF},
+    {0x0157, 0x7F},
     
     {0x0158, 0x01},
     {0x0159, 0x00},
 
-    {0x015a, 0x03},
+    {0x015a, 0x06},
     {0x015b, 0xE8},
 
     {0x0160, 0x02}, //FRAME_LENGHT_A[15:8]
@@ -245,7 +245,7 @@ static const DRV_IMAGE_SENSOR_REG imx219_raw_720p[] ={
     {0x0309, 0x0A}, // OPPXCK_DIV = 10
     {0x030B, 0x01}, // OPSYCK_DIV = 1
     {0x030C, 0x00}, //PLL_OP_MPY[10:8]
-    {0x030D, 0xCF}, //PLL_OP_MPY[7:0]
+    {0x030D, 0x72}, //PLL_OP_MPY[7:0]
 
     {0x455E, 0x00},
     {0x471E, 0x4B},
