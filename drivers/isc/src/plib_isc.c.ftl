@@ -104,9 +104,9 @@ void ISC_PFE_Set_Video_Mode(uint32_t vmode) {
  * vpol: Vertical Synchronization Polarity
  */
 void ISC_PFE_Set_Sync_Polarity(uint32_t hpol, uint32_t vpol) {
-    ISC_REGS->ISC_PFE_CFG0 &= ~ISC_PFE_CFG0_HPOL(1);
-    ISC_REGS->ISC_PFE_CFG0 &= ~ISC_PFE_CFG0_VPOL(1);
-    ISC_REGS->ISC_PFE_CFG0 |= hpol | vpol;
+    uint32_t cfg0 = ISC_REGS->ISC_PFE_CFG0;
+    cfg0 &= ~(ISC_PFE_CFG0_HPOL(1) | ISC_PFE_CFG0_VPOL(1));
+    ISC_REGS->ISC_PFE_CFG0 = cfg0 | hpol | vpol;
 }
 
 /**
@@ -134,12 +134,13 @@ void ISC_PFE_Field_Polarity(uint32_t fpol) {
  * enable_row: Row Cropping enable/disable(1/0)
  */
 void ISC_PFE_Enable_Crop(uint8_t enable_column, uint8_t enable_row) {
-    ISC_REGS->ISC_PFE_CFG0 &= ~ISC_PFE_CFG0_COLEN(1);
-    ISC_REGS->ISC_PFE_CFG0 &= ~ISC_PFE_CFG0_ROWEN(1);
+    uint32_t cfg0 = ISC_REGS->ISC_PFE_CFG0;
+    cfg0 &= ~(ISC_PFE_CFG0_COLEN(1) | ISC_PFE_CFG0_ROWEN(1));
     if (enable_column)
-        ISC_REGS->ISC_PFE_CFG0 |= ISC_PFE_CFG0_COLEN(1);
+        cfg0 |= ISC_PFE_CFG0_COLEN(1);
     if (enable_row)
-        ISC_REGS->ISC_PFE_CFG0 |= ISC_PFE_CFG0_ROWEN(1);
+        cfg0 |= ISC_PFE_CFG0_ROWEN(1);
+    ISC_REGS->ISC_PFE_CFG0 = cfg0;
 }
 
 /**
@@ -226,31 +227,20 @@ void ISC_DPC_Configure(uint8_t bayerPattern, uint8_t enableEITPOL, uint8_t enabl
         uint8_t enableTA, uint8_t enableTC, uint8_t enableREMode, uint8_t enableNDMode,
         uint16_t ThreshM, uint16_t ThreshA, uint16_t ThreshC) {
 
-    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_BAYCFG(bayerPattern);
+    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_BAYCFG(bayerPattern) |
+            ISC_DPC_CFG_EITPOL(enableEITPOL) |
+            ISC_DPC_CFG_TM_ENABLE(enableTM) |
+            ISC_DPC_CFG_TA_ENABLE(enableTA) |
+            ISC_DPC_CFG_TC_ENABLE(enableTC) |
+            ISC_DPC_CFG_RE_MODE(enableREMode) |
+            ISC_DPC_CFG_ND_MODE(enableNDMode);
 
-    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_EITPOL(enableEITPOL);
-
-    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_TM_ENABLE(enableTM);
-
-    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_TA_ENABLE(enableTA);
-
-    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_TC_ENABLE(enableTC);
-
-    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_RE_MODE(enableREMode);
-
-    ISC_REGS->ISC_DPC_CFG |= ISC_DPC_CFG_ND_MODE(enableNDMode);
-
-    if (enableTM) {
+    if (enableTM)
         ISC_REGS->ISC_DPC_THRESHM = ISC_DPC_THRESHM_THRESHM(ThreshM);
-    }
-
-    if (enableTC) {
+    if (enableTC)
         ISC_REGS->ISC_DPC_THRESHC = ISC_DPC_THRESHC_THRESHC(ThreshC);
-    }
-
-    if (enableTA) {
+    if (enableTA)
         ISC_REGS->ISC_DPC_THRESHA = ISC_DPC_THRESHA_THRESHA(ThreshA);
-    }
 }
 
 #endif
@@ -482,14 +472,15 @@ void ISC_CC_Configure(PLIB_ISC_COLOR_CORRECT* cc) {
  * channels ISC_GAM_CTRL_BENABLE/ISC_GAM_CTRL_GENABLE/ISC_GAM_CTRL_RENABLE
  */
 void ISC_Gamma_Enable(uint8_t enable, uint8_t channels, uint8_t bipart_enable) {
-    if (enable)
+    if (enable) {
 #ifdef ISC_GAM_CTRL_BIPART_Msk
         ISC_REGS->ISC_GAM_CTRL |= ISC_GAM_CTRL_ENABLE(1) | channels | (bipart_enable ? ISC_GAM_CTRL_BIPART(1) : 0);
 #else
         ISC_REGS->ISC_GAM_CTRL |= ISC_GAM_CTRL_ENABLE(1) | channels;
 #endif
-else
+    } else {
         ISC_REGS->ISC_GAM_CTRL = 0;
+    }
 }
 
 /**

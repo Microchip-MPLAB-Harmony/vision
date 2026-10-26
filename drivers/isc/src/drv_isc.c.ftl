@@ -132,7 +132,6 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj) {
                 dma_view1[i].addr0 = (uint32_t) iscObj->dma.address0 + i * iscObj->dma.size;
                 dma_view1[i].stride0 = 0;
                 dma_view1[i].addr1 = (uint32_t) iscObj->dma.address1 + i * iscObj->dma.size;
-                ;
                 dma_view1[i].stride1 = 0;
             }
             dma_view1[i - 1].nextDesc = (uint32_t) & dma_view1[0];
@@ -153,13 +152,10 @@ uint8_t DRV_ISC_Configure_DMA(DRV_ISC_OBJ* iscObj) {
                 dma_view2[i].ctrl = ISC_DCTRL_DVIEW_PLANAR | ISC_DCTRL_DE(1);
                 dma_view2[i].nextDesc = (uint32_t) & dma_view2[i + 1];
                 dma_view2[i].addr0 = (uint32_t) iscObj->dma.address0 + i * iscObj->dma.size;
-                ;
                 dma_view2[i].stride0 = 0;
                 dma_view2[i].addr1 = (uint32_t) iscObj->dma.address1 + i * iscObj->dma.size;
-                ;
                 dma_view2[i].stride1 = 0;
                 dma_view2[i].addr2 = (uint32_t) iscObj->dma.address2 + i * iscObj->dma.size;
-                ;
                 dma_view2[i].stride2 = 0;
             }
             dma_view2[i - 1].nextDesc = (uint32_t) & dma_view2[0];
