@@ -1,6 +1,6 @@
 
+#include <stdio.h>
 #include "vision/drivers/image_sensor/drv_image_sensor.h"
-
 
 #define IMX219_SLAVE_ADDRESS      0x10
 #define IMX219_CHIPIDH_ADDRESS    0x00
@@ -8,6 +8,8 @@
 #define IMX219_CHIPIDH            0x02
 #define IMX219_CHIPIDL            0x19
 #define IMX219_CHIPID_MASK        0xFFFF
+#define IMX219_IMAGE_ORIENTATION_REG  0x0172
+
 
 static const DRV_IMAGE_SENSOR_REG imx219_raw_vga[] ={
     {0x0100, 0x00},
@@ -420,23 +422,76 @@ static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_1080p_config ={
     imx219_raw_1080p
 };
 
-const DRV_IMAGE_SENSOR_OBJ imx219_device ={
-    "IMX219",
-    IMX219_SLAVE_ADDRESS,
-    DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE, /* I2C interface mode  */
-    IMX219_CHIPIDH_ADDRESS, /* Register address for product ID high byte */
-    IMX219_CHIPIDL_ADDRESS, /* Register address for product ID low byte*/
-    IMX219_CHIPIDH, /* product ID high byte */
-    IMX219_CHIPIDL, /* product ID low byte */
-    IMX219_CHIPID_MASK, /* version mask */
-    0x0100,
-    0x01,
-    0x00,
-    {
+#define IMX219_LINK_FREQ_MHZ    456
+
+static uint32_t IMX219_SetFlip(DRV_IMAGE_SENSOR_OBJ* isensor, DRV_IMAGE_SENSOR_FLIP_MODE mode);
+
+static uint32_t IMX219_SetFlip(DRV_IMAGE_SENSOR_OBJ* isensor, DRV_IMAGE_SENSOR_FLIP_MODE mode) {
+    uint8_t regVal = 0;
+    bool i2cResult = false;
+
+    printf("\r\n IMX219_SetFlip: Enter, mode=%d\r\n", mode);
+
+    if (isensor == NULL) {
+        printf("\r\n IMX219_SetFlip: ERROR - isensor is NULL\r\n");
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    printf("\r\n IMX219_SetFlip: sensor=%s, devAddr=0x%x, I2CHandle=0x%x\r\n",
+           isensor->name, isensor->devAddr, (unsigned int)isensor->drvI2CHandle);
+
+    switch (mode) {
+        case DRV_IMAGE_SENSOR_FLIP_NONE:
+            regVal = 0x00;
+            break;
+        case DRV_IMAGE_SENSOR_FLIP_HORIZONTAL:
+            regVal = 0x01;
+            break;
+        case DRV_IMAGE_SENSOR_FLIP_VERTICAL:
+            regVal = 0x02;
+            break;
+        case DRV_IMAGE_SENSOR_FLIP_BOTH:
+            regVal = 0x03;
+            break;
+        default:
+            printf("\r\n IMX219_SetFlip: ERROR - invalid mode\r\n");
+            return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    printf("\r\n IMX219_SetFlip: Writing reg=0x%04X, val=0x%02X\r\n",
+           IMX219_IMAGE_ORIENTATION_REG, regVal);
+
+    i2cResult = DRV_ImageSensor_I2C_WriteReg(isensor, IMX219_IMAGE_ORIENTATION_REG, regVal);
+
+    if (i2cResult == false) {
+        printf("\r\n IMX219_SetFlip: ERROR - I2C write failed\r\n");
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    printf("\r\n IMX219_SetFlip: SUCCESS\r\n");
+    return DRV_IMAGE_SENSOR_SUCCESS;
+}
+
+DRV_IMAGE_SENSOR_OBJ imx219_device ={
+    .name = "IMX219",
+    .devAddr = IMX219_SLAVE_ADDRESS,
+    .i2cInfMode = DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,
+    .chipIdAddrHigh = IMX219_CHIPIDH_ADDRESS,
+    .chipIdAddrLow = IMX219_CHIPIDL_ADDRESS,
+    .chipIdHigh = IMX219_CHIPIDH,
+    .chipIdLow = IMX219_CHIPIDL,
+    .chipIdMask = IMX219_CHIPID_MASK,
+    .streamStartAddr = 0x0100,
+    .streamStartValue = 0x01,
+    .streamStopValue = 0x00,
+    .flipRegAddr = IMX219_IMAGE_ORIENTATION_REG,
+    .flipFunc = IMX219_SetFlip,
+    .linkFreqMHz = IMX219_LINK_FREQ_MHZ,
+    .iSensorConfigs = {
         &imx219_raw_vga_config,
         &imx219_raw_wvga_config,
         &imx219_raw_720p_config,
         &imx219_raw_1080p_config
     },
-    (DRV_HANDLE) NULL
+    .drvI2CHandle = (DRV_HANDLE) NULL
 };

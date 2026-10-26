@@ -10,12 +10,15 @@
 
 #define debug_print(args ...) if (CAMERA_ENABLE_DEBUG) fprintf(stderr, args)
 
-static const DRV_IMAGE_SENSOR_OBJ* Devices[DRV_IMAGE_SENSOR_MAX_DEVICES] ={
+static DRV_IMAGE_SENSOR_OBJ* Devices[DRV_IMAGE_SENSOR_MAX_DEVICES] ={
     &imx219_device,
+    &imx462_device,
     &ov5647_device,
     &ov2640_device,
     &ov5640_device,
 };
+
+#define I2C_TIMEOUT_COUNT 100000
 
 static void DRV_ImageSensor_I2C_EventHandler(DRV_I2C_TRANSFER_EVENT evt,
         DRV_I2C_TRANSFER_HANDLE hdl,
@@ -49,15 +52,12 @@ bool DRV_ImageSensor_I2C_ReadReg(DRV_IMAGE_SENSOR_OBJ* isensor,
     uint32_t timeout = 0;
 
     if (isensor == NULL) {
+        debug_print("\r\n I2C_ReadReg: ERROR - isensor is NULL\r\n");
         return false;
     }
 
     isensor->drvI2cLock = true;
-
-    //TOdo Do it only once.
-    DRV_I2C_TransferEventHandlerSet(isensor->drvI2CHandle,
-            DRV_ImageSensor_I2C_EventHandler,
-            (uintptr_t) isensor);
+    isensor->drvI2cSuccess = false;
 
     if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_BYTE) {
         DRV_I2C_WriteReadTransferAdd(isensor->drvI2CHandle,
@@ -68,7 +68,7 @@ bool DRV_ImageSensor_I2C_ReadReg(DRV_IMAGE_SENSOR_OBJ* isensor,
                 sz,
                 &isensor->objReadHandle);
     } else if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE) {
-        addrBuf[0] = (addr & 0x7F00) >> 8;
+        addrBuf[0] = (addr >> 8) & 0xFF;
         addrBuf[1] = addr & 0xFF;
         DRV_I2C_WriteReadTransferAdd(isensor->drvI2CHandle,
                 isensor->devAddr,
@@ -87,14 +87,21 @@ bool DRV_ImageSensor_I2C_ReadReg(DRV_IMAGE_SENSOR_OBJ* isensor,
                 sz,
                 &isensor->objReadHandle);
     } else {
-        debug_print("\r\n DRV_ImageSensor_I2C_ReadReg: Invalid I2C interface mode \r\n");
+        debug_print("\r\n I2C_ReadReg: ERROR - Invalid I2C interface mode\r\n");
+        isensor->drvI2cLock = false;
         return false;
     }
 
     while (isensor->drvI2cLock == true) {
         timeout++;
-        if (timeout == 100000)
+        if (timeout == I2C_TIMEOUT_COUNT) {
+            debug_print("\r\n I2C_ReadReg: ERROR - Timeout waiting for I2C\r\n");
             break;
+        }
+    }
+
+    if (isensor->drvI2cSuccess == false) {
+        debug_print("\r\n I2C_ReadReg: ERROR - I2C transfer failed, addr=0x%04X\r\n", addr);
     }
 
     return isensor->drvI2cSuccess;
@@ -108,14 +115,12 @@ bool DRV_ImageSensor_I2C_WriteReg(DRV_IMAGE_SENSOR_OBJ* isensor,
     uint32_t timeout = 0;
 
     if (isensor == NULL) {
+        debug_print("\r\n I2C_WriteReg: ERROR - isensor is NULL\r\n");
         return false;
     }
 
     isensor->drvI2cLock = true;
-
-    DRV_I2C_TransferEventHandlerSet(isensor->drvI2CHandle,
-            DRV_ImageSensor_I2C_EventHandler,
-            (uintptr_t) isensor);
+    isensor->drvI2cSuccess = false;
 
     if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_BYTE) {
         buf[0] = (addr & 0xFF);
@@ -126,7 +131,7 @@ bool DRV_ImageSensor_I2C_WriteReg(DRV_IMAGE_SENSOR_OBJ* isensor,
                 2,
                 &isensor->objWriteHandle);
     } else if (isensor->i2cInfMode == DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE) {
-        buf[0] = (addr & 0x7F00) >> 8;
+        buf[0] = (addr >> 8) & 0xFF;
         buf[1] = (addr & 0xFF);
         buf[2] = val & 0xFF;
         DRV_I2C_WriteTransferAdd(isensor->drvI2CHandle,
@@ -144,14 +149,21 @@ bool DRV_ImageSensor_I2C_WriteReg(DRV_IMAGE_SENSOR_OBJ* isensor,
                 3,
                 &isensor->objWriteHandle);
     } else {
-        debug_print("\r\n DRV_ImageSensor_I2C_WriteReg: Invalid I2C interface mode \r\n");
+        debug_print("\r\n I2C_WriteReg: ERROR - Invalid I2C interface mode\r\n");
+        isensor->drvI2cLock = false;
         return false;
     }
 
     while (isensor->drvI2cLock == true) {
         timeout++;
-        if (timeout == 100000)
+        if (timeout == I2C_TIMEOUT_COUNT) {
+            debug_print("\r\n I2C_WriteReg: ERROR - Timeout waiting for I2C\r\n");
             break;
+        }
+    }
+
+    if (isensor->drvI2cSuccess == false) {
+        debug_print("\r\n I2C_WriteReg: ERROR - I2C transfer failed, addr=0x%04X, val=0x%02lX\r\n", addr, val);
     }
 
     return isensor->drvI2cSuccess;
@@ -258,6 +270,9 @@ DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Probe(const DRV_HANDLE I2CHandle, bool det
 
         isensor = (DRV_IMAGE_SENSOR_OBJ*) Devices[id];
         isensor->drvI2CHandle = I2CHandle;
+        DRV_I2C_TransferEventHandlerSet(isensor->drvI2CHandle,
+                DRV_ImageSensor_I2C_EventHandler,
+                (uintptr_t) isensor);
         if (DRV_ImageSensor_Read_ChipId(isensor) == DRV_IMAGE_SENSOR_SUCCESS) {
             return isensor;
         } else {
@@ -267,6 +282,9 @@ DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Probe(const DRV_HANDLE I2CHandle, bool det
         for (i = 0; i < DRV_IMAGE_SENSOR_MAX_DEVICES; i++) {
             isensor = (DRV_IMAGE_SENSOR_OBJ*) Devices[i];
             isensor->drvI2CHandle = I2CHandle;
+            DRV_I2C_TransferEventHandlerSet(isensor->drvI2CHandle,
+                    DRV_ImageSensor_I2C_EventHandler,
+                    (uintptr_t) isensor);
             if (DRV_ImageSensor_Read_ChipId(isensor) == DRV_IMAGE_SENSOR_SUCCESS)
                 break;
             else
@@ -357,4 +375,59 @@ DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Init(uint32_t drvI2CIndex, const char* dev
     }
     debug_print("\r\n Image Sensor probe failed.\r\n");
     return NULL;
+}
+
+uint32_t DRV_ImageSensor_SetFlip(DRV_IMAGE_SENSOR_OBJ* isensor,
+        DRV_IMAGE_SENSOR_FLIP_MODE mode) {
+    if (isensor == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    if (isensor->flipFunc != NULL) {
+        return isensor->flipFunc(isensor, mode);
+    }
+
+    if (isensor->flipRegAddr == 0) {
+        debug_print("\r\n DRV_ImageSensor_SetFlip: Flip not supported for this sensor \r\n");
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    if (DRV_ImageSensor_I2C_WriteReg(isensor, isensor->flipRegAddr, (uint32_t)mode) == false) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    return DRV_IMAGE_SENSOR_SUCCESS;
+}
+
+uint32_t DRV_ImageSensor_GetFlip(DRV_IMAGE_SENSOR_OBJ* isensor,
+        DRV_IMAGE_SENSOR_FLIP_MODE* mode) {
+    uint8_t regVal = 0;
+
+    if (isensor == NULL || mode == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    if (isensor->flipRegAddr == 0) {
+        debug_print("\r\n DRV_ImageSensor_GetFlip: Flip not supported for this sensor \r\n");
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    if (DRV_ImageSensor_I2C_ReadReg(isensor, isensor->flipRegAddr, &regVal, 1) == false) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    *mode = (DRV_IMAGE_SENSOR_FLIP_MODE)(regVal & 0x03);
+
+    return DRV_IMAGE_SENSOR_SUCCESS;
+}
+
+uint32_t DRV_ImageSensor_GetLinkFrequency(DRV_IMAGE_SENSOR_OBJ* isensor,
+        uint32_t* linkFreqMHz) {
+    if (isensor == NULL || linkFreqMHz == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    *linkFreqMHz = isensor->linkFreqMHz;
+
+    return DRV_IMAGE_SENSOR_SUCCESS;
 }

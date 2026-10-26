@@ -9,6 +9,8 @@
 #define OV5640_CHIPIDL          0x40
 #define OV5640_CHIPID_MASK      0xFFFF
 
+#define OV5640_LINK_FREQ_MHZ      168
+
 
 static const DRV_IMAGE_SENSOR_REG ov5640_raw_qvga[] ={
     {0x3103, 0x11},
@@ -5964,19 +5966,22 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5640_jpeg_5mp_config ={
     ov5640_jpeg_5mp
 };
 
-const DRV_IMAGE_SENSOR_OBJ ov5640_device ={
-    "OV5640",
-    OV5640_SLAVE_ADDRESS,
-    DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,
-    OV5640_CHIPIDH_ADDRESS,
-    OV5640_CHIPIDL_ADDRESS,
-    OV5640_CHIPIdH,
-    OV5640_CHIPIDL,
-    OV5640_CHIPID_MASK,
-    0x100,
-    0x01,
-    0x00,
-    {
+DRV_IMAGE_SENSOR_OBJ ov5640_device ={
+    .name = "OV5640",
+    .devAddr = OV5640_SLAVE_ADDRESS,
+    .i2cInfMode = DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,
+    .chipIdAddrHigh = OV5640_CHIPIDH_ADDRESS,
+    .chipIdAddrLow = OV5640_CHIPIDL_ADDRESS,
+    .chipIdHigh = OV5640_CHIPIdH,
+    .chipIdLow = OV5640_CHIPIDL,
+    .chipIdMask = OV5640_CHIPID_MASK,
+    .streamStartAddr = 0x100,
+    .streamStartValue = 0x01,
+    .streamStopValue = 0x00,
+    .flipRegAddr = 0,
+    .flipFunc = NULL,
+    .linkFreqMHz = OV5640_LINK_FREQ_MHZ,
+    .iSensorConfigs = {
         &ov5640_yuv_qvga_config,
         &ov5640_yuv_vga_config,
         &ov5640_yuv_wxga_config,
@@ -5986,5 +5991,5 @@ const DRV_IMAGE_SENSOR_OBJ ov5640_device ={
         &ov5640_jpeg_5mp_config,
         &ov5640_af_config,
     },
-    (DRV_HANDLE) NULL
+    .drvI2CHandle = (DRV_HANDLE) NULL
 };

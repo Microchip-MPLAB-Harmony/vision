@@ -53,6 +53,14 @@ enum {
     DRV_IMAGE_SENSOR_I2C_REG_BYTE_DATA_2BYTE
 };
 
+/** Image Sensor Flip Mode */
+typedef enum {
+    DRV_IMAGE_SENSOR_FLIP_NONE = 0x00,
+    DRV_IMAGE_SENSOR_FLIP_HORIZONTAL = 0x01,
+    DRV_IMAGE_SENSOR_FLIP_VERTICAL = 0x02,
+    DRV_IMAGE_SENSOR_FLIP_BOTH = 0x03
+} DRV_IMAGE_SENSOR_FLIP_MODE;
+
 typedef struct {
     uint16_t regAddr;
     uint16_t regValue;
@@ -69,7 +77,11 @@ typedef struct {
     const DRV_IMAGE_SENSOR_REG* iSensorRegSetting;
 } DRV_IMAGE_SENSOR_CONFIGS;
 
-typedef struct {
+typedef struct DRV_IMAGE_SENSOR_OBJ_T DRV_IMAGE_SENSOR_OBJ;
+
+typedef uint32_t (*DRV_IMAGE_SENSOR_FLIP_FUNC)(DRV_IMAGE_SENSOR_OBJ* isensor, DRV_IMAGE_SENSOR_FLIP_MODE mode);
+
+struct DRV_IMAGE_SENSOR_OBJ_T {
     const char* name;
     uint8_t devAddr;
     uint8_t i2cInfMode; /* I2C interface mode  */
@@ -81,18 +93,22 @@ typedef struct {
     uint16_t streamStartAddr;
     uint8_t streamStartValue;
     uint8_t streamStopValue;
-    const DRV_IMAGE_SENSOR_CONFIGS* iSensorConfigs[DRV_IMAGE_SENSOR_MAX_CONFIGS];
+    uint16_t flipRegAddr;
+    uint32_t linkFreqMHz;
     DRV_HANDLE drvI2CHandle;
     DRV_I2C_TRANSFER_HANDLE objWriteHandle;
     DRV_I2C_TRANSFER_HANDLE objReadHandle;
     volatile bool drvI2cLock;
     volatile bool drvI2cSuccess;
-} DRV_IMAGE_SENSOR_OBJ;
+    const DRV_IMAGE_SENSOR_CONFIGS* iSensorConfigs[DRV_IMAGE_SENSOR_MAX_CONFIGS];
+    DRV_IMAGE_SENSOR_FLIP_FUNC flipFunc;
+};
 
-extern const DRV_IMAGE_SENSOR_OBJ ov2640_device;
-extern const DRV_IMAGE_SENSOR_OBJ ov5640_device;
-extern const DRV_IMAGE_SENSOR_OBJ ov5647_device;
-extern const DRV_IMAGE_SENSOR_OBJ imx219_device;
+extern DRV_IMAGE_SENSOR_OBJ ov2640_device;
+extern DRV_IMAGE_SENSOR_OBJ ov5640_device;
+extern DRV_IMAGE_SENSOR_OBJ ov5647_device;
+extern DRV_IMAGE_SENSOR_OBJ imx219_device;
+extern DRV_IMAGE_SENSOR_OBJ imx462_device;
 
 DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Probe(DRV_HANDLE drvI2CHandle, bool detect_auto, uint8_t id);
 
@@ -123,5 +139,13 @@ bool DRV_ImageSensor_I2C_ReadReg(DRV_IMAGE_SENSOR_OBJ* isensor,
         const uint16_t addr,
         uint8_t* readBuf,
         const uint32_t sz);
+
+uint32_t DRV_ImageSensor_SetFlip(DRV_IMAGE_SENSOR_OBJ* isensor,
+        DRV_IMAGE_SENSOR_FLIP_MODE mode);
+
+uint32_t DRV_ImageSensor_GetFlip(DRV_IMAGE_SENSOR_OBJ* isensor,
+        DRV_IMAGE_SENSOR_FLIP_MODE* mode);
+
+uint32_t DRV_ImageSensor_GetLinkFrequency(DRV_IMAGE_SENSOR_OBJ* isensor, uint32_t* linkFreqMHz);
 
 #endif /* ! DRV_IMAGE_SENSOR_H */

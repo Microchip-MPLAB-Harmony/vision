@@ -9,6 +9,8 @@
 #define OV5647_CHIPIDL          0x47
 #define OV5647_CHIPID_MASK      0xFFFF
 
+#define OV5647_LINK_FREQ_MHZ    400
+
 static const DRV_IMAGE_SENSOR_REG ov5647_raw_vga[] = {
     {0x0100, 0x00},
     {0x0103, 0x01},
@@ -615,24 +617,26 @@ static const DRV_IMAGE_SENSOR_CONFIGS ov5647_raw_5MP_config = {
     ov5647_raw_5MP
 };
 
-
-const DRV_IMAGE_SENSOR_OBJ ov5647_device = {
-    "OV5647",
-    OV5647_SLAVE_ADDRESS,
-    DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,
-    OV5647_CHIPIDH_ADDRESS,
-    OV5647_CHIPIDL_ADDRESS,
-    OV5647_CHIPIdH,
-    OV5647_CHIPIDL,
-    OV5647_CHIPID_MASK,
-    0x4800, /* Register address of stream on */
-    0x34, /* Register value of stream on */
-    0x00,
-    {
+DRV_IMAGE_SENSOR_OBJ ov5647_device = {
+    .name = "OV5647",
+    .devAddr = OV5647_SLAVE_ADDRESS,
+    .i2cInfMode = DRV_IMAGE_SENSOR_I2C_REG_2BYTE_DATA_BYTE,
+    .chipIdAddrHigh = OV5647_CHIPIDH_ADDRESS,
+    .chipIdAddrLow = OV5647_CHIPIDL_ADDRESS,
+    .chipIdHigh = OV5647_CHIPIdH,
+    .chipIdLow = OV5647_CHIPIDL,
+    .chipIdMask = OV5647_CHIPID_MASK,
+    .streamStartAddr = 0x4800,
+    .streamStartValue = 0x34,
+    .streamStopValue = 0x00,
+    .flipRegAddr = 0,
+    .flipFunc = NULL,
+    .linkFreqMHz = OV5647_LINK_FREQ_MHZ,
+    .iSensorConfigs = {
         &ov5647_raw_vga_config,
         &ov5647_raw_720p_config,
         &ov5647_raw_1080p_config,
         &ov5647_raw_5MP_config,
     },
-    (DRV_HANDLE) NULL
+    .drvI2CHandle = (DRV_HANDLE) NULL
 };

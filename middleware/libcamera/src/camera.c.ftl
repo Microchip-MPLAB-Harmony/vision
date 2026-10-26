@@ -240,6 +240,34 @@ uint32_t CAMERA_Get_FPS() {
     return DrvCameraInstances.fpsCount;
 }
 
+uint32_t CAMERA_SetFlip(SYS_MODULE_OBJ object, DRV_IMAGE_SENSOR_FLIP_MODE mode) {
+    DEVICE_OBJECT* pDrvObject = (DEVICE_OBJECT*) object;
+
+    if (object == SYS_MODULE_OBJ_INVALID) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    if (pDrvObject->sensor == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    return DRV_ImageSensor_SetFlip(pDrvObject->sensor, mode);
+}
+
+uint32_t CAMERA_GetFlip(SYS_MODULE_OBJ object, DRV_IMAGE_SENSOR_FLIP_MODE* mode) {
+    DEVICE_OBJECT* pDrvObject = (DEVICE_OBJECT*) object;
+
+    if (object == SYS_MODULE_OBJ_INVALID || mode == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    if (pDrvObject->sensor == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    return DRV_ImageSensor_GetFlip(pDrvObject->sensor, mode);
+}
+
 bool CAMERA_Get_Frame(SYS_MODULE_OBJ object,
         uint32_t* buffer,
         uint32_t* width,

@@ -129,6 +129,10 @@ extern "C" {
 
     uint32_t CAMERA_Get_FPS(void);
 
+    uint32_t CAMERA_SetFlip(SYS_MODULE_OBJ object, DRV_IMAGE_SENSOR_FLIP_MODE mode);
+
+    uint32_t CAMERA_GetFlip(SYS_MODULE_OBJ object, DRV_IMAGE_SENSOR_FLIP_MODE* mode);
+
 #ifdef __cplusplus
 }
 #endif
