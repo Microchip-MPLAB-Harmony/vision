@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "vision/drivers/image_sensor/drv_image_sensor.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -17,15 +18,12 @@ extern "C" {
         uint8_t csiDataType;
         uint8_t csiDataId;
         uint8_t csiVirtualChannel;
-        uint8_t csiBitRate;
-        uint32_t csiFps;
-        uint32_t csiFrameWidth;
-        uint32_t csiFrameHeight;
+        uint32_t linkFreqMHz;
     } DRV_CSI_OBJ;
 
     bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj);
 
-    DRV_CSI_OBJ* DRV_CSI_Initalize(void);
+    DRV_CSI_OBJ* DRV_CSI_Initalize(DRV_IMAGE_SENSOR_OBJ* iSensor);
 
     // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

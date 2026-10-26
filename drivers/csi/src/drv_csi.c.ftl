@@ -41,12 +41,11 @@
 #include "configuration.h"
 #include "vision/drivers/csi/drv_csi.h"
 #include "vision/drivers/csi/plib_csi.h"
+#include "vision/drivers/image_sensor/drv_image_sensor.h"
 
 #define debug_print(args ...) if (CAMERA_ENABLE_DEBUG) fprintf(stderr, args)
 
 static DRV_CSI_OBJ csiObj;
-
-#if 0
 
 typedef struct {
     uint16_t MinValue;
@@ -54,88 +53,134 @@ typedef struct {
     uint16_t BitRateValue;
 } CSI_BitRate;
 
-static const CSI_BitRate CSI_BitRateLookUp[] ={
+static const CSI_BitRate CSI_BitRateLookUp[] = {
     {80, 89, 0x00},
     {90, 99, 0x10},
-    {100, 109, 0x20}, //100000
-    {110, 129, 0x01}, //000001
-    {130, 139, 0x11}, //010001
-    {140, 149, 0x21}, //100001
-    {150, 169, 0x02}, //000010
-    {170, 179, 0x22}, //010010
-    {180, 199, 0x12}, //100010
-    {200, 219, 0x03}, //000011
-    {220, 239, 0x13}, //010011
-    {240, 249, 0x23}, //100011
-    {250, 269, 0x04}, //000100
-    {270, 299, 0x14}, //010100
-    {300, 329, 0x05}, //000101
-    {330, 359, 0x15}, //010101
-    {360, 399, 0x25}, //100101
-    {400, 449, 0x06}, //000110
-    {450, 499, 0x16}, //010110
-    {500, 549, 0x07}, //000111
-    {550, 599, 0x17}, //010111
-    {600, 649, 0x08}, //001000
-    {650, 699, 0x18}, //011000
-    {700, 749, 0x09}, //001001
-    {750, 799, 0x19}, //011001
-    {800, 849, 0x29}, //101001
-    {850, 899, 0x39}, //111001
-    {900, 949, 0x0A}, //001010
-    {950, 999, 0x1A}, //011010
-    {1000, 1049, 0x2A}, //101010
-    {1050, 1099, 0x3A}, //111010
-    {1100, 1149, 0x0B}, //001011
-    {1150, 1199, 0x01}, //011011
-    {1200, 1249, 0x2B}, //101011
-    {1250, 1299, 0x3B}, //111011
-    {1300, 1349, 0x0C}, //001100
-    {1350, 1399, 0x1C}, //011100
-    {1400, 1449, 0x2C}, //101100
-    {1450, 1500, 0x3C}, //111100
+    {100, 109, 0x20},
+    {110, 129, 0x01},
+    {130, 139, 0x11},
+    {140, 149, 0x21},
+    {150, 169, 0x02},
+    {170, 179, 0x22},
+    {180, 199, 0x12},
+    {200, 219, 0x03},
+    {220, 239, 0x13},
+    {240, 249, 0x23},
+    {250, 269, 0x04},
+    {270, 299, 0x14},
+    {300, 329, 0x05},
+    {330, 359, 0x15},
+    {360, 399, 0x25},
+    {400, 449, 0x06},
+    {450, 499, 0x16},
+    {500, 549, 0x07},
+    {550, 599, 0x17},
+    {600, 649, 0x08},
+    {650, 699, 0x18},
+    {700, 749, 0x09},
+    {750, 799, 0x19},
+    {800, 849, 0x29},
+    {850, 899, 0x39},
+    {900, 949, 0x0A},
+    {950, 999, 0x1A},
+    {1000, 1049, 0x2A},
+    {1050, 1099, 0x3A},
+    {1100, 1149, 0x0B},
+    {1150, 1199, 0x1B},
+    {1200, 1249, 0x2B},
+    {1250, 1299, 0x3B},
+    {1300, 1349, 0x0C},
+    {1350, 1399, 0x1C},
+    {1400, 1449, 0x2C},
+    {1450, 1500, 0x3C},
 };
 
-static uint32_t DRV_CSI_GetBitRate(DRV_CSI_OBJ* devObj) {
-    uint8_t bpp = 0;
-    uint32_t bitrate = 0;
-    uint32_t size = sizeof (CSI_BitRateLookUp) / sizeof (CSI_BitRateLookUp[0]);
-    uint32_t i = 0;
+static uint8_t DRV_CSI_LookupBitRateRegister(uint32_t bitrateMbps) {
+    uint32_t size = sizeof(CSI_BitRateLookUp) / sizeof(CSI_BitRateLookUp[0]);
+    uint32_t i;
 
-    if (devObj == NULL) {
-        return 0;
+    if (bitrateMbps < CSI_BitRateLookUp[0].MinValue) {
+        debug_print("\r\n Bitrate below minimum, using lowest value\r\n");
+        return CSI_BitRateLookUp[0].BitRateValue;
     }
 
-    if (devObj->csiDataType == CSI2_DATA_FORMAT_RAW10)
-        bpp = 10;
-    else if (devObj->csiDataType == CSI2_DATA_FORMAT_RAW8)
-        bpp = 8;
+    if (bitrateMbps > CSI_BitRateLookUp[size - 1].MaxValue) {
+        debug_print("\r\n Bitrate above maximum, using highest value\r\n");
+        return CSI_BitRateLookUp[size - 1].BitRateValue;
+    }
 
-    bitrate = csiObj.csiFrameWidth * csiObj.csiFrameHeight * csiObj.csiFps * bpp;
-    bitrate /= 1000000;
-
-    debug_print("\r\n size = %ld bitrate = %ld \r\n", size, bitrate);
-
-    if (bitrate < 90) {
-        return 0;
-    } else {
-        for (i = 0; i < size; i++) {
-            if ((bitrate >= CSI_BitRateLookUp[i].MinValue) &&
-                    (bitrate <= CSI_BitRateLookUp[i].MaxValue)) {
-                return CSI_BitRateLookUp[i].BitRateValue;
-            }
+    for (i = 0; i < size; i++) {
+        if ((bitrateMbps >= CSI_BitRateLookUp[i].MinValue) &&
+            (bitrateMbps <= CSI_BitRateLookUp[i].MaxValue)) {
+            debug_print("\r\n Found bitrate register value: 0x%02X\r\n",
+                        CSI_BitRateLookUp[i].BitRateValue);
+            return (uint8_t)CSI_BitRateLookUp[i].BitRateValue;
         }
     }
+
     return 0;
 }
-#endif
+
+static uint8_t DRV_CSI_GetBppFromDataType(uint8_t dataType) {
+    switch (dataType) {
+        case CSI2_DATA_FORMAT_RAW6:
+            return 6;
+        case CSI2_DATA_FORMAT_RAW7:
+            return 7;
+        case CSI2_DATA_FORMAT_RAW8:
+        case CSI2_DATA_FORMAT_YUV420_8:
+        case CSI2_DATA_FORMAT_YUV420_8L:
+        case CSI2_DATA_FORMAT_YUV420_8C:
+        case CSI2_DATA_FORMAT_YUV422_8:
+            return 8;
+        case CSI2_DATA_FORMAT_RAW10:
+        case CSI2_DATA_FORMAT_YUV420_10:
+        case CSI2_DATA_FORMAT_YUV420_10C:
+        case CSI2_DATA_FORMAT_YUV422_10:
+            return 10;
+        case CSI2_DATA_FORMAT_RAW12:
+        case CSI2_DATA_FORMAT_RGB444:
+            return 12;
+        case CSI2_DATA_FORMAT_RAW14:
+            return 14;
+        case CSI2_DATA_FORMAT_RGB555:
+        case CSI2_DATA_FORMAT_RGB565:
+            return 16;
+        case CSI2_DATA_FORMAT_RGB666:
+            return 18;
+        case CSI2_DATA_FORMAT_RGB888:
+            return 24;
+        default:
+            return 10;
+    }
+}
+
+static uint8_t DRV_CSI_CalculateBitRate(uint64_t linkFreqMhz, uint8_t numLanes) {
+    uint32_t bitrateMbps;
+
+    bitrateMbps = DRV_CSI_LookupBitRateRegister(linkFreqMhz);
+
+    debug_print("\r\n DRV_CSI_CalculateBitRate: link_freq=%llu MHz, lanes=%u, bitrate=%lu Mbps\r\n",
+                (unsigned long long)linkFreqMhz,
+                numLanes + 1,
+                (unsigned long)bitrateMbps);
+
+    return bitrateMbps;
+}
 
 bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj) {
+    uint8_t csiBitRate;
+
     if (devObj == NULL) {
         return false;
     }
 
-    debug_print("\r\n\t csiBitRate = 0x%x \r\n", devObj->csiBitRate);
+    csiBitRate = DRV_CSI_LookupBitRateRegister(devObj->linkFreqMHz);
+
+    debug_print("\r\n DRV_CSI_Configure: linkFreq=%lu MHz, lanes=%u, csiBitRate=0x%02X\r\n",
+                (unsigned long)devObj->linkFreqMHz,
+                devObj->numLanes + 1,
+                csiBitRate);
 
     // release CSI2 reset
     CSI_Reset();
@@ -144,7 +189,7 @@ bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj) {
     // Reset CSI D-Phy
     CSI_Reset_DPhy();
     // Initialize DWC_mipi_csi2_host sequence
-    CSI_Analog_Init(devObj->csiBitRate, devObj->numLanes); //0x16
+    CSI_Analog_Init(csiBitRate, devObj->numLanes);
     // exit shutdown state
     CSI_Exit_Shutdown();
     // clear PHY from reset
@@ -159,16 +204,26 @@ bool DRV_CSI_Configure(DRV_CSI_OBJ* devObj) {
     return true;
 }
 
-DRV_CSI_OBJ* DRV_CSI_Initalize(void) {
-    csiObj.numLanes = CSI_NUM_LANES;
-    csiObj.csiDataType = CSI_DATA_FORMAT_TYPE;
-    csiObj.csiBitRate = 0x16;
-    csiObj.csiFrameWidth = 640;
-    csiObj.csiFrameHeight = 480;
-    csiObj.csiFps = 150;
+DRV_CSI_OBJ* DRV_CSI_Initalize(DRV_IMAGE_SENSOR_OBJ* iSensor) {
+    if (iSensor == NULL) {
+        debug_print("\r\n DRV_CSI_Initalize: ERROR - sensor is NULL\r\n");
+        return NULL;
+    }
 
+    csiObj.numLanes = CSI_NUM_LANES;
     csiObj.csiDataId = 0;
     csiObj.csiVirtualChannel = 0;
+    csiObj.csiDataType = CSI_DATA_FORMAT_TYPE;
+
+    if (DRV_ImageSensor_GetLinkFrequency(iSensor, &csiObj.linkFreqMHz) != DRV_IMAGE_SENSOR_SUCCESS) {
+        debug_print("\r\n DRV_CSI_Initalize: Failed to get link frequency from %s\r\n",
+                    iSensor->name);
+        return NULL;
+    }
+
+    debug_print("\r\n DRV_CSI_Initalize for %s linkFreq=%lu MHz\r\n",
+                iSensor->name,
+                (unsigned long)csiObj.linkFreqMHz);
 
     return &csiObj;
 }

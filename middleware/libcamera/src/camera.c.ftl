@@ -363,11 +363,11 @@ bool CAMERA_Open(SYS_MODULE_OBJ object) {
     debug_print("\r\n CAMERA_Open: Start\r\n");
 
     if (pDrvObject->sensor) {
-        if (DRV_ImageSensor_Configure(pDrvObject->sensor,
-                pDrvObject->imageSensorResolution,
-                pDrvObject->imageSensorOutputFormat) != DRV_IMAGE_SENSOR_SUCCESS) {
-            debug_print("\r\n Sensor setup failed.\r\n");
-        }
+        // if (DRV_ImageSensor_Configure(pDrvObject->sensor,
+        //         pDrvObject->imageSensorResolution,
+        //         pDrvObject->imageSensorOutputFormat) != DRV_IMAGE_SENSOR_SUCCESS) {
+        //     debug_print("\r\n Sensor setup failed.\r\n");
+        // }
 
         if (DRV_ImageSensor_GetConfig(pDrvObject->sensor,
                 pDrvObject->imageSensorResolution,
@@ -402,9 +402,6 @@ bool CAMERA_Open(SYS_MODULE_OBJ object) {
 
 #if ISC_ENABLE_MIPI_INTERFACE
     if (pDrvObject->csiObj) {
-        pDrvObject->csiObj->csiFrameWidth = pDrvObject->imageWidth;
-        pDrvObject->csiObj->csiFrameHeight = pDrvObject->imageHeight;
-        // ToDo Add fps, nlanes, channelid from Sensor configuration.
         DRV_CSI_Configure(pDrvObject->csiObj);
     }
 #endif
@@ -458,167 +455,25 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT * const init) {
         return SYS_MODULE_OBJ_INVALID;
     }
 
-    if (pInit->drvI2CIndex >= 0) {
-        pDrvInstance->sensor = DRV_ImageSensor_Init(pInit->drvI2CIndex, pInit->imageSensorName);
-        if (pDrvInstance->sensor == NULL) {
-            debug_print("\r\nCamera: DRV_ImageSensor_Init Failed \r\n");
-            return SYS_MODULE_OBJ_INVALID;
-        }
+    pDrvInstance->imageSensorResolution = pInit->imageSensorResolution;
+    pDrvInstance->imageSensorOutputFormat = pInit->imageSensorOutputFormat;
+    pDrvInstance->imageSensorOutputBitWidth = pInit->imageSensorOutputBitWidth;
+    // pDrvInstance->iscInputFormat = pInit->iscInputFormat;
 
-        if (pDrvInstance->sensor->name != NULL) {
-            strcpy(pDrvInstance->imageSensorName, pDrvInstance->sensor->name);
-        } else if (pInit->imageSensorName != NULL) {
-            strcpy(pDrvInstance->imageSensorName, pInit->imageSensorName);
-        }
-
-        if (pInit->imageSensorResolution >= 0)
-            pDrvInstance->imageSensorResolution = pInit->imageSensorResolution;
-        else
-            pDrvInstance->imageSensorResolution = DRV_IMAGE_SENSOR_VGA;
-
-        if (pInit->imageSensorOutputFormat >= 0)
-            pDrvInstance->imageSensorOutputFormat = pInit->imageSensorOutputFormat;
-        else
-            pDrvInstance->imageSensorOutputFormat = DRV_IMAGE_SENSOR_RAW_BAYER;
-
-        if (pInit->imageSensorOutputBitWidth >= 0)
-            pDrvInstance->imageSensorOutputBitWidth = pInit->imageSensorOutputBitWidth;
-        else
-            pDrvInstance->imageSensorOutputBitWidth = DRV_IMAGE_SENSOR_10_BIT;
-
-        if (DRV_ImageSensor_Configure(pDrvInstance->sensor,
-                pDrvInstance->imageSensorResolution,
-                pDrvInstance->imageSensorOutputFormat) != DRV_IMAGE_SENSOR_SUCCESS) {
-            debug_print("\r\n Sensor setup failed.\r\n");
-        }
-
-        if (DRV_ImageSensor_GetConfig(pDrvInstance->sensor,
-                pDrvInstance->imageSensorResolution,
-                pDrvInstance->imageSensorOutputFormat,
-                &pDrvInstance->imageSensorOutputBitWidth,
-                &pDrvInstance->imageWidth,
-                &pDrvInstance->imageHeight) == DRV_IMAGE_SENSOR_SUCCESS) {
-            debug_print("\r\n Image Sensor Configurations: \r\n");
-            debug_print("\r\n\t OutputBitWidth = 0x%x \r\n", pDrvInstance->imageSensorOutputBitWidth + 8);
-            debug_print("\r\n\t imageWidth = %ld \r\n", pDrvInstance->imageWidth);
-            debug_print("\r\n\t imageHeight = %ld \r\n", pDrvInstance->imageHeight);
-        }
-    } else {
-        debug_print("\r\nCamera: Invalid I2C Driver Index\r\n");
-        return SYS_MODULE_OBJ_INVALID;
-    }
-
-    if (pInit->imageSensorName != NULL)
-        strcpy(pDrvInstance->imageSensorName, pInit->imageSensorName);
-
-    if (pInit->imageSensorResolution >= 0)
-        pDrvInstance->imageSensorResolution = pInit->imageSensorResolution;
-    else
-        pDrvInstance->imageSensorResolution = DRV_IMAGE_SENSOR_VGA;
-
-    if (pInit->imageSensorOutputFormat >= 0)
-        pDrvInstance->imageSensorOutputFormat = pInit->imageSensorOutputFormat;
-    else
-        pDrvInstance->imageSensorOutputFormat = DRV_IMAGE_SENSOR_RAW_BAYER;
-
-    if (pInit->imageSensorOutputBitWidth >= 0)
-        pDrvInstance->imageSensorOutputBitWidth = pInit->imageSensorOutputBitWidth;
-    else
-        pDrvInstance->imageSensorOutputBitWidth = DRV_IMAGE_SENSOR_10_BIT;
-
-
-#if defined(_SAM9X7_CSI2DC_INSTANCE_)
-    pDrvInstance->csi2dcObj = DRV_CSI2DC_Initalize();
-    if (pDrvInstance->csi2dcObj == NULL) {
-        debug_print("\r\nCamera: DRV_CSI2DC_Initalize Failed \r\n");
-        return SYS_MODULE_OBJ_INVALID;
-    }
-
-    if (pInit->csiDataFormat >= 0) {
-        pDrvInstance->csi2dcObj->videoPipeDataType = pInit->csiDataFormat;
-        pDrvInstance->csi2dcObj->dataPipeDataType = pInit->csiDataFormat;
-    } else {
-        pDrvInstance->csi2dcObj->videoPipeDataType = CSI2DC_DATA_FORMAT_RAW8;
-        pDrvInstance->csi2dcObj->dataPipeDataType = CSI2DC_DATA_FORMAT_RAW8;
-    }
-#endif
-    
-#if ISC_ENABLE_MIPI_INTERFACE
-    pDrvInstance->csiObj = DRV_CSI_Initalize();
-    if (pDrvInstance->csiObj == NULL) {
-        debug_print("\r\nCamera: DRV_CSI_Initalize Failed \r\n");
-        return SYS_MODULE_OBJ_INVALID;
-    }
-    
-    if (pInit->csiDataFormat >= 0) {
-        pDrvInstance->csiObj->csiDataType = pInit->csiDataFormat;
-    } else {
-        pDrvInstance->csiObj->csiDataType = CSI2_DATA_FORMAT_RAW10;
-    }
-
-    if (pDrvInstance->csiObj->csiFrameWidth != pDrvInstance->imageWidth) {
-        pDrvInstance->csiObj->csiFrameWidth = pDrvInstance->imageWidth;
-    }
-
-    if (pDrvInstance->csiObj->csiFrameHeight != pDrvInstance->imageHeight) {
-        pDrvInstance->csiObj->csiFrameHeight = pDrvInstance->imageHeight;
-    }
-
-#endif
-
-    if (pInit->iscInputFormat >= 0) {
-        pDrvInstance->iscInputFormat = pInit->iscInputFormat;
-        pDrvInstance->iscObj->inputFormat = pInit->iscInputFormat;
-    } else {
-        pDrvInstance->iscObj->inputFormat = DRV_IMAGE_SENSOR_RAW_BAYER;
-        pDrvInstance->iscInputFormat = DRV_IMAGE_SENSOR_RAW_BAYER;
-    }
-
-    if (pInit->iscOutputFormat >= 0)
-        pDrvInstance->iscObj->rlpMode = pInit->iscOutputFormat;
-    else
-        pDrvInstance->iscObj->rlpMode = ISC_RLP_CFG_MODE_ARGB32;
-
-    if (pInit->iscBayerPattern >= 0)
-        pDrvInstance->iscObj->bayerPattern = pInit->iscBayerPattern;
-    else
-        pDrvInstance->iscObj->bayerPattern = ISC_CFA_CFG_BAYCFG_RGRG_Val;
-
-    if (pInit->iscOutputLayout >= 0)
-        pDrvInstance->iscObj->layout = pInit->iscOutputLayout;
-    else
-        pDrvInstance->iscObj->layout = ISC_LAYOUT_PACKED32;
-
-    if (pInit->iscInputBits >= 0) {
-        pDrvInstance->iscObj->inputBits = pInit->iscInputBits;
-    } else {
-        pDrvInstance->iscObj->inputBits = DRV_IMAGE_SENSOR_10_BIT;
-    }
-
+    pDrvInstance->iscObj->rlpMode = pInit->iscOutputFormat;
+    pDrvInstance->iscObj->bayerPattern = pInit->iscBayerPattern;
+    pDrvInstance->iscObj->layout = pInit->iscOutputLayout;
+    pDrvInstance->iscObj->inputBits = pInit->iscInputBits;
     pDrvInstance->iscObj->dpc.enableDPC = pInit->iscEnableDPC;
-
     pDrvInstance->iscObj->dpc.enableGDC = pInit->iscEnableGDC;
-
     pDrvInstance->iscObj->dpc.enableBLC = pInit->iscEnableBLC;
-
     pDrvInstance->iscObj->enableVideoMode = pInit->iscEnableVideoMode;
-
     pDrvInstance->iscObj->enableMIPI = pInit->iscEnableMIPI;
-
     pDrvInstance->iscObj->cbc.enableCBC = pInit->iscEnableBightnessAndContrast;
-
     pDrvInstance->iscObj->enableProgressiveMode = pInit->iscEnableProgressiveMode;
-
     pDrvInstance->iscObj->whiteBalance.enableWB = pInit->iscEnableWhiteBalance;
     pDrvInstance->iscObj->gamma.enableGamma = pInit->iscEnableGamma;
     pDrvInstance->iscObj->enableHistogram = pInit->iscEnableHistogram;
-
-    if (pDrvInstance->imageWidth <= 0)
-        pDrvInstance->imageWidth = DEFAULT_FRAME_WIDTH;
-
-    if (pDrvInstance->imageHeight <= 0)
-        pDrvInstance->imageHeight = DEFAULT_FRAME_HEIGHT;
-
     pDrvInstance->iscObj->imageWidth = pDrvInstance->imageWidth;
     pDrvInstance->iscObj->imageHeight = pDrvInstance->imageHeight;
 
@@ -635,6 +490,64 @@ SYS_MODULE_OBJ CAMERA_Initialize(const SYS_MODULE_INIT * const init) {
     pDrvInstance->enableFps = true;
     pDrvInstance->fpsTimer = SYS_TIME_HANDLE_INVALID;
     pDrvInstance->fpsCount = 0;
+
+    if (pInit->drvI2CIndex >= 0) {
+        pDrvInstance->sensor = DRV_ImageSensor_Init(pInit->drvI2CIndex, pInit->imageSensorName);
+        if (pDrvInstance->sensor == NULL) {
+            debug_print("\r\nCamera: DRV_ImageSensor_Init Failed \r\n");
+            return SYS_MODULE_OBJ_INVALID;
+        }
+
+        if (pDrvInstance->sensor->name != NULL) {
+            strcpy(pDrvInstance->imageSensorName, pDrvInstance->sensor->name);
+        } else if (pInit->imageSensorName != NULL) {
+            strcpy(pDrvInstance->imageSensorName, pInit->imageSensorName);
+        }
+
+        if (DRV_ImageSensor_GetConfig(pDrvInstance->sensor,
+                pDrvInstance->imageSensorResolution,
+                pDrvInstance->imageSensorOutputFormat,
+                &pDrvInstance->imageSensorOutputBitWidth,
+                &pDrvInstance->imageWidth,
+                &pDrvInstance->imageHeight) == DRV_IMAGE_SENSOR_SUCCESS) {
+            debug_print("\r\n Image Sensor Configurations: \r\n");
+            debug_print("\r\n\t OutputBitWidth = 0x%x \r\n", pDrvInstance->imageSensorOutputBitWidth + 8);
+            debug_print("\r\n\t imageWidth = %ld \r\n", pDrvInstance->imageWidth);
+            debug_print("\r\n\t imageHeight = %ld \r\n", pDrvInstance->imageHeight);
+
+            if (DRV_ImageSensor_Configure(pDrvInstance->sensor,
+                pDrvInstance->imageSensorResolution,
+                pDrvInstance->imageSensorOutputFormat) != DRV_IMAGE_SENSOR_SUCCESS) {
+                debug_print("\r\n ImageSensor Configure failed.\r\n");
+                return SYS_MODULE_OBJ_INVALID;
+            }
+
+            pDrvInstance->iscObj->inputFormat = pDrvInstance->imageSensorOutputFormat;
+
+        }
+    } else {
+        debug_print("\r\nCamera: Invalid I2C Driver Index\r\n");
+        return SYS_MODULE_OBJ_INVALID;
+    }
+
+#if defined(_SAM9X7_CSI2DC_INSTANCE_)
+    pDrvInstance->csi2dcObj = DRV_CSI2DC_Initalize();
+    if (pDrvInstance->csi2dcObj == NULL) {
+        debug_print("\r\nCamera: DRV_CSI2DC_Initalize Failed \r\n");
+        return SYS_MODULE_OBJ_INVALID;
+    }
+
+    pDrvInstance->csi2dcObj->videoPipeDataType = pInit->csiDataFormat;
+    pDrvInstance->csi2dcObj->dataPipeDataType = pInit->csiDataFormat;
+#endif
+    
+#if ISC_ENABLE_MIPI_INTERFACE
+    pDrvInstance->csiObj = DRV_CSI_Initalize(pDrvInstance->sensor);
+    if (pDrvInstance->csiObj == NULL) {
+        debug_print("\r\nCamera: DRV_CSI_Initalize Failed \r\n");
+        return SYS_MODULE_OBJ_INVALID;
+    }
+#endif
 
     CameraState = CAMERA_OPEN;
     debug_print("\r\n CAMERA_Initialize : END\r\n");
