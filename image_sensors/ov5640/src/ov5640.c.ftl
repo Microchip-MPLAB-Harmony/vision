@@ -5980,6 +5980,7 @@ DRV_IMAGE_SENSOR_OBJ ov5640_device ={
     .streamStopValue = 0x00,
     .flipRegAddr = 0,
     .flipFunc = NULL,
+    .getFormatFunc = NULL,
     .linkFreqMHz = OV5640_LINK_FREQ_MHZ,
     .iSensorConfigs = {
         &ov5640_yuv_qvga_config,

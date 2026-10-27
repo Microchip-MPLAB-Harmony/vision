@@ -242,6 +242,7 @@ uint32_t CAMERA_Get_FPS() {
 
 uint32_t CAMERA_SetFlip(SYS_MODULE_OBJ object, DRV_IMAGE_SENSOR_FLIP_MODE mode) {
     DEVICE_OBJECT* pDrvObject = (DEVICE_OBJECT*) object;
+    uint8_t bayerPattern;
 
     if (object == SYS_MODULE_OBJ_INVALID) {
         return DRV_IMAGE_SENSOR_ERROR;
@@ -251,7 +252,35 @@ uint32_t CAMERA_SetFlip(SYS_MODULE_OBJ object, DRV_IMAGE_SENSOR_FLIP_MODE mode) 
         return DRV_IMAGE_SENSOR_ERROR;
     }
 
-    return DRV_ImageSensor_SetFlip(pDrvObject->sensor, mode);
+    uint32_t result = DRV_ImageSensor_SetFlip(pDrvObject->sensor, mode);
+    if (result != DRV_IMAGE_SENSOR_SUCCESS) {
+        return result;
+    }
+
+    /* Adjust Bayer pattern based on flip mode.
+     * Vertical flip changes the starting row from red to blue (or vice versa).
+     * Original pattern is RGRG (1). When vertically flipped, it becomes BGBG (3).
+     * Horizontal flip does not change the Bayer pattern row order. */
+    switch (mode) {
+        case DRV_IMAGE_SENSOR_FLIP_NONE:
+        case DRV_IMAGE_SENSOR_FLIP_HORIZONTAL:
+            bayerPattern = pDrvObject->iscObj->bayerPattern;
+            break;
+        case DRV_IMAGE_SENSOR_FLIP_VERTICAL:
+        case DRV_IMAGE_SENSOR_FLIP_BOTH:
+            /* When vertical flip is enabled, swap red-row and blue-row patterns:
+             * GRGR (0) <-> GBGB (2)
+             * RGRG (1) <-> BGBG (3) */
+            bayerPattern = pDrvObject->iscObj->bayerPattern ^ 0x02;
+            break;
+        default:
+            bayerPattern = pDrvObject->iscObj->bayerPattern;
+            break;
+    }
+
+    ISC_CFA_Configure(bayerPattern, 1);
+
+    return DRV_IMAGE_SENSOR_SUCCESS;
 }
 
 uint32_t CAMERA_GetFlip(SYS_MODULE_OBJ object, DRV_IMAGE_SENSOR_FLIP_MODE* mode) {

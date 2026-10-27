@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define DRV_IMAGE_SENSOR_MAX_DEVICES    5
+#define DRV_IMAGE_SENSOR_MAX_DEVICES    7
 #define DRV_IMAGE_SENSOR_MAX_CONFIGS    10
 
 enum {
@@ -80,6 +80,7 @@ typedef struct {
 typedef struct DRV_IMAGE_SENSOR_OBJ_T DRV_IMAGE_SENSOR_OBJ;
 
 typedef uint32_t (*DRV_IMAGE_SENSOR_FLIP_FUNC)(DRV_IMAGE_SENSOR_OBJ* isensor, DRV_IMAGE_SENSOR_FLIP_MODE mode);
+typedef uint32_t (*DRV_IMAGE_SENSOR_GET_FORMAT_FUNC)(DRV_IMAGE_SENSOR_OBJ* isensor, uint8_t* format, uint8_t* bitWidth);
 
 struct DRV_IMAGE_SENSOR_OBJ_T {
     const char* name;
@@ -102,6 +103,7 @@ struct DRV_IMAGE_SENSOR_OBJ_T {
     volatile bool drvI2cSuccess;
     const DRV_IMAGE_SENSOR_CONFIGS* iSensorConfigs[DRV_IMAGE_SENSOR_MAX_CONFIGS];
     DRV_IMAGE_SENSOR_FLIP_FUNC flipFunc;
+    DRV_IMAGE_SENSOR_GET_FORMAT_FUNC getFormatFunc;
 };
 
 extern DRV_IMAGE_SENSOR_OBJ ov2640_device;
@@ -109,6 +111,8 @@ extern DRV_IMAGE_SENSOR_OBJ ov5640_device;
 extern DRV_IMAGE_SENSOR_OBJ ov5647_device;
 extern DRV_IMAGE_SENSOR_OBJ imx219_device;
 extern DRV_IMAGE_SENSOR_OBJ imx462_device;
+extern DRV_IMAGE_SENSOR_OBJ imx519_device;
+extern DRV_IMAGE_SENSOR_OBJ imx708_device;
 
 DRV_IMAGE_SENSOR_OBJ* DRV_ImageSensor_Probe(DRV_HANDLE drvI2CHandle, bool detect_auto, uint8_t id);
 
@@ -147,5 +151,9 @@ uint32_t DRV_ImageSensor_GetFlip(DRV_IMAGE_SENSOR_OBJ* isensor,
         DRV_IMAGE_SENSOR_FLIP_MODE* mode);
 
 uint32_t DRV_ImageSensor_GetLinkFrequency(DRV_IMAGE_SENSOR_OBJ* isensor, uint32_t* linkFreqMHz);
+
+uint32_t DRV_ImageSensor_GetFormat(DRV_IMAGE_SENSOR_OBJ* isensor, uint8_t* format, uint8_t* bitWidth);
+
+const char* DRV_ImageSensor_GetFormatString(uint8_t format);
 
 #endif /* ! DRV_IMAGE_SENSOR_H */

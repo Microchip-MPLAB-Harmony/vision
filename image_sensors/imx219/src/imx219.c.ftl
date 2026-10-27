@@ -425,6 +425,39 @@ static const DRV_IMAGE_SENSOR_CONFIGS imx219_raw_1080p_config ={
 #define IMX219_LINK_FREQ_MHZ    456
 
 static uint32_t IMX219_SetFlip(DRV_IMAGE_SENSOR_OBJ* isensor, DRV_IMAGE_SENSOR_FLIP_MODE mode);
+static uint32_t IMX219_GetFormat(DRV_IMAGE_SENSOR_OBJ* isensor, uint8_t* format, uint8_t* bitWidth);
+
+static uint32_t IMX219_GetFormat(DRV_IMAGE_SENSOR_OBJ* isensor, uint8_t* format, uint8_t* bitWidth) {
+    uint8_t regValH = 0;
+    uint8_t regValL = 0;
+
+    if (isensor == NULL || format == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    /* IMX219: Read CSI_DATA_FORMAT register 0x018C/0x018D */
+    if (!DRV_ImageSensor_I2C_ReadReg(isensor, 0x018C, &regValH, 1)) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+    if (!DRV_ImageSensor_I2C_ReadReg(isensor, 0x018D, &regValL, 1)) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    /* CSI_DATA_FORMAT: 0x0A0A = RAW10, 0x0808 = RAW8 */
+    *format = DRV_IMAGE_SENSOR_RAW_BAYER;
+
+    if (bitWidth != NULL) {
+        if (regValH == 0x0A && regValL == 0x0A) {
+            *bitWidth = DRV_IMAGE_SENSOR_10_BIT;
+        } else if (regValH == 0x08 && regValL == 0x08) {
+            *bitWidth = DRV_IMAGE_SENSOR_8_BIT;
+        } else {
+            *bitWidth = DRV_IMAGE_SENSOR_10_BIT;
+        }
+    }
+
+    return DRV_IMAGE_SENSOR_SUCCESS;
+}
 
 static uint32_t IMX219_SetFlip(DRV_IMAGE_SENSOR_OBJ* isensor, DRV_IMAGE_SENSOR_FLIP_MODE mode) {
     uint8_t regVal = 0;
@@ -486,6 +519,7 @@ DRV_IMAGE_SENSOR_OBJ imx219_device ={
     .streamStopValue = 0x00,
     .flipRegAddr = IMX219_IMAGE_ORIENTATION_REG,
     .flipFunc = IMX219_SetFlip,
+    .getFormatFunc = IMX219_GetFormat,
     .linkFreqMHz = IMX219_LINK_FREQ_MHZ,
     .iSensorConfigs = {
         &imx219_raw_vga_config,

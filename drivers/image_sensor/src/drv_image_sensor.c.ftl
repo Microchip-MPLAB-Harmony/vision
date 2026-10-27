@@ -11,6 +11,8 @@
 #define debug_print(args ...) if (CAMERA_ENABLE_DEBUG) fprintf(stderr, args)
 
 static DRV_IMAGE_SENSOR_OBJ* Devices[DRV_IMAGE_SENSOR_MAX_DEVICES] ={
+    &imx708_device,
+    &imx519_device,
     &imx219_device,
     &imx462_device,
     &ov5647_device,
@@ -430,4 +432,38 @@ uint32_t DRV_ImageSensor_GetLinkFrequency(DRV_IMAGE_SENSOR_OBJ* isensor,
     *linkFreqMHz = isensor->linkFreqMHz;
 
     return DRV_IMAGE_SENSOR_SUCCESS;
+}
+
+const char* DRV_ImageSensor_GetFormatString(uint8_t format) {
+    switch (format) {
+        case DRV_IMAGE_SENSOR_RAW_BAYER:
+            return "RAW_BAYER";
+        case DRV_IMAGE_SENSOR_YUV_422:
+            return "YUV_422";
+        case DRV_IMAGE_SENSOR_RGB:
+            return "RGB";
+        case DRV_IMAGE_SENSOR_CCIR656:
+            return "CCIR656";
+        case DRV_IMAGE_SENSOR_MONO:
+            return "MONO";
+        case DRV_IMAGE_SENSOR_JPEG:
+            return "JPEG";
+        default:
+            return "UNKNOWN";
+    }
+}
+
+uint32_t DRV_ImageSensor_GetFormat(DRV_IMAGE_SENSOR_OBJ* isensor,
+        uint8_t* format,
+        uint8_t* bitWidth) {
+    if (isensor == NULL || format == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    if (isensor->getFormatFunc != NULL) {
+        return isensor->getFormatFunc(isensor, format, bitWidth);
+    }
+
+    debug_print("\r\n DRV_ImageSensor_GetFormat: getFormatFunc not implemented for this sensor\r\n");
+    return DRV_IMAGE_SENSOR_ERROR;
 }

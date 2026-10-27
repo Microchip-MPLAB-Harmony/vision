@@ -11,6 +11,80 @@
 
 #define OV5647_LINK_FREQ_MHZ    400
 
+#define OV5647_REG_TIMING_TC_REG20  0x3820
+#define OV5647_REG_TIMING_TC_REG21  0x3821
+#define OV5647_REG20_VFLIP_MASK     0x02
+#define OV5647_REG21_HFLIP_MASK     0x02
+
+static uint32_t ov5647_get_format(DRV_IMAGE_SENSOR_OBJ* isensor, uint8_t* format, uint8_t* bitWidth)
+{
+    uint8_t regVal = 0;
+
+    if (isensor == NULL || format == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    /* OV5647: Read format control register 0x3034 for bit depth */
+    if (!DRV_ImageSensor_I2C_ReadReg(isensor, 0x3034, &regVal, 1)) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    /* OV5647 outputs RAW Bayer, bit depth from 0x3034[3:0] */
+    *format = DRV_IMAGE_SENSOR_RAW_BAYER;
+
+    if (bitWidth != NULL) {
+        uint8_t bits = regVal & 0x0F;
+        if (bits == 0x08) {
+            *bitWidth = DRV_IMAGE_SENSOR_8_BIT;
+        } else if (bits == 0x0A) {
+            *bitWidth = DRV_IMAGE_SENSOR_10_BIT;
+        } else {
+            *bitWidth = DRV_IMAGE_SENSOR_10_BIT;
+        }
+    }
+
+    return DRV_IMAGE_SENSOR_SUCCESS;
+}
+
+static uint32_t ov5647_flip(DRV_IMAGE_SENSOR_OBJ* isensor, DRV_IMAGE_SENSOR_FLIP_MODE mode)
+{
+    uint8_t reg20_val = 0;
+    uint8_t reg21_val = 0;
+
+    if (isensor == NULL) {
+        return DRV_IMAGE_SENSOR_ERROR;
+    }
+
+    if (!DRV_ImageSensor_I2C_ReadReg(isensor, OV5647_REG_TIMING_TC_REG20, &reg20_val, 1)) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    if (!DRV_ImageSensor_I2C_ReadReg(isensor, OV5647_REG_TIMING_TC_REG21, &reg21_val, 1)) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    reg20_val &= ~OV5647_REG20_VFLIP_MASK;
+    reg21_val &= ~OV5647_REG21_HFLIP_MASK;
+
+    if (mode & DRV_IMAGE_SENSOR_FLIP_VERTICAL) {
+        reg20_val |= OV5647_REG20_VFLIP_MASK;
+    }
+
+    if (mode & DRV_IMAGE_SENSOR_FLIP_HORIZONTAL) {
+        reg21_val |= OV5647_REG21_HFLIP_MASK;
+    }
+
+    if (!DRV_ImageSensor_I2C_WriteReg(isensor, OV5647_REG_TIMING_TC_REG20, reg20_val)) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    if (!DRV_ImageSensor_I2C_WriteReg(isensor, OV5647_REG_TIMING_TC_REG21, reg21_val)) {
+        return DRV_IMAGE_SENSOR_I2C_ERROR;
+    }
+
+    return DRV_IMAGE_SENSOR_SUCCESS;
+}
+
 static const DRV_IMAGE_SENSOR_REG ov5647_raw_vga[] = {
     {0x0100, 0x00},
     {0x0103, 0x01},
@@ -629,8 +703,9 @@ DRV_IMAGE_SENSOR_OBJ ov5647_device = {
     .streamStartAddr = 0x4800,
     .streamStartValue = 0x34,
     .streamStopValue = 0x00,
-    .flipRegAddr = 0,
-    .flipFunc = NULL,
+    .flipRegAddr = OV5647_REG_TIMING_TC_REG20,
+    .flipFunc = ov5647_flip,
+    .getFormatFunc = ov5647_get_format,
     .linkFreqMHz = OV5647_LINK_FREQ_MHZ,
     .iSensorConfigs = {
         &ov5647_raw_vga_config,
