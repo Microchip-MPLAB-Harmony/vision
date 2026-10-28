@@ -1,14 +1,14 @@
 package:
   format-version: "1.0.0"
   name: "vision"
-  version: "v3.2.2"
+  version: "v3.2.3"
   type: "api"
   status: "production"
 
   dependencies:
     - name: "core"
       type: "package"
-      version: "v3.16.2"
+      version: "v3.17.1"
     - name: "csp"
       type: "package"
-      version: "v3.25.1"
+      version: "v3.26.1"

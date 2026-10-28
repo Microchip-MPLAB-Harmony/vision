@@ -3,6 +3,35 @@
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Vision Release v3.2.3
+
+### New Features
+
+* add support for IMX462, IMX519 and IMX708 Image Sensors.
+* add image flip control (horizontal/vertical) to the Image Sensor driver and libcamera, with IMX219 and OV5647 support.
+* add API to read the sensor output format and bit width.
+* derive MIPI CSI bitrate from the image sensor link frequency.
+
+### Fixed Known Issues
+
+* fix OV5647 selection generating the OV5640 sensor name.
+* fix Bayer pattern after vertical flip.
+* fix 16-bit register address high byte masking in the Image Sensor I2C driver.
+* tune IMX219 and OV5647 720p register settings.
+
+### Development Tools
+
+* [MPLAB® X IDE v6.25](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v4.60](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * [MPLAB® Code Configurator Plug-In v5.6.4](https://github.com/Microchip-MPLAB-Harmony/mplabx-plugin)
+    * [MPLAB® Code Configurator Core v5.8.4](https://github.com/Microchip-MPLAB-Harmony/mplabx-plugin)
+
+### Dependent Components
+
+* [csp v3.26.1](https://github.com/Microchip-MPLAB-Harmony/csp/releases/tag/v3.26.1)
+* [core v3.17.1](https://github.com/Microchip-MPLAB-Harmony/core/releases/tag/v3.17.1)
+
 ## Vision Release v3.2.2
 
 ### New Features
